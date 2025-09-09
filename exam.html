@@ -6,6 +6,7 @@
     <title>ILMNEXUS - Exam Interface</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -617,6 +618,21 @@
         .hidden {
             display: none;
         }
+        
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #2E73FF;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -631,59 +647,33 @@
             <div class="timer" id="timer">40:00</div>
             
             <div class="student-info">
-                <div class="name">John David Anderson</div>
-                <div class="matric">ILM2024025 | Computer Science</div>
+                <div class="name" id="student-name">Loading...</div>
+                <div class="matric" id="student-matric">Loading...</div>
             </div>
         </header>
         
         <div class="container">
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar" style="width: 4%;"></div>
+            </div>
+            
             <div class="exam-card">
                 <div class="question-header">
-                    <div class="question-number">Question <span id="current-q">1</span> of 30</div>
+                    <div class="question-number">Question <span id="current-q">1</span> of 25</div>
                     <div class="question-type" id="question-type">MCQ</div>
                 </div>
                 
                 <div class="question-text" id="question-text">
-                    Which of the following best describes the concept of 'variable hoisting' in JavaScript?
+                    Loading question...
                 </div>
                 
                 <div class="options" id="mcq-options">
-                    <div class="option">
-                        <input type="radio" name="answer" id="option1" value="A">
-                        <label for="option1">
-                            <span class="custom-radio"></span>
-                            <span class="option-text">Variables are moved to the top of their scope during compilation</span>
-                        </label>
-                    </div>
-                    
-                    <div class="option">
-                        <input type="radio" name="answer" id="option2" value="B">
-                        <label for="option2">
-                            <span class="custom-radio"></span>
-                            <span class="option-text">Variables are automatically assigned a value of undefined</span>
-                        </label>
-                    </div>
-                    
-                    <div class="option">
-                        <input type="radio" name="answer" id="option3" value="C">
-                        <label for="option3">
-                            <span class="custom-radio"></span>
-                            <span class="option-text">Variables can be accessed before they are declared</span>
-                        </label>
-                    </div>
-                    
-                    <div class="option">
-                        <input type="radio" name="answer" id="option4" value="D">
-                        <label for="option4">
-                            <span class="custom-radio"></span>
-                            <span class="option-text">All of the above</span>
-                        </label>
-                    </div>
+                    <!-- Options will be populated by JavaScript -->
                 </div>
                 
                 <div class="essay-container hidden" id="essay-container">
-                    <textarea placeholder="Type your answer here..."></textarea>
-                    <div class="word-counter">Words: 0</div>
+                    <textarea id="essay-answer" placeholder="Type your answer here..."></textarea>
+                    <div class="word-counter">Words: <span id="word-count">0</span></div>
                 </div>
                 
                 <div class="navigation">
@@ -694,11 +684,7 @@
                     <div class="jump-container">
                         <span class="jump-label">Jump to:</span>
                         <select class="jump-select" id="jump-select">
-                            <option value="1">Question 1</option>
-                            <option value="2">Question 2</option>
-                            <option value="3">Question 3</option>
-                            <option value="4">Question 4</option>
-                            <option value="5">Question 5</option>
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
                     
@@ -748,22 +734,22 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Full Name</div>
-                            <div class="info-value">John David Anderson</div>
+                            <div class="info-value" id="result-name">John David Anderson</div>
                         </div>
                         
                         <div class="info-item">
                             <div class="info-label">Matric Number</div>
-                            <div class="info-value">ILM2024025</div>
+                            <div class="info-value" id="result-matric">ILM2024025</div>
                         </div>
                         
                         <div class="info-item">
                             <div class="info-label">Course</div>
-                            <div class="info-value">Computer Science</div>
+                            <div class="info-value" id="result-course">Computer Science</div>
                         </div>
                         
                         <div class="info-item">
                             <div class="info-label">Father's Name</div>
-                            <div class="info-value">Robert Anderson</div>
+                            <div class="info-value" id="result-father">Robert Anderson</div>
                         </div>
                     </div>
                 </div>
@@ -779,12 +765,12 @@
                         
                         <div class="info-item">
                             <div class="info-label">Start Time</div>
-                            <div class="info-value">May 15, 2023 - 10:00 AM</div>
+                            <div class="info-value" id="start-time">Loading...</div>
                         </div>
                         
                         <div class="info-item">
                             <div class="info-label">End Time</div>
-                            <div class="info-value">May 15, 2023 - 10:40 AM</div>
+                            <div class="info-value" id="end-time">Loading...</div>
                         </div>
                         
                         <div class="info-item">
@@ -804,30 +790,30 @@
                     
                     <div class="performance-grid">
                         <div class="performance-item correct">
-                            <div class="performance-value">22</div>
+                            <div class="performance-value" id="correct-answers">0</div>
                             <div class="performance-label">Correct Answers</div>
                         </div>
                         
                         <div class="performance-item wrong">
-                            <div class="performance-value">5</div>
+                            <div class="performance-value" id="wrong-answers">0</div>
                             <div class="performance-label">Wrong Answers</div>
                         </div>
                         
                         <div class="performance-item not-attempted">
-                            <div class="performance-value">3</div>
+                            <div class="performance-value" id="not-attempted">0</div>
                             <div class="performance-label">Not Attempted</div>
                         </div>
                         
                         <div class="performance-item negative">
-                            <div class="performance-value">-1.25</div>
+                            <div class="performance-value" id="negative-marks">0</div>
                             <div class="performance-label">Negative Marks</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="total-score">
-                    <div class="score-value">82.5%</div>
-                    <div class="score-label">Total Score: 33 out of 40</div>
+                    <div class="score-value" id="score-percentage">0%</div>
+                    <div class="score-label">Total Score: <span id="score-value">0</span> out of 40</div>
                     
                     <button class="download-btn" id="download-btn">
                         <i class="fas fa-download"></i> Download Results as PDF
@@ -838,7 +824,7 @@
     </div>
 
     <script>
-        // Firebase configuration (replace with your actual config)
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAi_IyKB8Rkb0CpM_lBlwgdpsZxsZT_MdY",
             authDomain: "ilmxam.firebaseapp.com",
@@ -861,6 +847,8 @@
         const questionTextElement = document.getElementById('question-text');
         const mcqOptionsElement = document.getElementById('mcq-options');
         const essayContainerElement = document.getElementById('essay-container');
+        const essayAnswerElement = document.getElementById('essay-answer');
+        const wordCountElement = document.getElementById('word-count');
         const prevButton = document.getElementById('prev-btn');
         const nextButton = document.getElementById('next-btn');
         const jumpSelect = document.getElementById('jump-select');
@@ -869,16 +857,38 @@
         const cancelButton = document.getElementById('cancel-btn');
         const confirmButton = document.getElementById('confirm-btn');
         const downloadButton = document.getElementById('download-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const studentNameElement = document.getElementById('student-name');
+        const studentMatricElement = document.getElementById('student-matric');
+        
+        // Result page elements
+        const resultNameElement = document.getElementById('result-name');
+        const resultMatricElement = document.getElementById('result-matric');
+        const resultCourseElement = document.getElementById('result-course');
+        const resultFatherElement = document.getElementById('result-father');
+        const startTimeElement = document.getElementById('start-time');
+        const endTimeElement = document.getElementById('end-time');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const wrongAnswersElement = document.getElementById('wrong-answers');
+        const notAttemptedElement = document.getElementById('not-attempted');
+        const negativeMarksElement = document.getElementById('negative-marks');
+        const scorePercentageElement = document.getElementById('score-percentage');
+        const scoreValueElement = document.getElementById('score-value');
         
         // Exam state
         let currentQuestion = 1;
-        let totalQuestions = 30;
+        let totalQuestions = 25;
         let timeLeft = 40 * 60; // 40 minutes in seconds
         let timerInterval;
+        let startTime;
+        let userAnswers = {};
+        let examData = {};
         
-        // Sample questions data
+        // Sample questions data (20 MCQ + 5 Essay)
         const questions = [
+            // MCQ Questions (1-20)
             {
+                id: 1,
                 type: "MCQ",
                 text: "Which of the following best describes the concept of 'variable hoisting' in JavaScript?",
                 options: [
@@ -886,17 +896,304 @@
                     "Variables are automatically assigned a value of undefined",
                     "Variables can be accessed before they are declared",
                     "All of the above"
-                ]
+                ],
+                correctAnswer: "D",
+                marks: 1
             },
             {
-                type: "Essay",
-                text: "Explain the concept of closures in JavaScript and provide a practical example of where they might be useful."
+                id: 2,
+                type: "MCQ",
+                text: "What does CSS stand for?",
+                options: [
+                    "Computer Style Sheets",
+                    "Creative Style System",
+                    "Cascading Style Sheets",
+                    "Colorful Style Sheets"
+                ],
+                correctAnswer: "C",
+                marks: 1
             },
-            // More questions would be loaded from Firebase in a real application
+            {
+                id: 3,
+                type: "MCQ",
+                text: "Which HTML tag is used to define an internal style sheet?",
+                options: [
+                    "<css>",
+                    "<script>",
+                    "<style>",
+                    "<link>"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 4,
+                type: "MCQ",
+                text: "Which property is used to change the background color?",
+                options: [
+                    "color",
+                    "bgcolor",
+                    "background-color",
+                    "bg-color"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 5,
+                type: "MCQ",
+                text: "How do you insert a comment in a CSS file?",
+                options: [
+                    "// this is a comment //",
+                    "/* this is a comment */",
+                    "' this is a comment",
+                    "// this is a comment"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 6,
+                type: "MCQ",
+                text: "Which property is used to change the font of an element?",
+                options: [
+                    "font-style",
+                    "font-weight",
+                    "font-family",
+                    "text-font"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 7,
+                type: "MCQ",
+                text: "How do you make each word in a text start with a capital letter?",
+                options: [
+                    "text-transform: capitalize",
+                    "text-style: capital",
+                    "transform: capitalize",
+                    "font-style: capital"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 8,
+                type: "MCQ",
+                text: "Which property is used to change the left margin of an element?",
+                options: [
+                    "margin-left",
+                    "padding-left",
+                    "indent",
+                    "left-margin"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 9,
+                type: "MCQ",
+                text: "What is the correct HTML for referring to an external style sheet?",
+                options: [
+                    "<stylesheet>mystyle.css</stylesheet>",
+                    "<style src=\"mystyle.css\">",
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\">",
+                    "<css>mystyle.css</css>"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 10,
+                type: "MCQ",
+                text: "Which is the correct CSS syntax?",
+                options: [
+                    "body {color: black;}",
+                    "{body:color=black;}",
+                    "body:color=black;",
+                    "{body;color:black;}"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 11,
+                type: "MCQ",
+                text: "How do you add a background color for all <h1> elements?",
+                options: [
+                    "h1.all {background-color:#FFFFFF;}",
+                    "h1 {background-color:#FFFFFF;}",
+                    "all.h1 {background-color:#FFFFFF;}",
+                    "h1.all bgcolor=#FFFFFF;"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 12,
+                type: "MCQ",
+                text: "Which CSS property controls the text size?",
+                options: [
+                    "font-style",
+                    "text-size",
+                    "font-size",
+                    "text-style"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 13,
+                type: "MCQ",
+                text: "What is the correct HTML for making a checkbox?",
+                options: [
+                    "<input type=\"check\">",
+                    "<check>",
+                    "<checkbox>",
+                    "<input type=\"checkbox\">"
+                ],
+                correctAnswer: "D",
+                marks: 1
+            },
+            {
+                id: 14,
+                type: "MCQ",
+                text: "What is the correct HTML for making a text input field?",
+                options: [
+                    "<input type=\"text\">",
+                    "<textfield>",
+                    "<textinput type=\"text\">",
+                    "<input type=\"textfield\">"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 15,
+                type: "MCQ",
+                text: "What is the correct HTML for making a drop-down list?",
+                options: [
+                    "<list>",
+                    "<input type=\"list\">",
+                    "<select>",
+                    "<input type=\"dropdown\">"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 16,
+                type: "MCQ",
+                text: "What is the correct HTML for making a text area?",
+                options: [
+                    "<input type=\"textbox\">",
+                    "<input type=\"textarea\">",
+                    "<textarea>",
+                    "<text area>"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 17,
+                type: "MCQ",
+                text: "What is the correct HTML for inserting an image?",
+                options: [
+                    "<image src=\"image.gif\" alt=\"MyImage\">",
+                    "<img href=\"image.gif\" alt=\"MyImage\">",
+                    "<img src=\"image.gif\" alt=\"MyImage\">",
+                    "<img alt=\"MyImage\">image.gif</img>"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
+                id: 18,
+                type: "MCQ",
+                text: "What is the correct HTML for inserting a background image?",
+                options: [
+                    "<body style=\"background-image:url(background.gif)\">",
+                    "<background img=\"background.gif\">",
+                    "<body bg=\"background.gif\">",
+                    "<body background=\"background.gif\">"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 19,
+                type: "MCQ",
+                text: "Which of these elements are all <table> elements?",
+                options: [
+                    "<table><head><tfoot>",
+                    "<table><tr><td>",
+                    "<table><tr><tt>",
+                    "<thead><body><tr>"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 20,
+                type: "MCQ",
+                text: "How can you make a numbered list?",
+                options: [
+                    "<list>",
+                    "<ol>",
+                    "<dl>",
+                    "<ul>"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            
+            // Essay Questions (21-25)
+            {
+                id: 21,
+                type: "Essay",
+                text: "Explain the concept of closures in JavaScript and provide a practical example of where they might be useful.",
+                marks: 4
+            },
+            {
+                id: 22,
+                type: "Essay",
+                text: "Describe the box model in CSS and how it affects layout and design of web pages.",
+                marks: 4
+            },
+            {
+                id: 23,
+                type: "Essay",
+                text: "Explain the difference between let, const, and var in JavaScript with examples.",
+                marks: 4
+            },
+            {
+                id: 24,
+                type: "Essay",
+                text: "Discuss the importance of responsive web design and describe three techniques for creating responsive layouts.",
+                marks: 4
+            },
+            {
+                id: 25,
+                type: "Essay",
+                text: "Explain how the JavaScript event loop works and why it's important for asynchronous programming.",
+                marks: 4
+            }
         ];
         
         // Initialize the exam
         function initExam() {
+            // Get user data from session storage
+            const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
+            
+            // Set student info
+            studentNameElement.textContent = userData.fullName || "Student Name";
+            studentMatricElement.textContent = `${userData.matricNumber || "MATRIC123"} | ${userData.course || "Course"}`;
+            
+            // Record start time
+            startTime = new Date();
+            startTimeElement.textContent = startTime.toLocaleString();
+            
             // Start the timer
             startTimer();
             
@@ -937,29 +1234,57 @@
         
         // Load a question
         function loadQuestion(number) {
-            // In a real app, this would fetch from Firebase
-            const question = questions[number - 1] || questions[0];
+            const question = questions[number - 1];
             
             // Update UI
             currentQuestionElement.textContent = number;
             questionTextElement.textContent = question.text;
             questionTypeElement.textContent = question.type;
             
+            // Update progress bar
+            progressBar.style.width = `${(number / totalQuestions) * 100}%`;
+            
             // Show appropriate input based on question type
             if (question.type === "MCQ") {
                 mcqOptionsElement.classList.remove('hidden');
                 essayContainerElement.classList.add('hidden');
                 
-                // Populate options (in a real app, this would use actual data)
-                const options = mcqOptionsElement.querySelectorAll('.option-text');
+                // Clear previous options
+                mcqOptionsElement.innerHTML = '';
+                
+                // Create new options
+                const optionLetters = ['A', 'B', 'C', 'D'];
                 question.options.forEach((option, index) => {
-                    if (options[index]) {
-                        options[index].textContent = option;
-                    }
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'option';
+                    
+                    optionElement.innerHTML = `
+                        <input type="radio" name="answer" id="option${optionLetters[index]}" value="${optionLetters[index]}">
+                        <label for="option${optionLetters[index]}">
+                            <span class="custom-radio"></span>
+                            <span class="option-text">${option}</span>
+                        </label>
+                    `;
+                    
+                    mcqOptionsElement.appendChild(optionElement);
                 });
+                
+                // Check if user has already answered this question
+                if (userAnswers[number]) {
+                    document.querySelector(`input[name="answer"][value="${userAnswers[number]}"]`).checked = true;
+                }
             } else {
                 mcqOptionsElement.classList.add('hidden');
                 essayContainerElement.classList.remove('hidden');
+                
+                // Check if user has already answered this question
+                if (userAnswers[number]) {
+                    essayAnswerElement.value = userAnswers[number];
+                    updateWordCount();
+                } else {
+                    essayAnswerElement.value = '';
+                    wordCountElement.textContent = '0';
+                }
             }
             
             // Update navigation buttons
@@ -968,6 +1293,13 @@
             
             // Update jump select
             jumpSelect.value = number;
+        }
+        
+        // Update word count for essay questions
+        function updateWordCount() {
+            const text = essayAnswerElement.value;
+            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            wordCountElement.textContent = wordCount;
         }
         
         // Populate the jump select dropdown
@@ -982,10 +1314,25 @@
             }
         }
         
+        // Save the current answer
+        function saveAnswer() {
+            if (questions[currentQuestion - 1].type === "MCQ") {
+                const selectedOption = document.querySelector('input[name="answer"]:checked');
+                if (selectedOption) {
+                    userAnswers[currentQuestion] = selectedOption.value;
+                }
+            } else {
+                if (essayAnswerElement.value.trim() !== '') {
+                    userAnswers[currentQuestion] = essayAnswerElement.value;
+                }
+            }
+        }
+        
         // Set up event listeners
         function setupEventListeners() {
             // Navigation buttons
             prevButton.addEventListener('click', () => {
+                saveAnswer();
                 if (currentQuestion > 1) {
                     currentQuestion--;
                     loadQuestion(currentQuestion);
@@ -993,6 +1340,7 @@
             });
             
             nextButton.addEventListener('click', () => {
+                saveAnswer();
                 if (currentQuestion < totalQuestions) {
                     currentQuestion++;
                     loadQuestion(currentQuestion);
@@ -1001,9 +1349,13 @@
             
             // Jump to question
             jumpSelect.addEventListener('change', () => {
+                saveAnswer();
                 currentQuestion = parseInt(jumpSelect.value);
                 loadQuestion(currentQuestion);
             });
+            
+            // Essay word count
+            essayAnswerElement.addEventListener('input', updateWordCount);
             
             // Submit exam
             submitButton.addEventListener('click', () => {
@@ -1024,12 +1376,99 @@
             downloadButton.addEventListener('click', downloadResults);
         }
         
+        // Calculate results
+        function calculateResults() {
+            let correctCount = 0;
+            let wrongCount = 0;
+            let notAttemptedCount = 0;
+            let negativeMarks = 0;
+            let totalScore = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const question = questions[i - 1];
+                
+                if (!userAnswers[i]) {
+                    notAttemptedCount++;
+                    continue;
+                }
+                
+                if (question.type === "MCQ") {
+                    if (userAnswers[i] === question.correctAnswer) {
+                        correctCount++;
+                        totalScore += question.marks;
+                    } else {
+                        wrongCount++;
+                        negativeMarks += 0.25;
+                        totalScore -= 0.25;
+                    }
+                } else {
+                    // For essay questions, we'll assign a random score between 60-100% of max marks
+                    // In a real app, this would be graded by a teacher or using an algorithm
+                    const essayScore = question.marks * (0.6 + Math.random() * 0.4);
+                    totalScore += essayScore;
+                }
+            }
+            
+            return {
+                correctCount,
+                wrongCount,
+                notAttemptedCount,
+                negativeMarks: negativeMarks.toFixed(2),
+                totalScore: Math.max(0, totalScore.toFixed(2)), // Ensure score is not negative
+                percentage: ((Math.max(0, totalScore) / 40) * 100).toFixed(2)
+            };
+        }
+        
         // Submit the exam
         function submitExam() {
             clearInterval(timerInterval);
+            saveAnswer();
             
-            // In a real app, this would save final answers to Firebase
-            console.log("Exam submitted!");
+            // Calculate results
+            const results = calculateResults();
+            
+            // Record end time
+            const endTime = new Date();
+            endTimeElement.textContent = endTime.toLocaleString();
+            
+            // Get user data from session storage
+            const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
+            
+            // Update result page with user data
+            resultNameElement.textContent = userData.fullName || "Student Name";
+            resultMatricElement.textContent = userData.matricNumber || "MATRIC123";
+            resultCourseElement.textContent = userData.course || "Course";
+            resultFatherElement.textContent = userData.fatherName || "Father's Name";
+            
+            // Update result page with performance data
+            correctAnswersElement.textContent = results.correctCount;
+            wrongAnswersElement.textContent = results.wrongCount;
+            notAttemptedElement.textContent = results.notAttemptedCount;
+            negativeMarksElement.textContent = results.negativeMarks;
+            scoreValueElement.textContent = `${results.totalScore} / 40`;
+            scorePercentageElement.textContent = `${results.percentage}%`;
+            
+            // Prepare exam data for Firebase
+            examData = {
+                studentId: userData.matricNumber,
+                studentName: userData.fullName,
+                course: userData.course,
+                startTime: startTime,
+                endTime: endTime,
+                answers: userAnswers,
+                results: results,
+                submittedAt: new Date()
+            };
+            
+            // Save to Firebase (commented out for now)
+            /*
+            try {
+                await db.collection('exam_submissions').add(examData);
+                console.log("Exam results saved to Firebase");
+            } catch (error) {
+                console.error("Error saving exam results:", error);
+            }
+            */
             
             // Show result page
             examInterface.classList.add('hidden');
@@ -1038,27 +1477,51 @@
         
         // Download results as PDF
         function downloadResults() {
-            // In a real app, this would use jsPDF to generate a PDF
-            alert("Results downloaded as PDF!");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add certificate content
+            doc.setFontSize(24);
+            doc.setTextColor(46, 115, 255);
+            doc.text('ILMXAM - Exam Results', 105, 30, { align: 'center' });
+            
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Certificate of Completion', 105, 45, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text(`This is to certify that ${examData.studentName} (${examData.studentId})`, 105, 60, { align: 'center' });
+            doc.text(`has completed the exam with a score of ${examData.results.totalScore}/40 (${examData.results.percentage}%)`, 105, 70, { align: 'center' });
+            
+            // Add performance details
+            doc.setFontSize(14);
+            doc.setTextColor(46, 115, 255);
+            doc.text('Performance Summary', 20, 90);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Correct Answers: ${examData.results.correctCount}`, 20, 100);
+            doc.text(`Wrong Answers: ${examData.results.wrongCount}`, 20, 110);
+            doc.text(`Not Attempted: ${examData.results.notAttemptedCount}`, 20, 120);
+            doc.text(`Negative Marks: ${examData.results.negativeMarks}`, 20, 130);
+            
+            // Add exam details
+            doc.setFontSize(14);
+            doc.setTextColor(46, 115, 255);
+            doc.text('Exam Details', 20, 150);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Start Time: ${examData.startTime.toLocaleString()}`, 20, 160);
+            doc.text(`End Time: ${examData.endTime.toLocaleString()}`, 20, 170);
+            doc.text(`Duration: 40 minutes`, 20, 180);
+            
+            // Save the PDF
+            doc.save(`ILMXAM_Results_${examData.studentId}.pdf`);
         }
         
         // Initialize the exam when the page loads
         document.addEventListener('DOMContentLoaded', initExam);
     </script>
-    <script type="module">
-  async function saveAnswer() {
-    try {
-      await addDoc(collection(db, "exam_submissions"), {
-        studentId: "24/1125148",
-        q1: "Answer here",
-        submittedAt: new Date()
-      });
-      alert("Answer saved successfully!");
-    } catch (e) {
-      console.error("Error saving answer:", e);
-    }
-  }
-</script>
-
 </body>
 </html>
