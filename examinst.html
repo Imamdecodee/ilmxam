@@ -338,5 +338,20 @@
             }, 1000);
         });
     </script>
+    <script type="module">
+  async function saveAnswer() {
+    try {
+      await addDoc(collection(db, "exam_submissions"), {
+        studentId: "24/1125148",
+        q1: "Answer here",
+        submittedAt: new Date()
+      });
+      alert("Answer saved successfully!");
+    } catch (e) {
+      console.error("Error saving answer:", e);
+    }
+  }
+</script>
+
 </body>
 </html>

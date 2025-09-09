@@ -840,12 +840,12 @@
     <script>
         // Firebase configuration (replace with your actual config)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyAi_IyKB8Rkb0CpM_lBlwgdpsZxsZT_MdY",
+            authDomain: "ilmxam.firebaseapp.com",
+            projectId: "ilmxam",
+            storageBucket: "ilmxam.firebasestorage.app",
+            messagingSenderId: "499914637135",
+            appId: "1:499914637135:web:8622a39105d0706be7cf3a"
         };
         
         // Initialize Firebase
@@ -1045,5 +1045,20 @@
         // Initialize the exam when the page loads
         document.addEventListener('DOMContentLoaded', initExam);
     </script>
+    <script type="module">
+  async function saveAnswer() {
+    try {
+      await addDoc(collection(db, "exam_submissions"), {
+        studentId: "24/1125148",
+        q1: "Answer here",
+        submittedAt: new Date()
+      });
+      alert("Answer saved successfully!");
+    } catch (e) {
+      console.error("Error saving answer:", e);
+    }
+  }
+</script>
+
 </body>
 </html>

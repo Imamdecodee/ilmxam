@@ -109,9 +109,41 @@
         .notification {
             animation: slideIn 0.3s ease-out;
         }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex h-screen">
+    <!-- Firebase configuration -->
+    <script>
+        // Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
     <!-- Sidebar -->
     <div class="sidebar bg-white shadow-md flex flex-col">
         <!-- Logo -->
@@ -176,7 +208,7 @@
             
             <div class="flex items-center">
                 <div class="relative mr-4">
-                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent">
+                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent w-full md:w-64">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
                 
@@ -250,7 +282,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Create New Exam</h2>
-                    <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center">
+                    <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="create-exam-btn">
                         <i class="fas fa-plus mr-2"></i> Create Exam
                     </button>
                 </div>
@@ -258,33 +290,33 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-gray-700 mb-2">Exam Title</label>
-                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Enter exam title">
+                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Enter exam title" id="exam-title">
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 mb-2">Course</label>
-                        <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent">
-                            <option>Select a course</option>
-                            <option>Computer Science</option>
-                            <option>Mathematics</option>
-                            <option>Physics</option>
-                            <option>Chemistry</option>
+                        <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-course">
+                            <option value="">Select a course</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
                         </select>
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 mb-2">Duration (minutes)</label>
-                        <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="60">
+                        <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="60" id="exam-duration">
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 mb-2">Total Marks</label>
-                        <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="100">
+                        <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="100" id="exam-marks">
                     </div>
                     
                     <div class="md:col-span-2">
                         <label class="block text-gray-700 mb-2">Instructions</label>
-                        <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="3" placeholder="Enter exam instructions"></textarea>
+                        <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="3" placeholder="Enter exam instructions" id="exam-instructions"></textarea>
                     </div>
                 </div>
             </div>
@@ -294,10 +326,10 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Add Questions</h2>
                     <div class="flex space-x-3">
-                        <button class="bg-orange-primary text-white px-4 py-2 rounded-lg flex items-center">
+                        <button class="bg-orange-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-orange-dark transition-colors" id="save-questions-btn">
                             <i class="fas fa-save mr-2"></i> Save Questions
                         </button>
-                        <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center">
+                        <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="add-question-btn">
                             <i class="fas fa-plus mr-2"></i> Add Question
                         </button>
                     </div>
@@ -305,62 +337,83 @@
                 
                 <div class="mb-6">
                     <div class="flex space-x-4 border-b">
-                        <button class="px-4 py-2 border-b-2 border-blue-primary text-blue-primary font-medium">MCQ Questions</button>
-                        <button class="px-4 py-2 text-gray-500 font-medium">Essay Questions</button>
+                        <button class="px-4 py-2 border-b-2 border-blue-primary text-blue-primary font-medium question-type-tab active" data-type="mcq">MCQ Questions</button>
+                        <button class="px-4 py-2 text-gray-500 font-medium question-type-tab" data-type="essay">Essay Questions</button>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 gap-6">
-                    <div>
-                        <label class="block text-gray-700 mb-2">Question Text</label>
-                        <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="3" placeholder="Enter your question"></textarea>
+                <div id="mcq-questions-container">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Question Text</label>
+                            <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="3" placeholder="Enter your question" id="question-text"></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">Option A</label>
+                                <div class="flex items-center">
+                                    <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option A" id="option-a">
+                                    <div class="ml-2 flex items-center">
+                                        <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary" value="A">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Option B</label>
+                                <div class="flex items-center">
+                                    <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option B" id="option-b">
+                                    <div class="ml-2 flex items-center">
+                                        <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary" value="B">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Option C</label>
+                                <div class="flex items-center">
+                                    <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option C" id="option-c">
+                                    <div class="ml-2 flex items-center">
+                                        <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary" value="C">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Option D</label>
+                                <div class="flex items-center">
+                                    <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option D" id="option-d">
+                                    <div class="ml-2 flex items-center">
+                                        <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary" value="D">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Marks for this question</label>
+                            <input type="number" class="w-32 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" value="1" id="question-marks">
+                        </div>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+                
+                <div id="essay-questions-container" class="hidden">
+                    <div class="grid grid-cols-1 gap-6">
                         <div>
-                            <label class="block text-gray-700 mb-2">Option A</label>
-                            <div class="flex items-center">
-                                <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option A">
-                                <div class="ml-2 flex items-center">
-                                    <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary">
-                                </div>
-                            </div>
+                            <label class="block text-gray-700 mb-2">Question Text</label>
+                            <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="3" placeholder="Enter your essay question" id="essay-question-text"></textarea>
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2">Option B</label>
-                            <div class="flex items-center">
-                                <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option B">
-                                <div class="ml-2 flex items-center">
-                                    <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary">
-                                </div>
-                            </div>
+                            <label class="block text-gray-700 mb-2">Expected Answer Guidelines</label>
+                            <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="3" placeholder="Provide guidelines for evaluating this essay" id="essay-guidelines"></textarea>
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2">Option C</label>
-                            <div class="flex items-center">
-                                <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option C">
-                                <div class="ml-2 flex items-center">
-                                    <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary">
-                                </div>
-                            </div>
+                            <label class="block text-gray-700 mb-2">Marks for this question</label>
+                            <input type="number" class="w-32 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" value="5" id="essay-question-marks">
                         </div>
-                        
-                        <div>
-                            <label class="block text-gray-700 mb-2">Option D</label>
-                            <div class="flex items-center">
-                                <input type="text" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option D">
-                                <div class="ml-2 flex items-center">
-                                    <input type="radio" name="correct-answer" class="h-5 w-5 text-blue-primary">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-700 mb-2">Marks for this question</label>
-                        <input type="number" class="w-32 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" value="1">
                     </div>
                 </div>
             </div>
@@ -370,10 +423,10 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Exam Results</h2>
                     <div class="flex space-x-3">
-                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg flex items-center">
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg flex items-center hover:bg-gray-200 transition-colors">
                             <i class="fas fa-filter mr-2"></i> Filter
                         </button>
-                        <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center">
+                        <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="export-results-btn">
                             <i class="fas fa-download mr-2"></i> Export
                         </button>
                     </div>
@@ -381,21 +434,21 @@
                 
                 <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
                     <div class="relative">
-                        <input type="text" placeholder="Search students..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent w-full md:w-80">
+                        <input type="text" placeholder="Search students..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent w-full md:w-80" id="results-search">
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                     
                     <div class="flex space-x-3">
-                        <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent">
-                            <option>All Exams</option>
-                            <option>Midterm Exam</option>
-                            <option>Final Exam</option>
+                        <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-filter">
+                            <option value="all">All Exams</option>
+                            <option value="midterm">Midterm Exam</option>
+                            <option value="final">Final Exam</option>
                         </select>
                         
-                        <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent">
-                            <option>Sort by: Latest</option>
-                            <option>Sort by: Highest Score</option>
-                            <option>Sort by: Lowest Score</option>
+                        <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="results-sort">
+                            <option value="latest">Sort by: Latest</option>
+                            <option value="highest">Sort by: Highest Score</option>
+                            <option value="lowest">Sort by: Lowest Score</option>
                         </select>
                     </div>
                 </div>
@@ -413,7 +466,7 @@
                                 <th class="py-3 px-4 text-left font-medium text-gray-500">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="results-table-body">
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="py-3 px-4">John David Anderson</td>
                                 <td class="py-3 px-4">ILM2024025</td>
@@ -525,100 +578,223 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div class="fixed bottom-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center hidden" id="toast">
+        <i class="fas fa-check-circle mr-3" id="toast-icon"></i>
+        <span id="toast-message"></span>
+    </div>
+
     <script>
-        // Firebase configuration (replace with your actual config)
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
         // DOM Elements
         const menuToggle = document.getElementById('menu-toggle');
         const overlay = document.getElementById('overlay');
         const sidebar = document.querySelector('.sidebar');
-        
+        const createExamBtn = document.getElementById('create-exam-btn');
+        const saveQuestionsBtn = document.getElementById('save-questions-btn');
+        const addQuestionBtn = document.getElementById('add-question-btn');
+        const exportResultsBtn = document.getElementById('export-results-btn');
+        const questionTypeTabs = document.querySelectorAll('.question-type-tab');
+        const mcqContainer = document.getElementById('mcq-questions-container');
+        const essayContainer = document.getElementById('essay-questions-container');
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastMessage = document.getElementById('toast-message');
+
         // Toggle sidebar on mobile
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
         });
-        
+
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
         });
-        
-        // Sample function to save exam data to Firestore
-        function saveExamData() {
-            // This would collect form data and save to Firestore
-            const examData = {
-                title: document.querySelector('input[placeholder="Enter exam title"]').value,
-                course: document.querySelector('select').value,
-                duration: document.querySelector('input[placeholder="60"]').value,
-                totalMarks: document.querySelector('input[placeholder="100"]').value,
-                instructions: document.querySelector('textarea').value,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            
-            // In a real application, you would save to Firestore
-            // db.collection("exams").add(examData)
-            //   .then((docRef) => {
-            //       console.log("Exam created with ID: ", docRef.id);
-            //       showNotification("Exam created successfully!");
-            //   })
-            //   .catch((error) => {
-            //       console.error("Error adding exam: ", error);
-            //       showNotification("Error creating exam: " + error.message, true);
-            //   });
-            
-            // For demo purposes, we'll just show a notification
-            showNotification("Exam created successfully!");
-        }
-        
-        // Sample function to show notification
-        function showNotification(message, isError = false) {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center notification ${
-                isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-            }`;
-            
-            notification.innerHTML = `
-                <i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-3"></i>
-                <span>${message}</span>
-                <button class="ml-4" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove notification after 5 seconds
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
+
+        // Question type tabs
+        questionTypeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                questionTypeTabs.forEach(t => t.classList.remove('active', 'text-blue-primary', 'border-blue-primary'));
+                tab.classList.add('active', 'text-blue-primary', 'border-blue-primary');
+                
+                const type = tab.getAttribute('data-type');
+                if (type === 'mcq') {
+                    mcqContainer.classList.remove('hidden');
+                    essayContainer.classList.add('hidden');
+                } else {
+                    mcqContainer.classList.add('hidden');
+                    essayContainer.classList.remove('hidden');
                 }
-            }, 5000);
-        }
-        
-        // Add event listeners for demo purposes
-        document.querySelector('button:contains("Create Exam")').addEventListener('click', saveExamData);
-        document.querySelector('button:contains("Save Questions")').addEventListener('click', () => {
-            showNotification("Questions saved successfully!");
+            });
         });
-        
+
+        // Show toast notification
+        function showToast(message, isSuccess = true) {
+            toast.classList.remove('hidden');
+            toastMessage.textContent = message;
+            
+            if (isSuccess) {
+                toast.classList.add('bg-green-100', 'text-green-700');
+                toastIcon.classList.add('text-green-500');
+                toastIcon.className = 'fas fa-check-circle mr-3 text-green-500';
+            } else {
+                toast.classList.add('bg-red-100', 'text-red-700');
+                toastIcon.classList.add('text-red-500');
+                toastIcon.className = 'fas fa-exclamation-circle mr-3 text-red-500';
+            }
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Create exam function
+        createExamBtn.addEventListener('click', async () => {
+            const title = document.getElementById('exam-title').value;
+            const course = document.getElementById('exam-course').value;
+            const duration = document.getElementById('exam-duration').value;
+            const marks = document.getElementById('exam-marks').value;
+            const instructions = document.getElementById('exam-instructions').value;
+            
+            if (!title || !course || !duration || !marks) {
+                showToast('Please fill all required fields', false);
+                return;
+            }
+            
+            // Show loading state
+            createExamBtn.innerHTML = '<div class="loading"></div> Creating...';
+            createExamBtn.disabled = true;
+            
+            try {
+                // In a real application, you would save to Firestore
+                // For demo purposes, we'll simulate a delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Simulate Firestore save
+                // await db.collection('exams').add({
+                //     title,
+                //     course,
+                //     duration: parseInt(duration),
+                //     totalMarks: parseInt(marks),
+                //     instructions,
+                //     createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                // });
+                
+                showToast('Exam created successfully!');
+                
+                // Reset form
+                document.getElementById('exam-title').value = '';
+                document.getElementById('exam-course').value = '';
+                document.getElementById('exam-duration').value = '';
+                document.getElementById('exam-marks').value = '';
+                document.getElementById('exam-instructions').value = '';
+            } catch (error) {
+                console.error('Error creating exam:', error);
+                showToast('Error creating exam: ' + error.message, false);
+            } finally {
+                // Reset button state
+                createExamBtn.innerHTML = '<i class="fas fa-plus mr-2"></i> Create Exam';
+                createExamBtn.disabled = false;
+            }
+        });
+
+        // Save questions function
+        saveQuestionsBtn.addEventListener('click', async () => {
+            // Show loading state
+            saveQuestionsBtn.innerHTML = '<div class="loading"></div> Saving...';
+            saveQuestionsBtn.disabled = true;
+            
+            try {
+                // Simulate save operation
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                showToast('Questions saved successfully!');
+            } catch (error) {
+                console.error('Error saving questions:', error);
+                showToast('Error saving questions: ' + error.message, false);
+            } finally {
+                // Reset button state
+                saveQuestionsBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Questions';
+                saveQuestionsBtn.disabled = false;
+            }
+        });
+
+        // Add question function
+        addQuestionBtn.addEventListener('click', () => {
+            showToast('New question form added');
+            
+            // In a real application, you would add a new question form
+            // For demo, we'll just reset the current form
+            document.getElementById('question-text').value = '';
+            document.getElementById('option-a').value = '';
+            document.getElementById('option-b').value = '';
+            document.getElementById('option-c').value = '';
+            document.getElementById('option-d').value = '';
+            document.querySelector('input[name="correct-answer"]').checked = false;
+            document.getElementById('question-marks').value = '1';
+            
+            document.getElementById('essay-question-text').value = '';
+            document.getElementById('essay-guidelines').value = '';
+            document.getElementById('essay-question-marks').value = '5';
+        });
+
+        // Export results function
+        exportResultsBtn.addEventListener('click', async () => {
+            // Show loading state
+            exportResultsBtn.innerHTML = '<div class="loading"></div> Exporting...';
+            exportResultsBtn.disabled = true;
+            
+            try {
+                // Simulate export operation
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                showToast('Results exported successfully!');
+                
+                // In a real application, you would generate and download a file
+                // For demo, we'll create a dummy download
+                const blob = new Blob(['Sample exported data'], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'exam-results.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error exporting results:', error);
+                showToast('Error exporting results: ' + error.message, false);
+            } finally {
+                // Reset button state
+                exportResultsBtn.innerHTML = '<i class="fas fa-download mr-2"></i> Export';
+                exportResultsBtn.disabled = false;
+            }
+        });
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("Admin dashboard loaded");
+            console.log('Admin dashboard loaded');
+            
+            // Check if Firebase is initialized
+            if (firebase.apps.length === 0) {
+                console.error('Firebase is not initialized. Please check your configuration.');
+                showToast('Firebase connection error. Please check configuration.', false);
+            }
         });
     </script>
+    <script type="module">
+  async function saveAnswer() {
+    try {
+      await addDoc(collection(db, "exam_submissions"), {
+        studentId: "24/1125148",
+        q1: "Answer here",
+        submittedAt: new Date()
+      });
+      alert("Answer saved successfully!");
+    } catch (e) {
+      console.error("Error saving answer:", e);
+    }
+  }
+</script>
+
+    
 </body>
 </html>
