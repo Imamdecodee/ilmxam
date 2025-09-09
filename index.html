@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ILMNEXUS - Innovative Learning Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #2E73FF;
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(46, 115, 255, 0.3);
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2E73FF;
+        }
+        
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            color: #E07C14;
+            font-weight: 600;
+            margin-bottom: 30px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            font-size: 42px;
+            color: #2E73FF;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-content {
+            font-size: 18px;
+            color: #555;
+            max-width: 700px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            background: #E07C14;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(224, 124, 20, 0.3);
+        }
+        
+        .btn:hover {
+            background: #c5690d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(224, 124, 20, 0.4);
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .feature {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            background: #2E73FF;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+        }
+        
+        .feature h3 {
+            color: #2E73FF;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .feature p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .social-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .social-section h2 {
+            color: #2E73FF;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f1f1;
+            color: #2E73FF;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .social-icon:hover {
+            background: #2E73FF;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+            
+            .hero-content {
+                font-size: 16px;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 22px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .tagline {
+                font-size: 16px;
+            }
+            
+            .btn {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">IL</div>
+                <div class="logo-text">ILMNEXUS</div>
+            </div>
+        </header>
+        
+        <section class="hero">
+            <p class="tagline">INNOVATIVE LEARNING PLATFORM</p>
+            <h1>Transforming Education Through Technology</h1>
+            <p class="hero-content">ILMNEXUS provides cutting-edge examination solutions for educational institutions and corporate training programs. Experience seamless assessment with our intuitive platform.</p>
+            <button class="btn"> <a href="login.html">Login to Exam</a></button>
+        </section>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Secure Testing</h3>
+                <p>Advanced proctoring and security features to ensure exam integrity and prevent cheating.</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Real-time Analytics</h3>
+                <p>Get instant insights and performance analytics to track progress and identify areas for improvement.</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Comprehensive Learning</h3>
+                <p>Access a wide range of learning materials and practice tests to enhance your knowledge.</p>
+            </div>
+        </div>
+        
+        <div class="social-section">
+            <h2>Follow Us on Social Media</h2>
+            <div class="social-icons">
+                <a class="social-icon" href="#">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a class="social-icon" href="#">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a class="social-icon" href="#">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a class="social-icon" href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 ILMNEXUS. All rights reserved.</p>
+    </footer>
+</body>
+</html>

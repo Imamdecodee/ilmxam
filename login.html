@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ILMNEXUS Student Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #2E73FF;
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(46, 115, 255, 0.3);
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2E73FF;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            color: #E07C14;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #2E73FF;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: #E07C14;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(224, 124, 20, 0.2);
+        }
+        
+        .btn {
+            background: #2E73FF;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 115, 255, 0.3);
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #1c5de5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 115, 255, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #ff3860;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toast.success {
+            background: #23d160;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .info-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .instructions h3 {
+            color: #2E73FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instructions p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .instructions li {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 30px 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 22px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .login-container {
+                padding: 25px 20px;
+            }
+            
+            input, .btn {
+                padding: 14px;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">IX</div>
+                <div class="logo-text">IlMXAM</div>
+            </div>
+        </header>
+        
+        <p class="tagline">INNOVATIVE LEARNING PLATFORM</p>
+        
+        <div class="login-container">
+            <h1>Student Login Portal</h1>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="matricNumber">Matric Number</label>
+                    <input type="text" id="matricNumber" placeholder="Enter your matric number" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="course">Course</label>
+                    <input type="text" id="course" placeholder="Enter your course" required>
+                </div>
+                
+                <button type="submit" class="btn" id="loginBtn">
+                    <span id="btnText">Login to Exam</span>
+                    <span id="btnLoading" class="loading" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+        
+        <div class="instructions">
+            <h3>Login Instructions</h3>
+            <p>Please enter your credentials to access the exam portal:</p>
+            <ul>
+                <li>Matric Number: Provided by your institution</li>
+                <li>Full Name: As registered in the system</li>
+                <li>Course: The course you are taking the exam for</li>
+            </ul>
+            <p>Contact administrator if you encounter any issues.</p>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">
+        <i class="fas fa-exclamation-circle" id="toastIcon"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        // Firebase configuration (replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // List of valid matric numbers (in a real app, this would be in your database)
+        const validMatricNumbers = [
+            "ILM2024001", "ILM2024002", "ILM2024003", "ILM2024004", "ILM2024005",
+            "ILM2024006", "ILM2024007", "ILM2024008", "ILM2024009", "ILM2024010",
+            "ILM2024011", "ILM2024012", "ILM2024013", "ILM2024014", "ILM2024015",
+            "ILM2024016", "ILM2024017", "ILM2024018", "ILM2024019", "ILM2024020",
+            "ILM2024021", "ILM2024022", "ILM2024023", "ILM2024024", "ILM2024025",
+            "ILM2024026", "ILM2024027", "ILM2024028", "ILM2024029", "ILM2024030"
+        ];
+        
+        // Show toast message
+        const showToast = (message, isError = true) => {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            if (isError) {
+                toast.className = 'toast';
+                toastIcon.className = 'fas fa-exclamation-circle';
+            } else {
+                toast.className = 'toast success';
+                toastIcon.className = 'fas fa-check-circle';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        };
+        
+        // Validate form inputs
+        const validateForm = () => {
+            const matricNumber = document.getElementById('matricNumber').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const course = document.getElementById('course').value.trim();
+            
+            if (!matricNumber || !fullName || !course) {
+                showToast('All fields are required!');
+                return false;
+            }
+            
+            // Check if matric number is valid
+            if (!validMatricNumbers.includes(matricNumber.toUpperCase())) {
+                showToast('Invalid matric number. Please check your credentials.');
+                return false;
+            }
+            
+            return true;
+        };
+        
+        // Simulate Firebase authentication (replace with actual implementation)
+        const authenticateUser = async (matricNumber, fullName, course) => {
+            // Show loading state
+            document.getElementById('btnText').style.display = 'none';
+            document.getElementById('btnLoading').style.display = 'inline-block';
+            document.getElementById('loginBtn').disabled = true;
+            
+            // Simulate API call
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // In a real application, you would:
+                    // 1. Check if the matric number exists in your database
+                    // 2. Verify the user's information
+                    // 3. Create/update the user record as needed
+                    
+                    // For this demo, we'll assume authentication is successful
+                    // if the matric number is in our list
+                    if (validMatricNumbers.includes(matricNumber.toUpperCase())) {
+                        resolve({ success: true });
+                    } else {
+                        reject(new Error('Invalid credentials'));
+                    }
+                }, 1500);
+            });
+        };
+        
+        // Handle form submission
+        const handleLogin = async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+            
+            const matricNumber = document.getElementById('matricNumber').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const course = document.getElementById('course').value.trim();
+            
+            try {
+                const result = await authenticateUser(matricNumber, fullName, course);
+                
+                if (result.success) {
+                    showToast('Login successful! Redirecting to exam...', false);
+                    
+                    // Store user data in session storage
+                    sessionStorage.setItem('user', JSON.stringify({
+                        matricNumber,
+                        fullName,
+                        course
+                    }));
+                    
+                    // Redirect to exam page after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'examinst.html';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Login failed: ' + error.message);
+                
+                // Reset loading state
+                document.getElementById('btnText').style.display = 'inline-block';
+                document.getElementById('btnLoading').style.display = 'none';
+                document.getElementById('loginBtn').disabled = false;
+            }
+        };
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Check if user is already logged in
+            const userData = sessionStorage.getItem('user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                document.getElementById('matricNumber').value = user.matricNumber;
+                document.getElementById('fullName').value = user.fullName;
+                document.getElementById('course').value = user.course;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ILMNEXUS - Exam Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 20px 40px;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #2E73FF;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2E73FF;
+        }
+        
+        .timer {
+            background: #ffe8d1;
+            color: #E07C14;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            min-width: 140px;
+            text-align: center;
+        }
+        
+        .timer.warning {
+            background: #ffdfdf;
+            color: #ff3860;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .student-info {
+            text-align: right;
+        }
+        
+        .student-info .name {
+            font-weight: 700;
+            color: #2E73FF;
+        }
+        
+        .student-info .matric {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        /* Exam Content Styles */
+        .exam-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2E73FF;
+        }
+        
+        .question-type {
+            background: #E07C14;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #333;
+        }
+        
+        /* MCQ Options */
+        .options {
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #2E73FF;
+            background: #f8faff;
+        }
+        
+        .option input[type="radio"] {
+            display: none;
+        }
+        
+        .option label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .custom-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .option input[type="radio"]:checked + label .custom-radio {
+            border-color: #2E73FF;
+            background: #2E73FF;
+        }
+        
+        .option input[type="radio"]:checked + label .custom-radio::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .option-text {
+            font-size: 16px;
+            color: #555;
+        }
+        
+        /* Essay Question */
+        .essay-container {
+            margin-bottom: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #2E73FF;
+            box-shadow: 0 0 0 3px rgba(46, 115, 255, 0.2);
+        }
+        
+        .word-counter {
+            text-align: right;
+            color: #777;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            background: #2E73FF;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #1c5de5;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .nav-btn.prev {
+            background: #6c757d;
+        }
+        
+        .nav-btn.prev:hover {
+            background: #5a6268;
+        }
+        
+        .jump-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .jump-label {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .jump-select {
+            padding: 10px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .submit-btn {
+            background: #E07C14;
+        }
+        
+        .submit-btn:hover {
+            background: #c5690d;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: #2E73FF;
+            margin-bottom: 20px;
+        }
+        
+        .modal-text {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn.cancel {
+            background: #f1f1f1;
+            color: #333;
+        }
+        
+        .modal-btn.cancel:hover {
+            background: #ddd;
+        }
+        
+        .modal-btn.confirm {
+            background: #23d160;
+            color: white;
+        }
+        
+        .modal-btn.confirm:hover {
+            background: #20bc58;
+        }
+        
+        /* Result Page Styles */
+        .result-header {
+            background: linear-gradient(135deg, #2E73FF 0%, #1c5de5 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .result-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .result-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .certificate-card {
+            border: 2px solid #2E73FF;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #2E73FF;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #E07C14;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+        
+        .performance-item {
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+        
+        .performance-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .performance-label {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .correct .performance-value {
+            color: #23d160;
+        }
+        
+        .wrong .performance-value {
+            color: #ff3860;
+        }
+        
+        .not-attempted .performance-value {
+            color: #ffdd57;
+        }
+        
+        .negative .performance-value {
+            color: #ff3860;
+        }
+        
+        .total-score {
+            text-align: center;
+            padding: 30px;
+            background: #f8faff;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .score-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: #2E73FF;
+            margin-bottom: 10px;
+        }
+        
+        .score-label {
+            font-size: 18px;
+            color: #777;
+        }
+        
+        .download-btn {
+            background: #E07C14;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .download-btn:hover {
+            background: #c5690d;
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                padding: 10px 15px;
+            }
+            
+            .logo {
+                order: 1;
+                width: 50%;
+            }
+            
+            .timer {
+                order: 3;
+                width: 100%;
+                margin-top: 10px;
+                min-width: auto;
+            }
+            
+            .student-info {
+                order: 2;
+                width: 50%;
+                text-align: right;
+            }
+            
+            .container {
+                padding: 120px 15px 30px;
+            }
+            
+            .exam-card {
+                padding: 20px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .jump-container {
+                order: 3;
+            }
+            
+            .performance-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 18px;
+            }
+            
+            .timer {
+                font-size: 16px;
+            }
+            
+            .student-info .name {
+                font-size: 14px;
+            }
+            
+            .student-info .matric {
+                font-size: 12px;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Exam Interface -->
+    <div id="exam-interface">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">IL</div>
+                <div class="logo-text">ILMNEXUS</div>
+            </div>
+            
+            <div class="timer" id="timer">40:00</div>
+            
+            <div class="student-info">
+                <div class="name">John David Anderson</div>
+                <div class="matric">ILM2024025 | Computer Science</div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <div class="exam-card">
+                <div class="question-header">
+                    <div class="question-number">Question <span id="current-q">1</span> of 30</div>
+                    <div class="question-type" id="question-type">MCQ</div>
+                </div>
+                
+                <div class="question-text" id="question-text">
+                    Which of the following best describes the concept of 'variable hoisting' in JavaScript?
+                </div>
+                
+                <div class="options" id="mcq-options">
+                    <div class="option">
+                        <input type="radio" name="answer" id="option1" value="A">
+                        <label for="option1">
+                            <span class="custom-radio"></span>
+                            <span class="option-text">Variables are moved to the top of their scope during compilation</span>
+                        </label>
+                    </div>
+                    
+                    <div class="option">
+                        <input type="radio" name="answer" id="option2" value="B">
+                        <label for="option2">
+                            <span class="custom-radio"></span>
+                            <span class="option-text">Variables are automatically assigned a value of undefined</span>
+                        </label>
+                    </div>
+                    
+                    <div class="option">
+                        <input type="radio" name="answer" id="option3" value="C">
+                        <label for="option3">
+                            <span class="custom-radio"></span>
+                            <span class="option-text">Variables can be accessed before they are declared</span>
+                        </label>
+                    </div>
+                    
+                    <div class="option">
+                        <input type="radio" name="answer" id="option4" value="D">
+                        <label for="option4">
+                            <span class="custom-radio"></span>
+                            <span class="option-text">All of the above</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="essay-container hidden" id="essay-container">
+                    <textarea placeholder="Type your answer here..."></textarea>
+                    <div class="word-counter">Words: 0</div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="nav-btn prev" id="prev-btn" disabled>
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    
+                    <div class="jump-container">
+                        <span class="jump-label">Jump to:</span>
+                        <select class="jump-select" id="jump-select">
+                            <option value="1">Question 1</option>
+                            <option value="2">Question 2</option>
+                            <option value="3">Question 3</option>
+                            <option value="4">Question 4</option>
+                            <option value="5">Question 5</option>
+                        </select>
+                    </div>
+                    
+                    <button class="nav-btn next" id="next-btn">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <div class="navigation">
+                    <button class="nav-btn submit-btn" id="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-overlay" id="modal-overlay">
+            <div class="modal">
+                <h2 class="modal-title">Confirm Submission</h2>
+                <p class="modal-text">Are you sure you want to submit your exam? You will not be able to make changes after submission.</p>
+                
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="cancel-btn">Cancel</button>
+                    <button class="modal-btn confirm" id="confirm-btn">Yes, Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Page -->
+    <div id="result-page" class="hidden">
+        <div class="container">
+            <div class="logo" style="justify-content: center; margin-bottom: 30px;">
+                <div class="logo-icon">IL</div>
+                <div class="logo-text">ILMNEXUS</div>
+            </div>
+            
+            <div class="certificate-card">
+                <div class="result-header">
+                    <h1 class="result-title">Exam Results</h1>
+                    <p class="result-subtitle">Congratulations on completing your exam</p>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-user-graduate"></i> Student Details</h2>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value">John David Anderson</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Matric Number</div>
+                            <div class="info-value">ILM2024025</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Course</div>
+                            <div class="info-value">Computer Science</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Father's Name</div>
+                            <div class="info-value">Robert Anderson</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-clock"></i> Exam Details</h2>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Exam Title</div>
+                            <div class="info-value">JavaScript Fundamentals</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Start Time</div>
+                            <div class="info-value">May 15, 2023 - 10:00 AM</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">End Time</div>
+                            <div class="info-value">May 15, 2023 - 10:40 AM</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Duration</div>
+                            <div class="info-value">40 minutes</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Attempts</div>
+                            <div class="info-value">1/2</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-chart-pie"></i> Performance Breakdown</h2>
+                    
+                    <div class="performance-grid">
+                        <div class="performance-item correct">
+                            <div class="performance-value">22</div>
+                            <div class="performance-label">Correct Answers</div>
+                        </div>
+                        
+                        <div class="performance-item wrong">
+                            <div class="performance-value">5</div>
+                            <div class="performance-label">Wrong Answers</div>
+                        </div>
+                        
+                        <div class="performance-item not-attempted">
+                            <div class="performance-value">3</div>
+                            <div class="performance-label">Not Attempted</div>
+                        </div>
+                        
+                        <div class="performance-item negative">
+                            <div class="performance-value">-1.25</div>
+                            <div class="performance-label">Negative Marks</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="total-score">
+                    <div class="score-value">82.5%</div>
+                    <div class="score-label">Total Score: 33 out of 40</div>
+                    
+                    <button class="download-btn" id="download-btn">
+                        <i class="fas fa-download"></i> Download Results as PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration (replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // DOM Elements
+        const examInterface = document.getElementById('exam-interface');
+        const resultPage = document.getElementById('result-page');
+        const timerElement = document.getElementById('timer');
+        const currentQuestionElement = document.getElementById('current-q');
+        const questionTypeElement = document.getElementById('question-type');
+        const questionTextElement = document.getElementById('question-text');
+        const mcqOptionsElement = document.getElementById('mcq-options');
+        const essayContainerElement = document.getElementById('essay-container');
+        const prevButton = document.getElementById('prev-btn');
+        const nextButton = document.getElementById('next-btn');
+        const jumpSelect = document.getElementById('jump-select');
+        const submitButton = document.getElementById('submit-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const cancelButton = document.getElementById('cancel-btn');
+        const confirmButton = document.getElementById('confirm-btn');
+        const downloadButton = document.getElementById('download-btn');
+        
+        // Exam state
+        let currentQuestion = 1;
+        let totalQuestions = 30;
+        let timeLeft = 40 * 60; // 40 minutes in seconds
+        let timerInterval;
+        
+        // Sample questions data
+        const questions = [
+            {
+                type: "MCQ",
+                text: "Which of the following best describes the concept of 'variable hoisting' in JavaScript?",
+                options: [
+                    "Variables are moved to the top of their scope during compilation",
+                    "Variables are automatically assigned a value of undefined",
+                    "Variables can be accessed before they are declared",
+                    "All of the above"
+                ]
+            },
+            {
+                type: "Essay",
+                text: "Explain the concept of closures in JavaScript and provide a practical example of where they might be useful."
+            },
+            // More questions would be loaded from Firebase in a real application
+        ];
+        
+        // Initialize the exam
+        function initExam() {
+            // Start the timer
+            startTimer();
+            
+            // Load the first question
+            loadQuestion(currentQuestion);
+            
+            // Populate the jump select
+            populateJumpSelect();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+        
+        // Start the countdown timer
+        function startTimer() {
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                } else if (timeLeft <= 300) { // 5 minutes left
+                    timerElement.classList.add('warning');
+                }
+                
+                updateTimerDisplay();
+            }, 1000);
+        }
+        
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Load a question
+        function loadQuestion(number) {
+            // In a real app, this would fetch from Firebase
+            const question = questions[number - 1] || questions[0];
+            
+            // Update UI
+            currentQuestionElement.textContent = number;
+            questionTextElement.textContent = question.text;
+            questionTypeElement.textContent = question.type;
+            
+            // Show appropriate input based on question type
+            if (question.type === "MCQ") {
+                mcqOptionsElement.classList.remove('hidden');
+                essayContainerElement.classList.add('hidden');
+                
+                // Populate options (in a real app, this would use actual data)
+                const options = mcqOptionsElement.querySelectorAll('.option-text');
+                question.options.forEach((option, index) => {
+                    if (options[index]) {
+                        options[index].textContent = option;
+                    }
+                });
+            } else {
+                mcqOptionsElement.classList.add('hidden');
+                essayContainerElement.classList.remove('hidden');
+            }
+            
+            // Update navigation buttons
+            prevButton.disabled = number === 1;
+            nextButton.disabled = number === totalQuestions;
+            
+            // Update jump select
+            jumpSelect.value = number;
+        }
+        
+        // Populate the jump select dropdown
+        function populateJumpSelect() {
+            jumpSelect.innerHTML = '';
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Question ${i}`;
+                jumpSelect.appendChild(option);
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation buttons
+            prevButton.addEventListener('click', () => {
+                if (currentQuestion > 1) {
+                    currentQuestion--;
+                    loadQuestion(currentQuestion);
+                }
+            });
+            
+            nextButton.addEventListener('click', () => {
+                if (currentQuestion < totalQuestions) {
+                    currentQuestion++;
+                    loadQuestion(currentQuestion);
+                }
+            });
+            
+            // Jump to question
+            jumpSelect.addEventListener('change', () => {
+                currentQuestion = parseInt(jumpSelect.value);
+                loadQuestion(currentQuestion);
+            });
+            
+            // Submit exam
+            submitButton.addEventListener('click', () => {
+                modalOverlay.classList.add('active');
+            });
+            
+            // Modal buttons
+            cancelButton.addEventListener('click', () => {
+                modalOverlay.classList.remove('active');
+            });
+            
+            confirmButton.addEventListener('click', () => {
+                modalOverlay.classList.remove('active');
+                submitExam();
+            });
+            
+            // Download results
+            downloadButton.addEventListener('click', downloadResults);
+        }
+        
+        // Submit the exam
+        function submitExam() {
+            clearInterval(timerInterval);
+            
+            // In a real app, this would save final answers to Firebase
+            console.log("Exam submitted!");
+            
+            // Show result page
+            examInterface.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+        }
+        
+        // Download results as PDF
+        function downloadResults() {
+            // In a real app, this would use jsPDF to generate a PDF
+            alert("Results downloaded as PDF!");
+        }
+        
+        // Initialize the exam when the page loads
+        document.addEventListener('DOMContentLoaded', initExam);
+    </script>
+</body>
+</html>
