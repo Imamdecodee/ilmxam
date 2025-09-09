@@ -1523,5 +1523,20 @@
         // Initialize the exam when the page loads
         document.addEventListener('DOMContentLoaded', initExam);
     </script>
+    <script>
+        // Save exam result to localStorage for dashboard access
+function saveExamResultToLocalStorage(examData) {
+    // Get existing results or initialize empty array
+    const allResults = JSON.parse(localStorage.getItem('examResults') || '[]');
+    
+    // Add new result
+    allResults.push(examData);
+    
+    // Save back to localStorage
+    localStorage.setItem('examResults', JSON.stringify(allResults));
+    
+    console.log("Exam results saved to localStorage for dashboard access");
+}
+    </script>
 </body>
 </html>
