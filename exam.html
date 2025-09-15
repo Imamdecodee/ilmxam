@@ -744,7 +744,7 @@
                         
                         <div class="info-item">
                             <div class="info-label">Course</div>
-                            <div class="info-value" id="result-course">Computer Science</div>
+                            <div class="info-value" id="result-course">Video Editing</div>
                         </div>
                         
                         <div class="info-item">
@@ -760,7 +760,7 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Exam Title</div>
-                            <div class="info-value">JavaScript Fundamentals</div>
+                            <div class="info-value">Ilm Nexus Video Editing</div>
                         </div>
                         
                         <div class="info-item">
@@ -884,44 +884,44 @@
         let userAnswers = {};
         let examData = {};
         
-        // Sample questions data (20 MCQ + 5 Essay)
+        // Updated questions data (20 MCQ + 5 Essay)
         const questions = [
             // MCQ Questions (1-20)
             {
                 id: 1,
                 type: "MCQ",
-                text: "Which of the following best describes the concept of 'variable hoisting' in JavaScript?",
+                text: "Which mobile app is commonly used in this course for basic and advanced video editing?",
                 options: [
-                    "Variables are moved to the top of their scope during compilation",
-                    "Variables are automatically assigned a value of undefined",
-                    "Variables can be accessed before they are declared",
-                    "All of the above"
+                    "Canva",
+                    "InShot",
+                    "Photoshop",
+                    "Premiere Pro"
                 ],
-                correctAnswer: "D",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 2,
                 type: "MCQ",
-                text: "What does CSS stand for?",
+                text: "On Pixabay.com, you can download the following resources for free EXCEPT:",
                 options: [
-                    "Computer Style Sheets",
-                    "Creative Style System",
-                    "Cascading Style Sheets",
-                    "Colorful Style Sheets"
+                    "Images",
+                    "Videos",
+                    "Music",
+                    "Paid Templates"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "D",
                 marks: 1
             },
             {
                 id: 3,
                 type: "MCQ",
-                text: "Which HTML tag is used to define an internal style sheet?",
+                text: "What is the vision of Ilm Nexus?",
                 options: [
-                    "<css>",
-                    "<script>",
-                    "<style>",
-                    "<link>"
+                    "Education for All",
+                    "Just Do It",
+                    "Learning to Earning",
+                    "Tech for Tomorrow"
                 ],
                 correctAnswer: "C",
                 marks: 1
@@ -929,64 +929,64 @@
             {
                 id: 4,
                 type: "MCQ",
-                text: "Which property is used to change the background color?",
+                text: "Which feature in InShot allows you to combine two or more clips into one video?",
                 options: [
-                    "color",
-                    "bgcolor",
-                    "background-color",
-                    "bg-color"
-                ],
-                correctAnswer: "C",
-                marks: 1
-            },
-            {
-                id: 5,
-                type: "MCQ",
-                text: "How do you insert a comment in a CSS file?",
-                options: [
-                    "// this is a comment //",
-                    "/* this is a comment */",
-                    "' this is a comment",
-                    "// this is a comment"
+                    "Trim",
+                    "Merge",
+                    "Filter",
+                    "Speed"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
             {
-                id: 6,
+                id: 5,
                 type: "MCQ",
-                text: "Which property is used to change the font of an element?",
+                text: "Who is the founder of Ilm Nexus Digital Skills Bootcamp?",
                 options: [
-                    "font-style",
-                    "font-weight",
-                    "font-family",
-                    "text-font"
-                ],
-                correctAnswer: "C",
-                marks: 1
-            },
-            {
-                id: 7,
-                type: "MCQ",
-                text: "How do you make each word in a text start with a capital letter?",
-                options: [
-                    "text-transform: capitalize",
-                    "text-style: capital",
-                    "transform: capitalize",
-                    "font-style: capital"
+                    "Miqdad Bada Akorede",
+                    "Mark Zuckerberg",
+                    "Elon Musk",
+                    "Bill Gates"
                 ],
                 correctAnswer: "A",
                 marks: 1
             },
             {
+                id: 6,
+                type: "MCQ",
+                text: "When adding background music in InShot, which of these formats is supported?",
+                options: [
+                    ".docx",
+                    ".mp3",
+                    ".pdf",
+                    ".pptx"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 7,
+                type: "MCQ",
+                text: "Which export format is most commonly used for sharing videos on social media?",
+                options: [
+                    ".avi",
+                    ".mov",
+                    ".mp4",
+                    ".gif"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
                 id: 8,
                 type: "MCQ",
-                text: "Which property is used to change the left margin of an element?",
+                text: "Which website provides copyright-free images and videos useful for editing?",
                 options: [
-                    "margin-left",
-                    "padding-left",
-                    "indent",
-                    "left-margin"
+                    "Pixabay",
+                    "Google Images",
+                    "Instagram",
+                    "Pinterest"
                 ],
                 correctAnswer: "A",
                 marks: 1
@@ -994,25 +994,25 @@
             {
                 id: 9,
                 type: "MCQ",
-                text: "What is the correct HTML for referring to an external style sheet?",
+                text: "Which of the following is a guiding principle of Ilm Nexus?",
                 options: [
-                    "<stylesheet>mystyle.css</stylesheet>",
-                    "<style src=\"mystyle.css\">",
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\">",
-                    "<css>mystyle.css</css>"
+                    "PPTT — Patience, Passion, Tools, Time",
+                    "ABCD",
+                    "Learn to Code",
+                    "Just Do It"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "A",
                 marks: 1
             },
             {
                 id: 10,
                 type: "MCQ",
-                text: "Which is the correct CSS syntax?",
+                text: "To remove unwanted parts of a clip in InShot, which tool do you use?",
                 options: [
-                    "body {color: black;}",
-                    "{body:color=black;}",
-                    "body:color=black;",
-                    "{body;color:black;}"
+                    "Split",
+                    "Merge",
+                    "Filter",
+                    "Text"
                 ],
                 correctAnswer: "A",
                 marks: 1
@@ -1020,25 +1020,25 @@
             {
                 id: 11,
                 type: "MCQ",
-                text: "How do you add a background color for all <h1> elements?",
+                text: "What is the maximum resolution you can export a video in the free version of InShot?",
                 options: [
-                    "h1.all {background-color:#FFFFFF;}",
-                    "h1 {background-color:#FFFFFF;}",
-                    "all.h1 {background-color:#FFFFFF;}",
-                    "h1.all bgcolor=#FFFFFF;"
+                    "240p",
+                    "480p",
+                    "720p",
+                    "4K"
                 ],
-                correctAnswer: "B",
+                correctAnswer: "C",
                 marks: 1
             },
             {
                 id: 12,
                 type: "MCQ",
-                text: "Which CSS property controls the text size?",
+                text: "Where is the Ilm Nexus Digital Skills Bootcamp center located?",
                 options: [
-                    "font-style",
-                    "text-size",
-                    "font-size",
-                    "text-style"
+                    "Abuja",
+                    "Lagos",
+                    "Ilorin",
+                    "Ibadan"
                 ],
                 correctAnswer: "C",
                 marks: 1
@@ -1046,25 +1046,25 @@
             {
                 id: 13,
                 type: "MCQ",
-                text: "What is the correct HTML for making a checkbox?",
+                text: "InShot allows you to change the video aspect ratio. Which ratio is best for Instagram Reels?",
                 options: [
-                    "<input type=\"check\">",
-                    "<check>",
-                    "<checkbox>",
-                    "<input type=\"checkbox\">"
+                    "1:1",
+                    "9:16",
+                    "4:3",
+                    "16:9"
                 ],
-                correctAnswer: "D",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 14,
                 type: "MCQ",
-                text: "What is the correct HTML for making a text input field?",
+                text: "Which license on Pixabay allows you to use content without giving credit?",
                 options: [
-                    "<input type=\"text\">",
-                    "<textfield>",
-                    "<textinput type=\"text\">",
-                    "<input type=\"textfield\">"
+                    "Pixabay License",
+                    "Creative Commons 2.0",
+                    "GPL License",
+                    "MIT License"
                 ],
                 correctAnswer: "A",
                 marks: 1
@@ -1072,64 +1072,64 @@
             {
                 id: 15,
                 type: "MCQ",
-                text: "What is the correct HTML for making a drop-down list?",
+                text: "Which feature in InShot allows you to speed up or slow down a video?",
                 options: [
-                    "<list>",
-                    "<input type=\"list\">",
-                    "<select>",
-                    "<input type=\"dropdown\">"
+                    "Split",
+                    "Speed",
+                    "Transition",
+                    "Filter"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 16,
                 type: "MCQ",
-                text: "What is the correct HTML for making a text area?",
+                text: "When will Ilm Nexus conclude its First Cohort Bootcamp?",
                 options: [
-                    "<input type=\"textbox\">",
-                    "<input type=\"textarea\">",
-                    "<textarea>",
-                    "<text area>"
-                ],
-                correctAnswer: "C",
-                marks: 1
-            },
-            {
-                id: 17,
-                type: "MCQ",
-                text: "What is the correct HTML for inserting an image?",
-                options: [
-                    "<image src=\"image.gif\" alt=\"MyImage\">",
-                    "<img href=\"image.gif\" alt=\"MyImage\">",
-                    "<img src=\"image.gif\" alt=\"MyImage\">",
-                    "<img alt=\"MyImage\">image.gif</img>"
-                ],
-                correctAnswer: "C",
-                marks: 1
-            },
-            {
-                id: 18,
-                type: "MCQ",
-                text: "What is the correct HTML for inserting a background image?",
-                options: [
-                    "<body style=\"background-image:url(background.gif)\">",
-                    "<background img=\"background.gif\">",
-                    "<body bg=\"background.gif\">",
-                    "<body background=\"background.gif\">"
+                    "October 4, 2025",
+                    "September 15, 2025",
+                    "December 25, 2025",
+                    "January 1, 2026"
                 ],
                 correctAnswer: "A",
                 marks: 1
             },
             {
+                id: 17,
+                type: "MCQ",
+                text: "What is the main advantage of using Pixabay for video editors?",
+                options: [
+                    "Free & copyright-safe content",
+                    "Only premium content available",
+                    "Requires subscription for all use",
+                    "No videos available"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 18,
+                type: "MCQ",
+                text: "InShot allows you to add stickers and emojis to your videos. Which tab do you click?",
+                options: [
+                    "Canvas",
+                    "Filter",
+                    "Sticker",
+                    "Text"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            {
                 id: 19,
                 type: "MCQ",
-                text: "Which of these elements are all <table> elements?",
+                text: "What is the benefit of exporting your final video in 1080p resolution?",
                 options: [
-                    "<table><head><tfoot>",
-                    "<table><tr><td>",
-                    "<table><tr><tt>",
-                    "<thead><body><tr>"
+                    "Smaller file size",
+                    "Higher video quality",
+                    "Faster upload",
+                    "Black & white effect"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1137,14 +1137,14 @@
             {
                 id: 20,
                 type: "MCQ",
-                text: "How can you make a numbered list?",
+                text: "Which export format is NOT supported by InShot for video export?",
                 options: [
-                    "<list>",
-                    "<ol>",
-                    "<dl>",
-                    "<ul>"
+                    ".mp4",
+                    ".mov",
+                    ".gif",
+                    ".exe"
                 ],
-                correctAnswer: "B",
+                correctAnswer: "D",
                 marks: 1
             },
             
@@ -1152,31 +1152,31 @@
             {
                 id: 21,
                 type: "Essay",
-                text: "Explain the concept of closures in JavaScript and provide a practical example of where they might be useful.",
+                text: "Explain the complete workflow of creating a video in InShot, starting from importing clips, adding music/effects, editing, and finally exporting. Use clear steps.",
                 marks: 4
             },
             {
                 id: 22,
                 type: "Essay",
-                text: "Describe the box model in CSS and how it affects layout and design of web pages.",
+                text: "Why is it important to use copyright-free resources (such as those from Pixabay.com) in video editing? Discuss the benefits and risks of using copyrighted materials.",
                 marks: 4
             },
             {
                 id: 23,
                 type: "Essay",
-                text: "Explain the difference between let, const, and var in JavaScript with examples.",
+                text: "Imagine you are hired by Ilm Nexus to create a promotional advert. Describe how you would plan, edit, and design a video that promotes the bootcamp to attract new students.",
                 marks: 4
             },
             {
                 id: 24,
                 type: "Essay",
-                text: "Discuss the importance of responsive web design and describe three techniques for creating responsive layouts.",
+                text: "Differentiate between 720p, 1080p, and 4K resolutions. Which resolution is most suitable for social media videos and why?",
                 marks: 4
             },
             {
                 id: 25,
                 type: "Essay",
-                text: "Explain how the JavaScript event loop works and why it's important for asynchronous programming.",
+                text: "Ilm Nexus believes in 'Learning to Earning.' Explain how video editing skills can help a student move from learning in the bootcamp to earning money in the real world. Give at least 3 examples.",
                 marks: 4
             }
         ];
@@ -1188,7 +1188,7 @@
             
             // Set student info
             studentNameElement.textContent = userData.fullName || "Student Name";
-            studentMatricElement.textContent = `${userData.matricNumber || "MATRIC123"} | ${userData.course || "Course"}`;
+            studentMatricElement.textContent = `${userData.matricNumber || "MATRIC123"} | ${userData.course || "Video Editing"}`;
             
             // Record start time
             startTime = new Date();
@@ -1437,7 +1437,7 @@
             // Update result page with user data
             resultNameElement.textContent = userData.fullName || "Student Name";
             resultMatricElement.textContent = userData.matricNumber || "MATRIC123";
-            resultCourseElement.textContent = userData.course || "Course";
+            resultCourseElement.textContent = userData.course || "Video Editing";
             resultFatherElement.textContent = userData.fatherName || "Father's Name";
             
             // Update result page with performance data
