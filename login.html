@@ -105,7 +105,7 @@
             color: #555;
         }
         
-        input {
+        input, select {
             width: 100%;
             padding: 16px;
             border: 2px solid #ddd;
@@ -114,7 +114,7 @@
             transition: all 0.3s ease;
         }
         
-        input:focus {
+        input:focus, select:focus {
             border-color: #E07C14;
             outline: none;
             box-shadow: 0 0 0 3px rgba(224, 124, 20, 0.2);
@@ -143,6 +143,13 @@
         
         .btn:active {
             transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .toast {
@@ -232,7 +239,7 @@
                 padding: 25px 20px;
             }
             
-            input, .btn {
+            input, select, .btn {
                 padding: 14px;
             }
         }
@@ -279,7 +286,14 @@
                 
                 <div class="input-group">
                     <label for="course">Course</label>
-                    <input type="text" id="course" placeholder="Enter your course" required>
+                    <select id="course" required>
+                        <option value="">Select your course</option>
+                        <option value="Video Editing">Video Editing</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                    </select>
                 </div>
                 
                 <button type="submit" class="btn" id="loginBtn">
@@ -297,6 +311,7 @@
                 <li>Full Name: As registered in the system</li>
                 <li>Course: The course you are taking the exam for</li>
             </ul>
+            <p><strong>Note:</strong> Video Editing course requires matric numbers containing "VIE"</p>
             <p>Contact administrator if you encounter any issues.</p>
         </div>
     </div>
@@ -324,8 +339,8 @@
         
         // List of valid matric numbers (in a real app, this would be in your database)
         const validMatricNumbers = [
-            "ILM2024001", "ILM2024002", "ILM2024003", "ILM2024004", "ILM2024005",
-            "ILM2024006", "ILM2024007", "ILM2024008", "ILM2024009", "ILM2024010",
+            "ILM/VIE/001/25", "ILM/002/VIE/25", "VIE/ILM/003/25", "ILM/004/25/VIE", "005/ILM/VIE/25",
+            "ILM/VIE25/006", "VIE/007/25/ILM", "ILM/25/VIE/008", "009/VIE/25/ILM", "ILM/010/VIE25",
             "ILM2024011", "ILM2024012", "ILM2024013", "ILM2024014", "ILM2024015",
             "ILM2024016", "ILM2024017", "ILM2024018", "ILM2024019", "ILM2024020",
             "ILM2024021", "ILM2024022", "ILM2024023", "ILM2024024", "ILM2024025",
@@ -355,11 +370,37 @@
             }, 3000);
         };
         
-        // Validate form inputs
+        // Check if current time is after 7:00 PM
+        const isAfter7PM = () => {
+            const now = new Date();
+            const hours = now.getHours();
+            return hours >= 19; // 7:00 PM is 19:00
+        };
+        
+        // Get login count for a matric number from localStorage
+        const getLoginCount = (matricNumber) => {
+            const loginData = JSON.parse(localStorage.getItem('loginAttempts') || '{}');
+            return loginData[matricNumber] || 0;
+        };
+        
+        // Update login count for a matric number in localStorage
+        const updateLoginCount = (matricNumber) => {
+            const loginData = JSON.parse(localStorage.getItem('loginAttempts') || '{}');
+            loginData[matricNumber] = (loginData[matricNumber] || 0) + 1;
+            localStorage.setItem('loginAttempts', JSON.stringify(loginData));
+        };
+        
+        // Validate form inputs with new rules
         const validateForm = () => {
             const matricNumber = document.getElementById('matricNumber').value.trim();
             const fullName = document.getElementById('fullName').value.trim();
-            const course = document.getElementById('course').value.trim();
+            const course = document.getElementById('course').value;
+            
+            // Check if it's after 7:00 PM
+            if (isAfter7PM()) {
+                showToast('Login is not allowed after 7:00 PM. Please try again tomorrow.');
+                return false;
+            }
             
             if (!matricNumber || !fullName || !course) {
                 showToast('All fields are required!');
@@ -369,6 +410,27 @@
             // Check if matric number is valid
             if (!validMatricNumbers.includes(matricNumber.toUpperCase())) {
                 showToast('Invalid matric number. Please check your credentials.');
+                return false;
+            }
+            
+            // Check login attempts
+            const loginCount = getLoginCount(matricNumber);
+            if (loginCount >= 2) {
+                showToast('This matric number has already been used for maximum login attempts (2).');
+                return false;
+            }
+            
+            // Check matric number and course compatibility
+            const hasVIE = matricNumber.toUpperCase().includes('VIE');
+            const isVideoEditing = course.toLowerCase().includes('video editing');
+            
+            if (isVideoEditing && !hasVIE) {
+                showToast('Video Editing course requires a matric number containing "VIE".');
+                return false;
+            }
+            
+            if (!isVideoEditing && hasVIE) {
+                showToast('Your matric number is only valid for Video Editing course.');
                 return false;
             }
             
@@ -409,12 +471,15 @@
             
             const matricNumber = document.getElementById('matricNumber').value.trim();
             const fullName = document.getElementById('fullName').value.trim();
-            const course = document.getElementById('course').value.trim();
+            const course = document.getElementById('course').value;
             
             try {
                 const result = await authenticateUser(matricNumber, fullName, course);
                 
                 if (result.success) {
+                    // Update login count
+                    updateLoginCount(matricNumber);
+                    
                     showToast('Login successful! Redirecting to exam...', false);
                     
                     // Store user data in session storage
@@ -451,6 +516,13 @@
                 document.getElementById('matricNumber').value = user.matricNumber;
                 document.getElementById('fullName').value = user.fullName;
                 document.getElementById('course').value = user.course;
+            }
+            
+            // Disable login if it's after 7:00 PM
+            if (isAfter7PM()) {
+                document.getElementById('loginBtn').disabled = true;
+                document.getElementById('loginBtn').innerHTML = '<span>Login Disabled After 7:00 PM</span>';
+                showToast('Login is disabled after 7:00 PM. Please try again tomorrow.');
             }
         });
     </script>

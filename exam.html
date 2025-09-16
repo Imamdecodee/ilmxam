@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILMNEXUS - Exam Interface</title>
+    <title>ILMNEXUS - Video Editing Exam</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -536,6 +537,61 @@
             transform: translateY(-2px);
         }
         
+        /* Special result for danlowad */
+        .special-result {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease;
+        }
+        
+        .special-title {
+            font-size: 36px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .special-subtitle {
+            font-size: 20px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .special-badge {
+            display: inline-block;
+            background: #2E73FF;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 15px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0.7;
+        }
+        
         /* Responsive Styles */
         @media (max-width: 768px) {
             header {
@@ -581,6 +637,14 @@
             .performance-grid {
                 grid-template-columns: 1fr 1fr;
             }
+            
+            .special-title {
+                font-size: 28px;
+            }
+            
+            .special-subtitle {
+                font-size: 18px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -612,6 +676,14 @@
             
             .performance-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .special-title {
+                font-size: 24px;
+            }
+            
+            .special-subtitle {
+                font-size: 16px;
             }
         }
         
@@ -720,6 +792,13 @@
             <div class="logo" style="justify-content: center; margin-bottom: 30px;">
                 <div class="logo-icon">IX</div>
                 <div class="logo-text">ILMXAM</div>
+            </div>
+            
+            <!-- Special result section for danlowad -->
+            <div id="special-result" class="special-result hidden">
+                <h1 class="special-title">Outstanding Performance! 🎉</h1>
+                <p class="special-subtitle">You've demonstrated exceptional video editing knowledge!</p>
+                <div class="special-badge">Top Performer</div>
             </div>
             
             <div class="certificate-card">
@@ -838,9 +917,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
+        // Initialize EmailJS
+        emailjs.init('CTivTkN2aGpDGUCZl');
+        
         // DOM Elements
         const examInterface = document.getElementById('exam-interface');
         const resultPage = document.getElementById('result-page');
+        const specialResult = document.getElementById('special-result');
         const timerElement = document.getElementById('timer');
         const currentQuestionElement = document.getElementById('current-q');
         const questionTypeElement = document.getElementById('question-type');
@@ -886,16 +969,16 @@
         
         // Updated questions data (20 MCQ + 5 Essay)
         const questions = [
-            // MCQ Questions (1-20)
+            // Module 1 - Introduction & Storytelling
             {
                 id: 1,
                 type: "MCQ",
-                text: "Which mobile app is commonly used in this course for basic and advanced video editing?",
+                text: "What is the main purpose of video editing?",
                 options: [
-                    "Canva",
-                    "InShot",
-                    "Photoshop",
-                    "Premiere Pro"
+                    "To create raw footage",
+                    "To arrange, cut, and enhance video",
+                    "To only add music",
+                    "To record videos"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -903,18 +986,31 @@
             {
                 id: 2,
                 type: "MCQ",
-                text: "On Pixabay.com, you can download the following resources for free EXCEPT:",
+                text: "Which of these is an example of short-form video content?",
                 options: [
-                    "Images",
-                    "Videos",
-                    "Music",
-                    "Paid Templates"
+                    "Full-length movie",
+                    "Instagram Reel",
+                    "Documentary",
+                    "TV Series"
                 ],
-                correctAnswer: "D",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 3,
+                type: "MCQ",
+                text: "Storytelling in video editing is important because:",
+                options: [
+                    "It makes the video longer",
+                    "It helps the audience connect with the message",
+                    "It reduces file size",
+                    "It removes background noise"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 4,
                 type: "MCQ",
                 text: "What is the vision of Ilm Nexus?",
                 options: [
@@ -926,41 +1022,30 @@
                 correctAnswer: "C",
                 marks: 1
             },
+            
+            // Module 2 – Editing Basics & Workflow
             {
-                id: 4,
+                id: 5,
                 type: "MCQ",
-                text: "Which feature in InShot allows you to combine two or more clips into one video?",
+                text: "The video editing process begins with:",
                 options: [
-                    "Trim",
-                    "Merge",
-                    "Filter",
-                    "Speed"
+                    "Exporting",
+                    "Importing and organizing footage",
+                    "Adding transitions",
+                    "Color grading"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
             {
-                id: 5,
-                type: "MCQ",
-                text: "Who is the founder of Ilm Nexus Digital Skills Bootcamp?",
-                options: [
-                    "Miqdad Bada Akorede",
-                    "Mark Zuckerberg",
-                    "Elon Musk",
-                    "Bill Gates"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
                 id: 6,
                 type: "MCQ",
-                text: "When adding background music in InShot, which of these formats is supported?",
+                text: "In video editing, the timeline is used for:",
                 options: [
-                    ".docx",
-                    ".mp3",
-                    ".pdf",
-                    ".pptx"
+                    "Watching movies",
+                    "Cutting and arranging clips",
+                    "Downloading videos",
+                    "Changing resolution"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -968,90 +1053,92 @@
             {
                 id: 7,
                 type: "MCQ",
-                text: "Which export format is most commonly used for sharing videos on social media?",
+                text: "Which of these is an example of a basic transition?",
                 options: [
-                    ".avi",
-                    ".mov",
-                    ".mp4",
-                    ".gif"
+                    "Blur",
+                    "Fade-in/Fade-out",
+                    "3D Animation",
+                    "Color correction"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 8,
                 type: "MCQ",
-                text: "Which website provides copyright-free images and videos useful for editing?",
+                text: "Who is the founder of Ilm Nexus?",
                 options: [
-                    "Pixabay",
-                    "Google Images",
-                    "Instagram",
-                    "Pinterest"
+                    "Elon Musk",
+                    "Miqdad Bada Akorede",
+                    "Bill Gates",
+                    "Jeff Bezos"
                 ],
-                correctAnswer: "A",
+                correctAnswer: "B",
                 marks: 1
             },
+            
+            // Module 3 – Enhancing with Sound, Text & Color
             {
                 id: 9,
                 type: "MCQ",
-                text: "Which of the following is a guiding principle of Ilm Nexus?",
+                text: "Why is adding background music important in video editing?",
                 options: [
-                    "PPTT — Patience, Passion, Tools, Time",
-                    "ABCD",
-                    "Learn to Code",
-                    "Just Do It"
+                    "To fill empty space",
+                    "To support the mood and storytelling",
+                    "To reduce file size",
+                    "To distract the viewer"
                 ],
-                correctAnswer: "A",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 10,
                 type: "MCQ",
-                text: "To remove unwanted parts of a clip in InShot, which tool do you use?",
+                text: "Which of these formats is most common for background music?",
                 options: [
-                    "Split",
-                    "Merge",
-                    "Filter",
-                    "Text"
+                    ".jpg",
+                    ".mp3",
+                    ".docx",
+                    ".pptx"
                 ],
-                correctAnswer: "A",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 11,
                 type: "MCQ",
-                text: "What is the maximum resolution you can export a video in the free version of InShot?",
+                text: "Which tool is used to balance loud and quiet audio levels in editing?",
                 options: [
-                    "240p",
-                    "480p",
-                    "720p",
-                    "4K"
+                    "Audio mixer",
+                    "Color corrector",
+                    "Timeline",
+                    "Text tool"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "A",
                 marks: 1
             },
             {
                 id: 12,
                 type: "MCQ",
-                text: "Where is the Ilm Nexus Digital Skills Bootcamp center located?",
+                text: "Where is the Ilm Nexus Bootcamp physical center located?",
                 options: [
                     "Abuja",
-                    "Lagos",
                     "Ilorin",
+                    "Lagos",
                     "Ibadan"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 13,
                 type: "MCQ",
-                text: "InShot allows you to change the video aspect ratio. Which ratio is best for Instagram Reels?",
+                text: "Which editing element is used to add captions or titles to a video?",
                 options: [
-                    "1:1",
-                    "9:16",
-                    "4:3",
-                    "16:9"
+                    "Transitions",
+                    "Text overlay",
+                    "Color grading",
+                    "Audio track"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1059,125 +1146,127 @@
             {
                 id: 14,
                 type: "MCQ",
-                text: "Which license on Pixabay allows you to use content without giving credit?",
+                text: "Adjusting brightness, contrast, and saturation in a video is called:",
                 options: [
-                    "Pixabay License",
-                    "Creative Commons 2.0",
-                    "GPL License",
-                    "MIT License"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
-                id: 15,
-                type: "MCQ",
-                text: "Which feature in InShot allows you to speed up or slow down a video?",
-                options: [
-                    "Split",
-                    "Speed",
+                    "Trimming",
+                    "Color correction",
                     "Transition",
-                    "Filter"
+                    "Exporting"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
+            
+            // Module 4 – Final Project & Exporting
             {
-                id: 16,
+                id: 15,
                 type: "MCQ",
-                text: "When will Ilm Nexus conclude its First Cohort Bootcamp?",
+                text: "Which step comes LAST in the editing process?",
                 options: [
-                    "October 4, 2025",
-                    "September 15, 2025",
-                    "December 25, 2025",
-                    "January 1, 2026"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
-                id: 17,
-                type: "MCQ",
-                text: "What is the main advantage of using Pixabay for video editors?",
-                options: [
-                    "Free & copyright-safe content",
-                    "Only premium content available",
-                    "Requires subscription for all use",
-                    "No videos available"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
-                id: 18,
-                type: "MCQ",
-                text: "InShot allows you to add stickers and emojis to your videos. Which tab do you click?",
-                options: [
-                    "Canvas",
-                    "Filter",
-                    "Sticker",
-                    "Text"
+                    "Importing footage",
+                    "Cutting clips",
+                    "Exporting video",
+                    "Adding transitions"
                 ],
                 correctAnswer: "C",
                 marks: 1
             },
             {
-                id: 19,
+                id: 16,
                 type: "MCQ",
-                text: "What is the benefit of exporting your final video in 1080p resolution?",
+                text: "Which file format is most commonly used for exporting videos online?",
                 options: [
-                    "Smaller file size",
-                    "Higher video quality",
-                    "Faster upload",
-                    "Black & white effect"
+                    ".exe",
+                    ".mp4",
+                    ".pdf",
+                    ".txt"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
             {
-                id: 20,
+                id: 17,
                 type: "MCQ",
-                text: "Which export format is NOT supported by InShot for video export?",
+                text: "For Instagram Reels, the best aspect ratio is:",
                 options: [
-                    ".mp4",
-                    ".mov",
-                    ".gif",
-                    ".exe"
+                    "16:9",
+                    "9:16",
+                    "1:1",
+                    "4:3"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 18,
+                type: "MCQ",
+                text: "Which is NOT an export setting in video editing software?",
+                options: [
+                    "Resolution",
+                    "Frame rate",
+                    "File format",
+                    "Password"
                 ],
                 correctAnswer: "D",
                 marks: 1
             },
+            {
+                id: 19,
+                type: "MCQ",
+                text: "Which of the following is a guiding principle of Ilm Nexus?",
+                options: [
+                    "PPTT (Patience, Passion, Tools, Time)",
+                    "ASAP",
+                    "BYOD",
+                    "DIY"
+                ],
+                correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 20,
+                type: "MCQ",
+                text: "When will Ilm Nexus conclude its First Cohort Bootcamp?",
+                options: [
+                    "Sept 15, 2025",
+                    "Oct 4, 2025",
+                    "Dec 25, 2025",
+                    "Jan 1, 2026"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
             
-            // Essay Questions (21-25)
+            // Section B: Theory Questions
             {
                 id: 21,
                 type: "Essay",
-                text: "Explain the complete workflow of creating a video in InShot, starting from importing clips, adding music/effects, editing, and finally exporting. Use clear steps.",
-                marks: 4
+                text: "Explain the role of storytelling in video editing. Why is it important for keeping an audience engaged?",
+                marks: 5
             },
             {
                 id: 22,
                 type: "Essay",
-                text: "Why is it important to use copyright-free resources (such as those from Pixabay.com) in video editing? Discuss the benefits and risks of using copyrighted materials.",
-                marks: 4
+                text: "Describe the basic workflow of video editing, starting from importing raw footage to exporting the final video.",
+                marks: 5
             },
             {
                 id: 23,
                 type: "Essay",
-                text: "Imagine you are hired by Ilm Nexus to create a promotional advert. Describe how you would plan, edit, and design a video that promotes the bootcamp to attract new students.",
-                marks: 4
+                text: "Why is sound design (music, voiceovers, sound effects) important in video editing? Give at least 3 reasons.",
+                marks: 5
             },
             {
                 id: 24,
                 type: "Essay",
-                text: "Differentiate between 720p, 1080p, and 4K resolutions. Which resolution is most suitable for social media videos and why?",
-                marks: 4
+                text: "Imagine you are creating a promotional video for Ilm Nexus. Outline how you would plan, edit, and export it to attract new students.",
+                marks: 5
             },
             {
                 id: 25,
                 type: "Essay",
-                text: "Ilm Nexus believes in 'Learning to Earning.' Explain how video editing skills can help a student move from learning in the bootcamp to earning money in the real world. Give at least 3 examples.",
-                marks: 4
+                text: "\"Ilm Nexus believes in Learning to Earning.\" Explain how mastering video editing skills can help students achieve this vision with practical examples.",
+                marks: 5
             }
         ];
         
@@ -1419,6 +1508,54 @@
             };
         }
         
+        // Send email notification
+        function sendEmailNotification(userData, results) {
+            const templateParams = {
+                to_email: "theilmnexus@gmail.com",
+                student_name: userData.fullName,
+                matric_number: userData.matricNumber,
+                course: userData.course,
+                score: results.totalScore,
+                total_score: 40,
+                percentage: results.percentage,
+                submission_time: new Date().toLocaleString()
+            };
+            
+            emailjs.send('service_mwk9x5l', 'template_zkexdja', templateParams)
+                .then((response) => {
+                    console.log('Email sent successfully!', response.status, response.text);
+                })
+                .catch((error) => {
+                    console.error('Failed to send email:', error);
+                });
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            const container = document.querySelector('.special-result');
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(confetti);
+                
+                // Animate confetti
+                confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(720deg)`, opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 3000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+                    fill: 'forwards'
+                });
+            }
+        }
+        
         // Submit the exam
         function submitExam() {
             clearInterval(timerInterval);
@@ -1460,6 +1597,15 @@
                 submittedAt: new Date()
             };
             
+            // Send email notification
+            sendEmailNotification(userData, results);
+            
+            // Check if user is danlowad for special result
+            if (userData.matricNumber && userData.matricNumber.toLowerCase().includes('danlowad')) {
+                specialResult.classList.remove('hidden');
+                createConfetti();
+            }
+            
             // Save to Firebase (commented out for now)
             /*
             try {
@@ -1470,9 +1616,26 @@
             }
             */
             
+            // Save to localStorage for dashboard
+            saveExamResultToLocalStorage(examData);
+            
             // Show result page
             examInterface.classList.add('hidden');
             resultPage.classList.remove('hidden');
+        }
+        
+        // Save exam result to localStorage for dashboard access
+        function saveExamResultToLocalStorage(examData) {
+            // Get existing results or initialize empty array
+            const allResults = JSON.parse(localStorage.getItem('examResults') || '[]');
+            
+            // Add new result
+            allResults.push(examData);
+            
+            // Save back to localStorage
+            localStorage.setItem('examResults', JSON.stringify(allResults));
+            
+            console.log("Exam results saved to localStorage for dashboard access");
         }
         
         // Download results as PDF
@@ -1522,21 +1685,6 @@
         
         // Initialize the exam when the page loads
         document.addEventListener('DOMContentLoaded', initExam);
-    </script>
-    <script>
-        // Save exam result to localStorage for dashboard access
-function saveExamResultToLocalStorage(examData) {
-    // Get existing results or initialize empty array
-    const allResults = JSON.parse(localStorage.getItem('examResults') || '[]');
-    
-    // Add new result
-    allResults.push(examData);
-    
-    // Save back to localStorage
-    localStorage.setItem('examResults', JSON.stringify(allResults));
-    
-    console.log("Exam results saved to localStorage for dashboard access");
-}
     </script>
 </body>
 </html>
