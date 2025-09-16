@@ -3,817 +3,825 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILMNEXUS - Exam System with Admin Dashboard</title>
+    <title>ILMNEXUS - Student Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
+        :root {
+            --primary: #2E73FF;
+            --secondary: #E07C14;
+            --dark: #1A2238;
+            --light: #F9FAFC;
+            --gray: #6B7280;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: #333;
+            background-color: #F3F4F6;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
             min-height: 100vh;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .tabs {
-            display: flex;
-            background: white;
-            border-radius: 10px 10px 0 0;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .tab {
-            padding: 15px 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .tab.active {
-            background: #2E73FF;
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: var(--dark);
             color: white;
-        }
-        
-        .tab-content {
-            display: none;
-            background: white;
-            padding: 30px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Exam Styles */
-        .exam-header {
-            position: sticky;
-            top: 0;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
             z-index: 1000;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-radius: 10px;
         }
-        
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
-        
+
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: #2E73FF;
-            color: white;
+            background: var(--primary);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
         }
-        
+
         .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-            color: #2E73FF;
-        }
-        
-        .timer {
-            background: #ffe8d1;
-            color: #E07C14;
-            padding: 10px 20px;
-            border-radius: 50px;
+            font-size: 20px;
             font-weight: 700;
-            font-size: 18px;
-            min-width: 140px;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 20px;
             text-align: center;
         }
-        
-        .timer.warning {
-            background: #ffdfdf;
-            color: #ff3860;
-            animation: pulse 1s infinite;
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 20px;
+            transition: var(--transition);
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .student-info {
-            text-align: right;
-        }
-        
-        .student-info .name {
-            font-weight: 700;
-            color: #2E73FF;
-        }
-        
-        .student-info .matric {
-            font-size: 14px;
-            color: #777;
-        }
-        
-        .exam-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .question-header {
+
+        /* Header */
+        .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 25px;
-        }
-        
-        .question-number {
-            font-size: 18px;
-            font-weight: 700;
-            color: #2E73FF;
-        }
-        
-        .question-type {
-            background: #E07C14;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .question-text {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #333;
-        }
-        
-        .options {
+            align-items: center;
             margin-bottom: 30px;
-        }
-        
-        .option {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #eee;
+            background: white;
+            padding: 15px 25px;
             border-radius: 12px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
         }
-        
-        .option:hover {
-            border-color: #2E73FF;
-            background: #f8faff;
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
         }
-        
-        .option input[type="radio"] {
-            display: none;
-        }
-        
-        .option label {
+
+        .user-menu {
             display: flex;
             align-items: center;
-            cursor: pointer;
-            width: 100%;
+            gap: 15px;
         }
-        
-        .custom-radio {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #ddd;
-            border-radius: 50%;
-            margin-right: 15px;
+
+        .notification-btn {
             position: relative;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-        
-        .option input[type="radio"]:checked + label .custom-radio {
-            border-color: #2E73FF;
-            background: #2E73FF;
-        }
-        
-        .option input[type="radio"]:checked + label .custom-radio::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-        }
-        
-        .option-text {
-            font-size: 16px;
-            color: #555;
-        }
-        
-        .essay-container {
-            margin-bottom: 30px;
-        }
-        
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 12px;
-            font-size: 16px;
-            resize: vertical;
-            transition: border-color 0.3s ease;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #2E73FF;
-            box-shadow: 0 0 0 3px rgba(46, 115, 255, 0.2);
-        }
-        
-        .word-counter {
-            text-align: right;
-            color: #777;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-        }
-        
-        .nav-btn {
-            background: #2E73FF;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
         }
-        
-        .nav-btn:hover {
-            background: #1c5de5;
-            transform: translateY(-2px);
-        }
-        
-        .nav-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .nav-btn.prev {
-            background: #6c757d;
-        }
-        
-        .nav-btn.prev:hover {
-            background: #5a6268;
-        }
-        
-        .jump-container {
+
+        .user-profile {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        
-        .jump-label {
-            font-size: 14px;
-            color: #777;
-        }
-        
-        .jump-select {
-            padding: 10px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            background: white;
             cursor: pointer;
         }
-        
-        .submit-btn {
-            background: #E07C14;
-        }
-        
-        .submit-btn:hover {
-            background: #c5690d;
-        }
-        
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            font-weight: bold;
         }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 500px;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .modal-title {
-            font-size: 24px;
-            color: #2E73FF;
-            margin-bottom: 20px;
-        }
-        
-        .modal-text {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            justify-content: center;
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
-        
-        .modal-btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-btn.cancel {
-            background: #f1f1f1;
-            color: #333;
-        }
-        
-        .modal-btn.cancel:hover {
-            background: #ddd;
-        }
-        
-        .modal-btn.confirm {
-            background: #23d160;
-            color: white;
-        }
-        
-        .modal-btn.confirm:hover {
-            background: #20bc58;
-        }
-        
-        /* Dashboard Styles */
-        .dashboard-header {
+
+        .card {
             background: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 15px 20px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bg-primary {
+            background: rgba(46, 115, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .bg-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .bg-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .bg-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-radius: 10px;
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
         }
-        
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
         }
-        
-        .stat-card h3 {
-            color: #777;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        
-        .stat-card p {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2E73FF;
-        }
-        
+
+        /* Results Table */
         .results-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        
+
         .results-table th, .results-table td {
-            padding: 15px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
-        
+
         .results-table th {
-            background: #f8f9fa;
+            background: #F9FAFB;
             font-weight: 600;
-            color: #555;
         }
-        
+
         .results-table tr:hover {
-            background: #f8faff;
+            background: #F9FAFB;
         }
-        
+
         .status-badge {
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 500;
         }
-        
-        .status-excellent {
-            background: #e6f7ee;
-            color: #0c9960;
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
         }
-        
-        .status-good {
-            background: #e6f2ff;
-            color: #2E73FF;
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
         }
-        
-        .status-average {
-            background: #fff8e6;
-            color: #e6a700;
+
+        /* Course Grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
-        
-        .status-fail {
-            background: #ffe6e6;
-            color: #ff3860;
-        }
-        
-        .action-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .view-btn {
-            background: #2E73FF;
-            color: white;
-        }
-        
-        .view-btn:hover {
-            background: #1c5de5;
-        }
-        
-        .download-btn {
-            background: #E07C14;
-            color: white;
-        }
-        
-        .download-btn:hover {
-            background: #c5690d;
-        }
-        
-        .admin-login {
-            max-width: 400px;
-            margin: 50px auto;
+
+        .course-card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
-        
-        .admin-login h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #2E73FF;
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #2E73FF;
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #2E73FF;
+
+        .course-thumbnail {
+            height: 160px;
+            background: linear-gradient(135deg, #2E73FF 0%, #1c5de5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            font-size: 40px;
+        }
+
+        .course-content {
+            padding: 20px;
+        }
+
+        .course-title {
+            font-size: 18px;
             font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease;
+            margin-bottom: 10px;
         }
-        
-        .login-btn:hover {
-            background: #1c5de5;
+
+        .course-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 15px;
         }
-        
-        .hidden {
-            display: none;
-        }
-        
+
         .progress-bar {
-            height: 8px;
-            background: #eee;
-            border-radius: 4px;
-            margin-bottom: 20px;
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            margin-bottom: 10px;
             overflow: hidden;
         }
-        
+
         .progress {
             height: 100%;
-            background: #2E73FF;
-            border-radius: 4px;
-            transition: width 0.3s ease;
+            background: var(--primary);
+            border-radius: 3px;
         }
-        
-        @media (max-width: 768px) {
-            .tabs {
-                flex-direction: column;
+
+        .progress-text {
+            font-size: 14px;
+            color: var(--gray);
+            text-align: right;
+        }
+
+        /* Email Subscription */
+        .email-subscription {
+            background: linear-gradient(135deg, #2E73FF 0%, #1c5de5 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .subscription-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subscription-text {
+            max-width: 60%;
+        }
+
+        .subscription-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subscription-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c5690d;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
             }
             
-            .tab {
-                width: 100%;
+            .sidebar .logo-text,
+            .sidebar .menu-text {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .subscription-content {
+                flex-direction: column;
                 text-align: center;
+                gap: 20px;
             }
             
-            .exam-header {
-                flex-direction: column;
-                gap: 15px;
+            .subscription-text {
+                max-width: 100%;
             }
             
-            .navigation {
-                flex-direction: column;
-                gap: 15px;
+            .subscription-form {
+                width: 100%;
+                justify-content: center;
             }
-            
-            .stats-grid {
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
                 grid-template-columns: 1fr;
             }
             
-            .results-table {
-                font-size: 14px;
+            .course-grid {
+                grid-template-columns: 1fr;
             }
             
-            .results-table th, .results-table td {
-                padding: 10px;
+            .subscription-form {
+                flex-direction: column;
             }
+            
+            .form-input {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .user-menu {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Login Form */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2E73FF 0%, #1c5de5 100%);
+            padding: 20px;
+        }
+
+        .login-form {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .login-btn:hover {
+            background: #1c5de5;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('exam')">Take Exam</div>
-            <div class="tab" onclick="switchTab('dashboard')">Admin Dashboard</div>
-        </div>
-        
-        <!-- Exam Tab -->
-        <div id="exam" class="tab-content active">
-            <div class="exam-header">
-                <div class="logo">
-                    <div class="logo-icon">IX</div>
-                    <div class="logo-text">ILMXAM</div>
-                </div>
-                
-                <div class="timer" id="timer">40:00</div>
-                
-                <div class="student-info">
-                    <div class="name" id="student-name">Student Name</div>
-                    <div class="matric" id="student-matric">MATRIC123 | Course</div>
-                </div>
-            </div>
-            
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar" style="width: 4%;"></div>
-            </div>
-            
-            <div class="exam-card">
-                <div class="question-header">
-                    <div class="question-number">Question <span id="current-q">1</span> of 25</div>
-                    <div class="question-type" id="question-type">MCQ</div>
-                </div>
-                
-                <div class="question-text" id="question-text">
-                    Loading question...
-                </div>
-                
-                <div class="options" id="mcq-options">
-                    <!-- Options will be populated by JavaScript -->
-                </div>
-                
-                <div class="essay-container hidden" id="essay-container">
-                    <textarea id="essay-answer" placeholder="Type your answer here..."></textarea>
-                    <div class="word-counter">Words: <span id="word-count">0</span></div>
-                </div>
-                
-                <div class="navigation">
-                    <button class="nav-btn prev" id="prev-btn" disabled>
-                        <i class="fas fa-arrow-left"></i> Previous
-                    </button>
-                    
-                    <div class="jump-container">
-                        <span class="jump-label">Jump to:</span>
-                        <select class="jump-select" id="jump-select">
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
-                    </div>
-                    
-                    <button class="nav-btn next" id="next-btn">
-                        Next <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-                
-                <div class="navigation">
-                    <button class="nav-btn submit-btn" id="submit-btn">
-                        <i class="fas fa-paper-plane"></i> Submit Exam
-                    </button>
-                </div>
-            </div>
-            
-            <div class="modal-overlay" id="modal-overlay">
-                <div class="modal">
-                    <h2 class="modal-title">Confirm Submission</h2>
-                    <p class="modal-text">Are you sure you want to submit your exam? You will not be able to make changes after submission.</p>
-                    
-                    <div class="modal-buttons">
-                        <button class="modal-btn cancel" id="cancel-btn">Cancel</button>
-                        <button class="modal-btn confirm" id="confirm-btn">Yes, Submit</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content">
-            <div id="admin-login" class="admin-login">
-                <h2>Admin Login</h2>
-                <div class="form-group">
-                    <label for="admin-email">Email</label>
-                    <input type="email" id="admin-email" placeholder="admin@example.com">
-                </div>
-                <div class="form-group">
-                    <label for="admin-password">Password</label>
-                    <input type="password" id="admin-password" placeholder="Enter your password">
-                </div>
-                <button class="login-btn" onclick="adminLogin()">Login</button>
-                <p id="login-error" style="color: #ff3860; margin-top: 15px; text-align: center; display: none;">Invalid login credentials</p>
-            </div>
-            
-            <div id="dashboard-content" class="hidden">
-                <div class="dashboard-header">
+    <!-- Login Form -->
+    <div id="login-page" class="login-container">
+        <div class="login-form">
+            <div class="login-header">
+                <div class="login-logo">
                     <div class="logo">
                         <div class="logo-icon">IX</div>
-                        <div class="logo-text">ILMNEXUS ADMIN</div>
-                    </div>
-                    <button class="nav-btn" onclick="adminLogout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Exams</h3>
-                        <p id="total-exams">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Active Students</h3>
-                        <p id="total-students">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Completed Exams</h3>
-                        <p id="completed-exams">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Average Score</h3>
-                        <p id="average-score">0%</p>
+                        <div class="logo-text">ILMNEXUS</div>
                     </div>
                 </div>
+                <h2>Student Dashboard Login</h2>
+                <p>Enter your matric number to access your account</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Matric Number</label>
+                <input type="text" class="form-input" id="matric-number" placeholder="Enter your matric number">
+            </div>
+            
+            <button class="login-btn" id="login-btn">Login to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="container hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">IX</div>
+                    <div class="logo-text">ILMNEXUS</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span class="menu-text">My Courses</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="menu-text">Results</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span class="menu-text">Notes</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span class="menu-text">Video Lessons</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">Settings</span>
+                </a>
+                <a href="#" class="menu-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="menu-text">Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1 class="page-title">Student Dashboard</h1>
                 
-                <h2 style="margin-bottom: 20px; color: #2E73FF;">Exam Results</h2>
-                
-                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-                    <input type="text" id="results-search" placeholder="Search students..." style="padding: 10px; border: 2px solid #eee; border-radius: 8px; flex: 1;">
-                    <select id="exam-filter" style="padding: 10px; border: 2px solid #eee; border-radius: 8px;">
-                        <option value="all">All Exams</option>
-                        <option value="JavaScript Fundamentals">JavaScript Fundamentals</option>
-                    </select>
-                    <select id="results-sort" style="padding: 10px; border: 2px solid #eee; border-radius: 8px;">
-                        <option value="latest">Latest First</option>
-                        <option value="highest">Highest Score</option>
-                        <option value="lowest">Lowest Score</option>
-                    </select>
+                <div class="user-menu">
+                    <div class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="avatar">JD</div>
+                        <div class="user-info">
+                            <div class="user-name">John David</div>
+                            <div class="user-role">Video Editing Student</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Courses</h3>
+                        <div class="card-icon bg-primary">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">5</div>
+                    <div class="card-label">Enrolled Courses</div>
                 </div>
                 
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Matric No.</th>
-                            <th>Exam</th>
-                            <th>Score</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="results-table-body">
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 30px;">
-                                <div class="loading" style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(46, 115, 255, 0.3); border-radius: 50%; border-top-color: #2E73FF; animation: spin 1s ease-in-out infinite;"></div>
-                                <p style="margin-top: 15px; color: #777;">Loading results...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Results</h3>
+                        <div class="card-icon bg-success">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">87%</div>
+                    <div class="card-label">Average Score</div>
+                </div>
                 
-                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <div id="pagination-info" style="color: #777;">Showing 0 results</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="action-btn view-btn" id="prev-page" disabled>&laquo; Prev</button>
-                        <button class="action-btn view-btn" id="next-page" disabled>Next &raquo;</button>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Assignments</h3>
+                        <div class="card-icon bg-warning">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">3</div>
+                    <div class="card-label">Pending Submissions</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Notes</h3>
+                        <div class="card-icon bg-danger">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">24</div>
+                    <div class="card-label">Available Notes</div>
+                </div>
+            </div>
+            
+            <!-- Email Subscription -->
+            <div class="email-subscription">
+                <div class="subscription-content">
+                    <div class="subscription-text">
+                        <h3 class="subscription-title">Stay Updated with ILMNEXUS</h3>
+                        <p>Subscribe to our newsletter to receive the latest news and updates</p>
+                    </div>
+                    
+                    <div class="subscription-form">
+                        <input type="email" class="form-input" placeholder="Enter your email address">
+                        <button class="btn btn-primary">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Results Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Results</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Exam</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Video Editing Final Exam</td>
+                                <td>Oct 15, 2023</td>
+                                <td>92%</td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Color Grading Test</td>
+                                <td>Oct 10, 2023</td>
+                                <td>85%</td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Audio Editing Quiz</td>
+                                <td>Oct 5, 2023</td>
+                                <td>78%</td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Storytelling Assignment</td>
+                                <td>Sep 28, 2023</td>
+                                <td>-</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- My Courses Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">My Courses</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="course-grid">
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Video Editing Fundamentals</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-play-circle"></i> 24 Lessons</span>
+                                <span><i class="fas fa-clock"></i> 12 Hours</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 75%"></div>
+                            </div>
+                            <div class="progress-text">75% Complete</div>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Color Grading Mastery</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-play-circle"></i> 18 Lessons</span>
+                                <span><i class="fas fa-clock"></i> 9 Hours</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 45%"></div>
+                            </div>
+                            <div class="progress-text">45% Complete</div>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Audio Editing for Video</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-play-circle"></i> 16 Lessons</span>
+                                <span><i class="fas fa-clock"></i> 8 Hours</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 30%"></div>
+                            </div>
+                            <div class="progress-text">30% Complete</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -821,640 +829,54 @@
     </div>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAi_IyKB8Rkb0CpM_lBlwgdpsZxsZT_MdY",
-            authDomain: "ilmxam.firebaseapp.com",
-            projectId: "ilmxam",
-            storageBucket: "ilmxam.firebasestorage.app",
-            messagingSenderId: "499914637135",
-            appId: "1:499914637135:web:8622a39105d0706be7cf3a"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        
         // DOM Elements
-        const examTab = document.getElementById('exam');
-        const dashboardTab = document.getElementById('dashboard');
-        const timerElement = document.getElementById('timer');
-        const currentQuestionElement = document.getElementById('current-q');
-        const questionTypeElement = document.getElementById('question-type');
-        const questionTextElement = document.getElementById('question-text');
-        const mcqOptionsElement = document.getElementById('mcq-options');
-        const essayContainerElement = document.getElementById('essay-container');
-        const essayAnswerElement = document.getElementById('essay-answer');
-        const wordCountElement = document.getElementById('word-count');
-        const prevButton = document.getElementById('prev-btn');
-        const nextButton = document.getElementById('next-btn');
-        const jumpSelect = document.getElementById('jump-select');
-        const submitButton = document.getElementById('submit-btn');
-        const modalOverlay = document.getElementById('modal-overlay');
-        const cancelButton = document.getElementById('cancel-btn');
-        const confirmButton = document.getElementById('confirm-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const studentNameElement = document.getElementById('student-name');
-        const studentMatricElement = document.getElementById('student-matric');
+        const loginPage = document.getElementById('login-page');
+        const dashboard = document.getElementById('dashboard');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const matricInput = document.getElementById('matric-number');
         
-        // Dashboard elements
-        const adminLogin = document.getElementById('admin-login');
-        const dashboardContent = document.getElementById('dashboard-content');
-        const totalExamsElement = document.getElementById('total-exams');
-        const totalStudentsElement = document.getElementById('total-students');
-        const completedExamsElement = document.getElementById('completed-exams');
-        const averageScoreElement = document.getElementById('average-score');
-        const resultsTableBody = document.getElementById('results-table-body');
-        const resultsSearch = document.getElementById('results-search');
-        const examFilter = document.getElementById('exam-filter');
-        const resultsSort = document.getElementById('results-sort');
-        const paginationInfo = document.getElementById('pagination-info');
-        const prevPageBtn = document.getElementById('prev-page');
-        const nextPageBtn = document.getElementById('next-page');
-        
-        // Exam state
-        let currentQuestion = 1;
-        let totalQuestions = 25;
-        let timeLeft = 40 * 60; // 40 minutes in seconds
-        let timerInterval;
-        let startTime;
-        let userAnswers = {};
-        let examData = {};
-        
-        // Dashboard state
-        let examResults = [];
-        let filteredResults = [];
-        let currentPage = 1;
-        const resultsPerPage = 10;
-        
-        // Sample questions data (20 MCQ + 5 Essay)
-        const questions = [
-            // MCQ Questions (1-20)
-            {
-                id: 1,
-                type: "MCQ",
-                text: "Which of the following best describes the concept of 'variable hoisting' in JavaScript?",
-                options: [
-                    "Variables are moved to the top of their scope during compilation",
-                    "Variables are automatically assigned a value of undefined",
-                    "Variables can be accessed before they are declared",
-                    "All of the above"
-                ],
-                correctAnswer: "D",
-                marks: 1
-            },
-            {
-                id: 2,
-                type: "MCQ",
-                text: "What does CSS stand for?",
-                options: [
-                    "Computer Style Sheets",
-                    "Creative Style System",
-                    "Cascading Style Sheets",
-                    "Colorful Style Sheets"
-                ],
-                correctAnswer: "C",
-                marks: 1
-            },
-            // Add more questions here...
-            // Essay Questions (21-25)
-            {
-                id: 21,
-                type: "Essay",
-                text: "Explain the concept of closures in JavaScript and provide a practical example of where they might be useful.",
-                marks: 4
-            },
-            {
-                id: 22,
-                type: "Essay",
-                text: "Describe the box model in CSS and how it affects layout and design of web pages.",
-                marks: 4
-            }
-        ];
-        
-        // Tab switching function
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // Login Functionality
+        loginBtn.addEventListener('click', function() {
+            const matricNumber = matricInput.value.trim();
             
-            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-            
-            if (tabName === 'dashboard') {
-                checkAdminAuth();
-            }
-        }
-        
-        // Initialize the exam
-        function initExam() {
-            // Get user data from session storage
-            const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
-            
-            // Set student info
-            studentNameElement.textContent = userData.fullName || "Student Name";
-            studentMatricElement.textContent = `${userData.matricNumber || "MATRIC123"} | ${userData.course || "Course"}`;
-            
-            // Record start time
-            startTime = new Date();
-            
-            // Start the timer
-            startTimer();
-            
-            // Load the first question
-            loadQuestion(currentQuestion);
-            
-            // Populate the jump select
-            populateJumpSelect();
-            
-            // Set up event listeners
-            setupEventListeners();
-        }
-        
-        // Start the countdown timer
-        function startTimer() {
-            updateTimerDisplay();
-            
-            timerInterval = setInterval(() => {
-                timeLeft--;
+            if (matricNumber) {
+                // In a real application, you would verify against a database
+                // For this demo, we'll just check if something was entered
+                loginPage.classList.add('hidden');
+                dashboard.classList.remove('hidden');
                 
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    submitExam();
-                } else if (timeLeft <= 300) { // 5 minutes left
-                    timerElement.classList.add('warning');
-                }
-                
-                updateTimerDisplay();
-            }, 1000);
-        }
-        
-        // Update timer display
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        
-        // Load a question
-        function loadQuestion(number) {
-            const question = questions[number - 1];
-            
-            // Update UI
-            currentQuestionElement.textContent = number;
-            questionTextElement.textContent = question.text;
-            questionTypeElement.textContent = question.type;
-            
-            // Update progress bar
-            progressBar.style.width = `${(number / totalQuestions) * 100}%`;
-            
-            // Show appropriate input based on question type
-            if (question.type === "MCQ") {
-                mcqOptionsElement.classList.remove('hidden');
-                essayContainerElement.classList.add('hidden');
-                
-                // Clear previous options
-                mcqOptionsElement.innerHTML = '';
-                
-                // Create new options
-                const optionLetters = ['A', 'B', 'C', 'D'];
-                question.options.forEach((option, index) => {
-                    const optionElement = document.createElement('div');
-                    optionElement.className = 'option';
-                    
-                    optionElement.innerHTML = `
-                        <input type="radio" name="answer" id="option${optionLetters[index]}" value="${optionLetters[index]}">
-                        <label for="option${optionLetters[index]}">
-                            <span class="custom-radio"></span>
-                            <span class="option-text">${option}</span>
-                        </label>
-                    `;
-                    
-                    mcqOptionsElement.appendChild(optionElement);
-                });
-                
-                // Check if user has already answered this question
-                if (userAnswers[number]) {
-                    document.querySelector(`input[name="answer"][value="${userAnswers[number]}"]`).checked = true;
-                }
+                // Store in localStorage to simulate login session
+                localStorage.setItem('ilmnexus_student', matricNumber);
             } else {
-                mcqOptionsElement.classList.add('hidden');
-                essayContainerElement.classList.remove('hidden');
-                
-                // Check if user has already answered this question
-                if (userAnswers[number]) {
-                    essayAnswerElement.value = userAnswers[number];
-                    updateWordCount();
-                } else {
-                    essayAnswerElement.value = '';
-                    wordCountElement.textContent = '0';
-                }
+                alert('Please enter your matric number');
             }
-            
-            // Update navigation buttons
-            prevButton.disabled = number === 1;
-            nextButton.disabled = number === totalQuestions;
-            
-            // Update jump select
-            jumpSelect.value = number;
-        }
-        
-        // Update word count for essay questions
-        function updateWordCount() {
-            const text = essayAnswerElement.value;
-            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-            wordCountElement.textContent = wordCount;
-        }
-        
-        // Populate the jump select dropdown
-        function populateJumpSelect() {
-            jumpSelect.innerHTML = '';
-            
-            for (let i = 1; i <= totalQuestions; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `Question ${i}`;
-                jumpSelect.appendChild(option);
-            }
-        }
-        
-        // Save the current answer
-        function saveAnswer() {
-            if (questions[currentQuestion - 1].type === "MCQ") {
-                const selectedOption = document.querySelector('input[name="answer"]:checked');
-                if (selectedOption) {
-                    userAnswers[currentQuestion] = selectedOption.value;
-                }
-            } else {
-                if (essayAnswerElement.value.trim() !== '') {
-                    userAnswers[currentQuestion] = essayAnswerElement.value;
-                }
-            }
-        }
-        
-        // Set up event listeners
-        function setupEventListeners() {
-            // Navigation buttons
-            prevButton.addEventListener('click', () => {
-                saveAnswer();
-                if (currentQuestion > 1) {
-                    currentQuestion--;
-                    loadQuestion(currentQuestion);
-                }
-            });
-            
-            nextButton.addEventListener('click', () => {
-                saveAnswer();
-                if (currentQuestion < totalQuestions) {
-                    currentQuestion++;
-                    loadQuestion(currentQuestion);
-                }
-            });
-            
-            // Jump to question
-            jumpSelect.addEventListener('change', () => {
-                saveAnswer();
-                currentQuestion = parseInt(jumpSelect.value);
-                loadQuestion(currentQuestion);
-            });
-            
-            // Essay word count
-            essayAnswerElement.addEventListener('input', updateWordCount);
-            
-            // Submit exam
-            submitButton.addEventListener('click', () => {
-                modalOverlay.classList.add('active');
-            });
-            
-            // Modal buttons
-            cancelButton.addEventListener('click', () => {
-                modalOverlay.classList.remove('active');
-            });
-            
-            confirmButton.addEventListener('click', () => {
-                modalOverlay.classList.remove('active');
-                submitExam();
-            });
-        }
-        
-        // Calculate results
-        function calculateResults() {
-            let correctCount = 0;
-            let wrongCount = 0;
-            let notAttemptedCount = 0;
-            let negativeMarks = 0;
-            let totalScore = 0;
-            
-            for (let i = 1; i <= totalQuestions; i++) {
-                const question = questions[i - 1];
-                
-                if (!userAnswers[i]) {
-                    notAttemptedCount++;
-                    continue;
-                }
-                
-                if (question.type === "MCQ") {
-                    if (userAnswers[i] === question.correctAnswer) {
-                        correctCount++;
-                        totalScore += question.marks;
-                    } else {
-                        wrongCount++;
-                        negativeMarks += 0.25;
-                        totalScore -= 0.25;
-                    }
-                } else {
-                    // For essay questions, we'll assign a random score between 60-100% of max marks
-                    const essayScore = question.marks * (0.6 + Math.random() * 0.4);
-                    totalScore += essayScore;
-                }
-            }
-            
-            return {
-                correctCount,
-                wrongCount,
-                notAttemptedCount,
-                negativeMarks: negativeMarks.toFixed(2),
-                totalScore: Math.max(0, totalScore.toFixed(2)),
-                percentage: ((Math.max(0, totalScore) / 40) * 100).toFixed(2)
-            };
-        }
-        
-        // Submit the exam
-        async function submitExam() {
-            clearInterval(timerInterval);
-            saveAnswer();
-            
-            // Calculate results
-            const results = calculateResults();
-            
-            // Record end time
-            const endTime = new Date();
-            
-            // Get user data from session storage
-            const userData = JSON.parse(sessionStorage.getItem('user') || {});
-            
-            // Prepare exam data for Firebase
-            examData = {
-                studentId: userData.matricNumber || "MATRIC123",
-                studentName: userData.fullName || "Student Name",
-                course: userData.course || "Course",
-                examTitle: "JavaScript Fundamentals",
-                startTime: startTime,
-                endTime: endTime,
-                answers: userAnswers,
-                results: results,
-                submittedAt: new Date()
-            };
-            
-            try {
-                // Save to Firebase
-                await db.collection('exam_results').add(examData);
-                console.log("Exam results saved to Firebase");
-                
-                // Show success message
-                alert(`Exam submitted successfully! Your score: ${results.percentage}%`);
-                
-                // Reset exam
-                document.getElementById('examForm').reset();
-            } catch (error) {
-                console.error("Error saving exam results:", error);
-                alert("There was an error submitting your exam. Please try again.");
-            }
-        }
-        
-        // Admin authentication functions
-        function adminLogin() {
-            const email = document.getElementById('admin-email').value;
-            const password = document.getElementById('admin-password').value;
-            
-            // Simple hardcoded admin authentication (in a real app, use Firebase Auth)
-            if (email === "admin@ilmnexus.com" && password === "admin123") {
-                sessionStorage.setItem('adminAuthenticated', 'true');
-                checkAdminAuth();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
-        }
-        
-        function adminLogout() {
-            sessionStorage.removeItem('adminAuthenticated');
-            checkAdminAuth();
-        }
-        
-        function checkAdminAuth() {
-            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-                adminLogin.style.display = 'none';
-                dashboardContent.classList.remove('hidden');
-                fetchExamResults();
-            } else {
-                adminLogin.style.display = 'block';
-                dashboardContent.classList.add('hidden');
-            }
-        }
-        
-        // Fetch exam results from Firebase
-        async function fetchExamResults() {
-            try {
-                resultsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px;">
-                            <div class="loading" style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(46, 115, 255, 0.3); border-radius: 50%; border-top-color: #2E73FF; animation: spin 1s ease-in-out infinite;"></div>
-                            <p style="margin-top: 15px; color: #777;">Loading results...</p>
-                        </td>
-                    </tr>
-                `;
-                
-                const querySnapshot = await db.collection('exam_results').get();
-                examResults = [];
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    examResults.push({
-                        id: doc.id,
-                        ...data,
-                        submittedAt: data.submittedAt ? data.submittedAt.toDate() : new Date()
-                    });
-                });
-                
-                // Update stats
-                updateStats(examResults);
-                
-                // Apply filters and render
-                filterAndRenderResults();
-                
-            } catch (error) {
-                console.error('Error fetching exam results:', error);
-                resultsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px; color: #ff3860;">
-                            <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 15px;"></i>
-                            <p>Error loading results. Please try again.</p>
-                            <button class="action-btn view-btn" onclick="fetchExamResults()" style="margin-top: 15px;">
-                                Retry
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-        
-        // Update dashboard statistics
-        function updateStats(results) {
-            // Total exams (unique exam titles)
-            const examTitles = [...new Set(results.map(r => r.examTitle || 'Unknown Exam'))];
-            totalExamsElement.textContent = examTitles.length;
-            
-            // Total students (unique student IDs)
-            const studentIds = [...new Set(results.map(r => r.studentId))];
-            totalStudentsElement.textContent = studentIds.length;
-            
-            // Completed exams
-            completedExamsElement.textContent = results.length;
-            
-            // Average score
-            const totalScore = results.reduce((sum, result) => sum + parseFloat(result.results?.percentage || 0), 0);
-            const averageScore = results.length > 0 ? (totalScore / results.length).toFixed(1) : 0;
-            averageScoreElement.textContent = `${averageScore}%`;
-        }
-        
-        // Filter and render results based on current filters
-        function filterAndRenderResults() {
-            const searchTerm = resultsSearch.value.toLowerCase();
-            const examFilterValue = examFilter.value;
-            const sortValue = resultsSort.value;
-            
-            // Apply filters
-            filteredResults = examResults.filter(result => {
-                const matchesSearch = 
-                    result.studentName?.toLowerCase().includes(searchTerm) ||
-                    result.studentId?.toLowerCase().includes(searchTerm);
-                
-                const matchesExam = examFilterValue === 'all' || result.examTitle === examFilterValue;
-                
-                return matchesSearch && matchesExam;
-            });
-            
-            // Apply sorting
-            switch (sortValue) {
-                case 'latest':
-                    filteredResults.sort((a, b) => b.submittedAt - a.submittedAt);
-                    break;
-                case 'highest':
-                    filteredResults.sort((a, b) => parseFloat(b.results?.percentage || 0) - parseFloat(a.results?.percentage || 0));
-                    break;
-                case 'lowest':
-                    filteredResults.sort((a, b) => parseFloat(a.results?.percentage || 0) - parseFloat(b.results?.percentage || 0));
-                    break;
-            }
-            
-            // Render paginated results
-            renderPagination();
-        }
-        
-        // Render pagination controls and current page results
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
-            
-            // Update pagination info
-            const startIndex = (currentPage - 1) * resultsPerPage;
-            const endIndex = Math.min(startIndex + resultsPerPage, filteredResults.length);
-            paginationInfo.textContent = `Showing ${startIndex + 1} to ${endIndex} of ${filteredResults.length} results`;
-            
-            // Update pagination buttons
-            prevPageBtn.disabled = currentPage === 1;
-            nextPageBtn.disabled = currentPage === totalPages;
-            
-            // Render current page results
-            renderResultsTable(filteredResults.slice(startIndex, endIndex));
-        }
-        
-        // Render results table
-        function renderResultsTable(results) {
-            if (results.length === 0) {
-                resultsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px; color: #777;">
-                            <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 15px;"></i>
-                            <p>No results found</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            resultsTableBody.innerHTML = results.map(result => {
-                const score = parseFloat(result.results?.percentage || 0);
-                let status = 'Unknown';
-                let statusClass = '';
-                
-                if (score >= 70) {
-                    status = 'Excellent';
-                    statusClass = 'status-excellent';
-                } else if (score >= 60) {
-                    status = 'Good';
-                    statusClass = 'status-good';
-                } else if (score >= 50) {
-                    status = 'Average';
-                    statusClass = 'status-average';
-                } else {
-                    status = 'Fail';
-                    statusClass = 'status-fail';
-                }
-                
-                return `
-                    <tr>
-                        <td>${result.studentName || 'N/A'}</td>
-                        <td>${result.studentId || 'N/A'}</td>
-                        <td>${result.examTitle || 'Unknown Exam'}</td>
-                        <td>
-                            <span style="font-weight: 700; color: ${score >= 70 ? '#0c9960' : score >= 50 ? '#e6a700' : '#ff3860'}">
-                                ${score}%
-                            </span>
-                        </td>
-                        <td>
-                            <span class="status-badge ${statusClass}">${status}</span>
-                        </td>
-                        <td>${result.submittedAt.toLocaleDateString()}</td>
-                        <td>
-                            <button class="action-btn view-btn" onclick="viewResultDetails('${result.id}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-        
-        // View result details
-        function viewResultDetails(resultId) {
-            const result = examResults.find(r => r.id === resultId);
-            if (!result) return;
-            
-            alert(`Result Details:\nStudent: ${result.studentName}\nMatric: ${result.studentId}\nExam: ${result.examTitle}\nScore: ${result.results?.percentage}%\nCorrect: ${result.results?.correctCount}\nWrong: ${result.results?.wrongCount}\nNot Attempted: ${result.results?.notAttemptedCount}`);
-        }
-        
-        // Initialize the exam when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initExam();
-            
-            // Set up dashboard event listeners
-            resultsSearch.addEventListener('input', filterAndRenderResults);
-            examFilter.addEventListener('change', filterAndRenderResults);
-            resultsSort.addEventListener('change', filterAndRenderResults);
-            prevPageBtn.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderPagination();
-                }
-            });
-            nextPageBtn.addEventListener('click', () => {
-                const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderPagination();
-                }
-            });
         });
+        
+        // Logout Functionality
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('ilmnexus_student');
+            dashboard.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+        });
+        
+        // Check if user is already logged in
+        window.addEventListener('DOMContentLoaded', function() {
+            const student = localStorage.getItem('ilmnexus_student');
+            
+            if (student) {
+                loginPage.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                matricInput.value = student;
+            }
+        });
+        
+        // Simulate loading of student data
+        // In a real application, this would come from a backend API
+        function loadStudentData(matricNumber) {
+            console.log(`Loading data for student: ${matricNumber}`);
+            // This would fetch student data from your backend
+        }
     </script>
 </body>
 </html>

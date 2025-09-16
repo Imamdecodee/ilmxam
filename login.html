@@ -370,11 +370,11 @@
             }, 3000);
         };
         
-        // Check if current time is after 7:00 PM
+        // Check if current time is after 9:00 PM
         const isAfter7PM = () => {
             const now = new Date();
             const hours = now.getHours();
-            return hours >= 19; // 7:00 PM is 19:00
+            return hours >= 21; // 9:00 PM is 21:00
         };
         
         // Get login count for a matric number from localStorage
@@ -396,7 +396,7 @@
             const fullName = document.getElementById('fullName').value.trim();
             const course = document.getElementById('course').value;
             
-            // Check if it's after 7:00 PM
+            // Check if it's after 9:00 PM
             if (isAfter7PM()) {
                 showToast('Login is not allowed after 7:00 PM. Please try again tomorrow.');
                 return false;
@@ -521,7 +521,7 @@
             // Disable login if it's after 7:00 PM
             if (isAfter7PM()) {
                 document.getElementById('loginBtn').disabled = true;
-                document.getElementById('loginBtn').innerHTML = '<span>Login Disabled After 7:00 PM</span>';
+                document.getElementById('loginBtn').innerHTML = '<span>Login Disabled After 9:00 PM</span>';
                 showToast('Login is disabled after 7:00 PM. Please try again tomorrow.');
             }
         });
