@@ -25,18 +25,6 @@
       "type": "image/png"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshots/screen1.jpg",
-      "sizes": "1080x1920",
-      "type": "image/jpg"
-    },
-    {
-      "src": "screenshots/screen2.jpg",
-      "sizes": "1080x1920",
-      "type": "image/jpg"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Start Quiz",
