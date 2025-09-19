@@ -487,16 +487,16 @@
             }, 1000);
         });
     </script>
-    <script>
+<script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("sw.js")
-      .then(() => console.log("✅ Service Worker registered"))
-      .catch(err => console.error("❌ SW registration failed:", err));
-  });
+  navigator.serviceWorker
+    .register("/sw.js")
+    .then(() => console.log("✅ Service Worker registered"))
+    .catch(err => console.error("❌ SW failed:", err));
 }
 </script>
+
+
 
 </body>
 </html>

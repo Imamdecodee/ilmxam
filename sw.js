@@ -1,9 +1,10 @@
 const CACHE_NAME = "ilmxam-cache-v1";
 const urlsToCache = [
   "/", 
-  "/index.html", 
-  "/style.css", 
-  "/script.js"
+  "/index.html",
+  "/manifest.json",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png"
 ];
 
 // Install SW
