@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ILMNEXUS - Student Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root {
             --primary: #2E73FF;
@@ -308,6 +309,24 @@
             color: var(--warning);
         }
 
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 5px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: #1c5de5;
+        }
+
         /* Course Grid */
         .course-grid {
             display: grid;
@@ -321,6 +340,7 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: var(--transition);
+            cursor: pointer;
         }
 
         .course-card:hover {
@@ -336,6 +356,22 @@
             justify-content: center;
             color: white;
             font-size: 40px;
+            position: relative;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .course-card:hover .play-icon {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
         .course-content {
@@ -431,6 +467,79 @@
 
         .btn-primary:hover {
             background: #c5690d;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         /* Responsive Styles */
@@ -565,6 +674,30 @@
         .hidden {
             display: none;
         }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -603,27 +736,27 @@
             </div>
             
             <div class="sidebar-menu">
-                <a href="#" class="menu-item active">
+                <a href="#" class="menu-item active" data-section="dashboard">
                     <i class="fas fa-home"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-section="courses">
                     <i class="fas fa-graduation-cap"></i>
                     <span class="menu-text">My Courses</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-section="results">
                     <i class="fas fa-chart-bar"></i>
                     <span class="menu-text">Results</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-section="notes">
                     <i class="fas fa-book"></i>
                     <span class="menu-text">Notes</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-section="videos">
                     <i class="fas fa-video"></i>
                     <span class="menu-text">Video Lessons</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-section="settings">
                     <i class="fas fa-cog"></i>
                     <span class="menu-text">Settings</span>
                 </a>
@@ -656,200 +789,299 @@
                 </div>
             </div>
             
-            <!-- Dashboard Cards -->
-            <div class="dashboard-cards">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Courses</h3>
-                        <div class="card-icon bg-primary">
-                            <i class="fas fa-book"></i>
+            <!-- Dashboard Content -->
+            <div id="dashboard-content">
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Courses</h3>
+                            <div class="card-icon bg-primary">
+                                <i class="fas fa-book"></i>
+                            </div>
                         </div>
+                        <div class="card-value">5</div>
+                        <div class="card-label">Enrolled Courses</div>
                     </div>
-                    <div class="card-value">5</div>
-                    <div class="card-label">Enrolled Courses</div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Results</h3>
+                            <div class="card-icon bg-success">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">87%</div>
+                        <div class="card-label">Average Score</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Assignments</h3>
+                            <div class="card-icon bg-warning">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">3</div>
+                        <div class="card-label">Pending Submissions</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Notes</h3>
+                            <div class="card-icon bg-danger">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">24</div>
+                        <div class="card-label">Available Notes</div>
+                    </div>
                 </div>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Results</h3>
-                        <div class="card-icon bg-success">
-                            <i class="fas fa-chart-bar"></i>
+                <!-- Email Subscription -->
+                <div class="email-subscription">
+                    <div class="subscription-content">
+                        <div class="subscription-text">
+                            <h3 class="subscription-title">Stay Updated with ILMNEXUS</h3>
+                            <p>Subscribe to our newsletter to receive the latest news and updates</p>
+                        </div>
+                        
+                        <div class="subscription-form">
+                            <input type="email" class="form-input" id="subscriber-email" placeholder="Enter your email address">
+                            <button class="btn btn-primary" id="subscribe-btn">Subscribe</button>
                         </div>
                     </div>
-                    <div class="card-value">87%</div>
-                    <div class="card-label">Average Score</div>
                 </div>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Assignments</h3>
-                        <div class="card-icon bg-warning">
-                            <i class="fas fa-tasks"></i>
-                        </div>
+                <!-- Recent Results Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Results</h2>
+                        <a href="#" class="view-all">View All</a>
                     </div>
-                    <div class="card-value">3</div>
-                    <div class="card-label">Pending Submissions</div>
+                    
+                    <div class="table-responsive">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Exam</th>
+                                    <th>Date</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Video Editing Final Exam</td>
+                                    <td>Oct 15, 2023</td>
+                                    <td>92%</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td>
+                                        <button class="action-btn view-result-btn" data-exam="Video Editing Final Exam">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Color Grading Test</td>
+                                    <td>Oct 10, 2023</td>
+                                    <td>85%</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td>
+                                        <button class="action-btn view-result-btn" data-exam="Color Grading Test">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Audio Editing Quiz</td>
+                                    <td>Oct 5, 2023</td>
+                                    <td>78%</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td>
+                                        <button class="action-btn view-result-btn" data-exam="Audio Editing Quiz">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Storytelling Assignment</td>
+                                    <td>Sep 28, 2023</td>
+                                    <td>-</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <button class="action-btn" disabled>
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Notes</h3>
-                        <div class="card-icon bg-danger">
-                            <i class="fas fa-file-alt"></i>
+                <!-- My Courses Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">My Courses</h2>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    
+                    <div class="course-grid">
+                        <div class="course-card" data-video="https://www.youtube.com/embed/5qap5aO4i9A">
+                            <div class="course-thumbnail">
+                                <i class="fas fa-film"></i>
+                                <div class="play-icon"><i class="fas fa-play-circle"></i></div>
+                            </div>
+                            <div class="course-content">
+                                <h3 class="course-title">Video Editing Fundamentals</h3>
+                                <div class="course-info">
+                                    <span><i class="fas fa-play-circle"></i> 24 Lessons</span>
+                                    <span><i class="fas fa-clock"></i> 12 Hours</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 75%"></div>
+                                </div>
+                                <div class="progress-text">75% Complete</div>
+                            </div>
+                        </div>
+                        
+                        <div class="course-card" data-video="https://www.youtube.com/embed/5qap5aO4i9A">
+                            <div class="course-thumbnail">
+                                <i class="fas fa-palette"></i>
+                                <div class="play-icon"><i class="fas fa-play-circle"></i></div>
+                            </div>
+                            <div class="course-content">
+                                <h3 class="course-title">Color Grading Mastery</h3>
+                                <div class="course-info">
+                                    <span><i class="fas fa-play-circle"></i> 18 Lessons</span>
+                                    <span><i class="fas fa-clock"></i> 9 Hours</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 45%"></div>
+                                </div>
+                                <div class="progress-text">45% Complete</div>
+                            </div>
+                        </div>
+                        
+                        <div class="course-card" data-video="https://www.youtube.com/embed/5qap5aO4i9A">
+                            <div class="course-thumbnail">
+                                <i class="fas fa-music"></i>
+                                <div class="play-icon"><i class="fas fa-play-circle"></i></div>
+                            </div>
+                            <div class="course-content">
+                                <h3 class="course-title">Audio Editing for Video</h3>
+                                <div class="course-info">
+                                    <span><i class="fas fa-play-circle"></i> 16 Lessons</span>
+                                    <span><i class="fas fa-clock"></i> 8 Hours</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 30%"></div>
+                                </div>
+                                <div class="progress-text">30% Complete</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-value">24</div>
-                    <div class="card-label">Available Notes</div>
                 </div>
             </div>
             
-            <!-- Email Subscription -->
-            <div class="email-subscription">
-                <div class="subscription-content">
-                    <div class="subscription-text">
-                        <h3 class="subscription-title">Stay Updated with ILMNEXUS</h3>
-                        <p>Subscribe to our newsletter to receive the latest news and updates</p>
-                    </div>
-                    
-                    <div class="subscription-form">
-                        <input type="email" class="form-input" placeholder="Enter your email address">
-                        <button class="btn btn-primary">Subscribe</button>
-                    </div>
-                </div>
+            <!-- Other Sections (initially hidden) -->
+            <div id="courses-content" class="hidden">
+                <h2>My Courses</h2>
+                <p>This section would display all your enrolled courses.</p>
             </div>
             
-            <!-- Recent Results Section -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">Recent Results</h2>
-                    <a href="#" class="view-all">View All</a>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="results-table">
-                        <thead>
-                            <tr>
-                                <th>Exam</th>
-                                <th>Date</th>
-                                <th>Score</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Video Editing Final Exam</td>
-                                <td>Oct 15, 2023</td>
-                                <td>92%</td>
-                                <td><span class="status-badge status-completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>Color Grading Test</td>
-                                <td>Oct 10, 2023</td>
-                                <td>85%</td>
-                                <td><span class="status-badge status-completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>Audio Editing Quiz</td>
-                                <td>Oct 5, 2023</td>
-                                <td>78%</td>
-                                <td><span class="status-badge status-completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>Storytelling Assignment</td>
-                                <td>Sep 28, 2023</td>
-                                <td>-</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div id="results-content" class="hidden">
+                <h2>Exam Results</h2>
+                <p>This section would display all your exam results.</p>
             </div>
             
-            <!-- My Courses Section -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">My Courses</h2>
-                    <a href="#" class="view-all">View All</a>
-                </div>
-                
-                <div class="course-grid">
-                    <div class="course-card">
-                        <div class="course-thumbnail">
-                            <i class="fas fa-film"></i>
-                        </div>
-                        <div class="course-content">
-                            <h3 class="course-title">Video Editing Fundamentals</h3>
-                            <div class="course-info">
-                                <span><i class="fas fa-play-circle"></i> 24 Lessons</span>
-                                <span><i class="fas fa-clock"></i> 12 Hours</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 75%"></div>
-                            </div>
-                            <div class="progress-text">75% Complete</div>
-                        </div>
-                    </div>
-                    
-                    <div class="course-card">
-                        <div class="course-thumbnail">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div class="course-content">
-                            <h3 class="course-title">Color Grading Mastery</h3>
-                            <div class="course-info">
-                                <span><i class="fas fa-play-circle"></i> 18 Lessons</span>
-                                <span><i class="fas fa-clock"></i> 9 Hours</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 45%"></div>
-                            </div>
-                            <div class="progress-text">45% Complete</div>
-                        </div>
-                    </div>
-                    
-                    <div class="course-card">
-                        <div class="course-thumbnail">
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <div class="course-content">
-                            <h3 class="course-title">Audio Editing for Video</h3>
-                            <div class="course-info">
-                                <span><i class="fas fa-play-circle"></i> 16 Lessons</span>
-                                <span><i class="fas fa-clock"></i> 8 Hours</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 30%"></div>
-                            </div>
-                            <div class="progress-text">30% Complete</div>
-                        </div>
-                    </div>
+            <div id="notes-content" class="hidden">
+                <h2>Course Notes</h2>
+                <p>This section would contain all your course notes and materials.</p>
+            </div>
+            
+            <div id="videos-content" class="hidden">
+                <h2>Video Lessons</h2>
+                <p>This section would contain all your video lessons.</p>
+            </div>
+            
+            <div id="settings-content" class="hidden">
+                <h2>Settings</h2>
+                <p>This section would contain your account settings.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="modal-overlay" id="video-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="video-modal-title">Video Lesson</h3>
+                <button class="close-btn" id="close-video-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="video-container">
+                    <iframe id="video-player" width="100%" height="100%" src="" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Operation completed successfully</span>
+    </div>
+
     <script>
+        // Initialize EmailJS with your public key
+        emailjs.init('CTivTkN2aGpDGUCZl'); // Replace with your actual public key if different
+
         // DOM Elements
         const loginPage = document.getElementById('login-page');
         const dashboard = document.getElementById('dashboard');
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const matricInput = document.getElementById('matric-number');
+        const subscribeBtn = document.getElementById('subscribe-btn');
+        const subscriberEmail = document.getElementById('subscriber-email');
+        const videoModal = document.getElementById('video-modal');
+        const closeVideoModal = document.getElementById('close-video-modal');
+        const videoPlayer = document.getElementById('video-player');
+        const videoModalTitle = document.getElementById('video-modal-title');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
         
+        // Section elements
+        const menuItems = document.querySelectorAll('.menu-item');
+        const dashboardContent = document.getElementById('dashboard-content');
+        const coursesContent = document.getElementById('courses-content');
+        const resultsContent = document.getElementById('results-content');
+        const notesContent = document.getElementById('notes-content');
+        const videosContent = document.getElementById('videos-content');
+        const settingsContent = document.getElementById('settings-content');
+        
+        // Course cards and view buttons
+        const courseCards = document.querySelectorAll('.course-card');
+        const viewResultBtns = document.querySelectorAll('.view-result-btn');
+
         // Login Functionality
         loginBtn.addEventListener('click', function() {
             const matricNumber = matricInput.value.trim();
             
             if (matricNumber) {
-                // In a real application, you would verify against a database
-                // For this demo, we'll just check if something was entered
                 loginPage.classList.add('hidden');
                 dashboard.classList.remove('hidden');
                 
                 // Store in localStorage to simulate login session
                 localStorage.setItem('ilmnexus_student', matricNumber);
+                
+                // Load student data
+                loadStudentData(matricNumber);
             } else {
-                alert('Please enter your matric number');
+                showToast('Please enter your matric number', 'error');
             }
         });
         
@@ -858,6 +1090,123 @@
             localStorage.removeItem('ilmnexus_student');
             dashboard.classList.add('hidden');
             loginPage.classList.remove('hidden');
+            showToast('You have been logged out successfully');
+        });
+        
+        // Sidebar menu functionality
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Handle logout separately
+                if (this.id === 'logout-btn') return;
+                
+                // Remove active class from all items
+                menuItems.forEach(i => i.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Get the section to show
+                const section = this.getAttribute('data-section');
+                
+                // Hide all sections
+                dashboardContent.classList.add('hidden');
+                coursesContent.classList.add('hidden');
+                resultsContent.classList.add('hidden');
+                notesContent.classList.add('hidden');
+                videosContent.classList.add('hidden');
+                settingsContent.classList.add('hidden');
+                
+                // Show the selected section
+                switch(section) {
+                    case 'dashboard':
+                        dashboardContent.classList.remove('hidden');
+                        break;
+                    case 'courses':
+                        coursesContent.classList.remove('hidden');
+                        break;
+                    case 'results':
+                        resultsContent.classList.remove('hidden');
+                        break;
+                    case 'notes':
+                        notesContent.classList.remove('hidden');
+                        break;
+                    case 'videos':
+                        videosContent.classList.remove('hidden');
+                        break;
+                    case 'settings':
+                        settingsContent.classList.remove('hidden');
+                        break;
+                }
+            });
+        });
+        
+        // Email Subscription
+        subscribeBtn.addEventListener('click', function() {
+            const email = subscriberEmail.value.trim();
+            
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Send email using EmailJS
+            const templateParams = {
+                to_email: "theilmnexus@gmail.com",
+                subscriber_email: email,
+                matric_number: localStorage.getItem('ilmnexus_student') || 'Unknown',
+                date: new Date().toLocaleString()
+            };
+            
+            emailjs.send('service_mwk9x5l', 'template_zkexdja', templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    showToast('Successfully subscribed to newsletter!');
+                    subscriberEmail.value = '';
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    showToast('Subscription failed. Please try again.', 'error');
+                });
+        });
+        
+        // Course card click - open video modal
+        courseCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const videoUrl = this.getAttribute('data-video');
+                const courseTitle = this.querySelector('.course-title').textContent;
+                
+                videoPlayer.src = videoUrl;
+                videoModalTitle.textContent = courseTitle;
+                videoModal.classList.add('active');
+            });
+        });
+        
+        // View result button click
+        viewResultBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const examName = this.getAttribute('data-exam');
+                // In a real application, this would redirect to view.html with exam parameter
+                // For this demo, we'll show a toast message
+                showToast(`Opening results for: ${examName}`);
+                
+                // Simulate redirect (commented out for demo)
+                // window.location.href = `view.html?exam=${encodeURIComponent(examName)}`;
+            });
+        });
+        
+        // Close video modal
+        closeVideoModal.addEventListener('click', function() {
+            videoModal.classList.remove('active');
+            videoPlayer.src = '';
+        });
+        
+        // Close modal when clicking outside
+        videoModal.addEventListener('click', function(e) {
+            if (e.target === videoModal) {
+                videoModal.classList.remove('active');
+                videoPlayer.src = '';
+            }
         });
         
         // Check if user is already logged in
@@ -868,15 +1217,21 @@
                 loginPage.classList.add('hidden');
                 dashboard.classList.remove('hidden');
                 matricInput.value = student;
+                loadStudentData(student);
             }
         });
         
-        // Simulate loading of student data
-        // In a real application, this would come from a backend API
+        // Helper functions
         function loadStudentData(matricNumber) {
             console.log(`Loading data for student: ${matricNumber}`);
-            // This would fetch student data from your backend
+            // This would fetch student data from your backend in a real application
         }
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    
     </script>
 </body>
 </html>
