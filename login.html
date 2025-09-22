@@ -257,6 +257,17 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        .time-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -271,6 +282,10 @@
         <p class="tagline">INNOVATIVE LEARNING PLATFORM</p>
         
         <div class="login-container">
+            <div class="time-info" id="timeInfo">
+                <i class="fas fa-clock"></i> Exam period: 5:00 PM - 7:00 PM only
+            </div>
+            
             <h1>Student Login Portal</h1>
             
             <form id="loginForm">
@@ -311,7 +326,9 @@
                 <li>Full Name: As registered in the system</li>
                 <li>Course: The course you are taking the exam for</li>
             </ul>
-            <p><strong>Note:</strong> Video Editing course requires matric numbers containing "VIE"</p>
+            <p><strong>Note:</strong> Graphic Design course requires matric numbers containing "GRA"</p>
+            <p>Each matric number can only be used twice maximum</p>
+            <p>Exam period is strictly from 5:00 PM to 7:00 PM only</p>
             <p>Contact administrator if you encounter any issues.</p>
         </div>
     </div>
@@ -370,11 +387,15 @@
             }, 3000);
         };
         
-        // Check if current time is after 9:00 PM
-        const isAfter7PM = () => {
+        // Check if current time is within exam period (5pm to 7pm)
+        const isWithinExamPeriod = () => {
             const now = new Date();
             const hours = now.getHours();
-            return hours >= 21; // 9:00 PM is 21:00
+            const minutes = now.getMinutes();
+            const currentTime = hours + minutes / 60;
+            
+            // 5:00 PM is 17:00, 7:00 PM is 19:00
+            return currentTime >= 17 && currentTime < 19;
         };
         
         // Get login count for a matric number from localStorage
@@ -392,13 +413,13 @@
         
         // Validate form inputs with new rules
         const validateForm = () => {
-            const matricNumber = document.getElementById('matricNumber').value.trim();
+            const matricNumber = document.getElementById('matricNumber').value.trim().toUpperCase();
             const fullName = document.getElementById('fullName').value.trim();
             const course = document.getElementById('course').value;
             
-            // Check if it's after 9:00 PM
-            if (isAfter9PM()) {
-                showToast('Login is not allowed after 7:00 PM. Please try again tomorrow.');
+            // Check if it's within exam period (5pm to 7pm)
+            if (!isWithinExamPeriod()) {
+                showToast('Exam login is only allowed between 5:00 PM and 7:00 PM.');
                 return false;
             }
             
@@ -408,36 +429,36 @@
             }
             
             // Check if matric number is valid
-            if (!validMatricNumbers.includes(matricNumber.toUpperCase())) {
+            if (!validMatricNumbers.includes(matricNumber)) {
                 showToast('Invalid matric number. Please check your credentials.');
                 return false;
             }
             
-            // Check login attempts
+            // Check login attempts (max 2 per matric number)
             const loginCount = getLoginCount(matricNumber);
             if (loginCount >= 2) {
                 showToast('This matric number has already been used for maximum login attempts (2).');
                 return false;
             }
-                 
-   // Check matric number and course compatibility
-            const hasGRA = matricNumber.toUpperCase().includes('GRA');
-            const isGraphicsDesigng = course.toLowerCase().includes('Graphics Design');
             
-            if (isGraphicsDesigngg && !hasGRA) {
-                showToast('Graphics Designg course requires a matric number containing "GRA".');
+            // Check matric number and course compatibility for Graphic Design
+            const hasGRA = matricNumber.includes('GRA');
+            const isGraphicDesign = course.toLowerCase().includes('graphic design');
+            
+            if (isGraphicDesign && !hasGRA) {
+                showToast('Graphic Design course requires a matric number containing "GRA".');
                 return false;
             }
             
-            if (!isGraphicsDesigng && hasGRA) {
-                showToast('Your matric number is only valid for Graphics Designg course.');
+            if (!isGraphicDesign && hasGRA) {
+                showToast('Your matric number is only valid for Graphic Design course.');
                 return false;
             }
             
             return true;
         };
 
-        // Simulate Firebase authentication (replace with actual implementation)
+        // Simulate Firebase authentication
         const authenticateUser = async (matricNumber, fullName, course) => {
             // Show loading state
             document.getElementById('btnText').style.display = 'none';
@@ -447,13 +468,6 @@
             // Simulate API call
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    // In a real application, you would:
-                    // 1. Check if the matric number exists in your database
-                    // 2. Verify the user's information
-                    // 3. Create/update the user record as needed
-                    
-                    // For this demo, we'll assume authentication is successful
-                    // if the matric number is in our list
                     if (validMatricNumbers.includes(matricNumber.toUpperCase())) {
                         resolve({ success: true });
                     } else {
@@ -469,7 +483,7 @@
             
             if (!validateForm()) return;
             
-            const matricNumber = document.getElementById('matricNumber').value.trim();
+            const matricNumber = document.getElementById('matricNumber').value.trim().toUpperCase();
             const fullName = document.getElementById('fullName').value.trim();
             const course = document.getElementById('course').value;
             
@@ -486,7 +500,8 @@
                     sessionStorage.setItem('user', JSON.stringify({
                         matricNumber,
                         fullName,
-                        course
+                        course,
+                        loginTime: new Date().toISOString()
                     }));
                     
                     // Redirect to exam page after a short delay
@@ -505,9 +520,25 @@
             }
         };
         
+        // Update time info display based on current time
+        const updateTimeInfo = () => {
+            const timeInfo = document.getElementById('timeInfo');
+            if (isWithinExamPeriod()) {
+                timeInfo.innerHTML = '<i class="fas fa-check-circle"></i> Exam period is active (5:00 PM - 7:00 PM)';
+                timeInfo.style.background = '#d4edda';
+                timeInfo.style.borderColor = '#c3e6cb';
+                timeInfo.style.color = '#155724';
+            } else {
+                timeInfo.innerHTML = '<i class="fas fa-clock"></i> Exam login available only from 5:00 PM to 7:00 PM';
+            }
+        };
+        
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Update time info
+            updateTimeInfo();
             
             // Check if user is already logged in
             const userData = sessionStorage.getItem('user');
@@ -518,12 +549,14 @@
                 document.getElementById('course').value = user.course;
             }
             
-            // Disable login if it's after 7:00 PM
-            if (isAfter7PM()) {
+            // Disable login if it's outside exam hours
+            if (!isWithinExamPeriod()) {
                 document.getElementById('loginBtn').disabled = true;
-                document.getElementById('loginBtn').innerHTML = '<span>Login Disabled After 9:00 PM</span>';
-                showToast('Login is disabled after 7:00 PM. Please try again tomorrow.');
+                document.getElementById('loginBtn').innerHTML = '<span>Login Available 5:00 PM - 7:00 PM Only</span>';
             }
+            
+            // Update time info every minute
+            setInterval(updateTimeInfo, 60000);
         });
     </script>
 </body>
