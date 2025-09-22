@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILMNEXUS - Graphic Design Exam</title>
+    <title>ILMNEXUS - Video Editing Exam</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -115,8 +121,6 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
         
         .question-number {
@@ -241,8 +245,6 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
         
         .nav-btn {
@@ -392,7 +394,6 @@
             padding: 30px;
             text-align: center;
             border-radius: 20px 20px 0 0;
-            margin-top: 20px;
         }
         
         .result-title {
@@ -796,7 +797,7 @@
             <!-- Special result section for danlowad -->
             <div id="special-result" class="special-result hidden">
                 <h1 class="special-title">Outstanding Performance! 🎉</h1>
-                <p class="special-subtitle">You've demonstrated exceptional graphic design knowledge!</p>
+                <p class="special-subtitle">You've demonstrated exceptional video editing knowledge!</p>
                 <div class="special-badge">Top Performer</div>
             </div>
             
@@ -822,7 +823,7 @@
                         
                         <div class="info-item">
                             <div class="info-label">Course</div>
-                            <div class="info-value" id="result-course">Graphic Design</div>
+                            <div class="info-value" id="result-course">Video Editing</div>
                         </div>
                         
                         <div class="info-item">
@@ -838,7 +839,7 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Exam Title</div>
-                            <div class="info-value">Ilm Nexus Graphic Design</div>
+                            <div class="info-value">Ilm Nexus Video Editing</div>
                         </div>
                         
                         <div class="info-item">
@@ -902,6 +903,23 @@
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAi_IyKB8Rkb0CpM_lBlwgdpsZxsZT_MdY",
+            authDomain: "ilmxam.firebaseapp.com",
+            projectId: "ilmxam",
+            storageBucket: "ilmxam.firebasestorage.app",
+            messagingSenderId: "499914637135",
+            appId: "1:499914637135:web:8622a39105d0706be7cf3a"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Initialize EmailJS
+        emailjs.init('CTivTkN2aGpDGUCZl');
+        
         // DOM Elements
         const examInterface = document.getElementById('exam-interface');
         const resultPage = document.getElementById('result-page');
@@ -949,18 +967,18 @@
         let userAnswers = {};
         let examData = {};
         
-        // Updated questions data (20 MCQ + 5 Essay) - Graphic Design Questions
+        // Updated questions data (20 MCQ + 5 Essay)
         const questions = [
-            // Section A: Multiple Choice Questions
+            // Module 1 - Introduction & Storytelling
             {
                 id: 1,
                 type: "MCQ",
-                text: "What is graphic design mainly used for?",
+                text: "What is the main purpose of video editing?",
                 options: [
-                    "Entertainment only",
-                    "Business and communication",
-                    "Agriculture",
-                    "Sports"
+                    "To create raw footage",
+                    "To arrange, cut, and enhance video",
+                    "To only add music",
+                    "To record videos"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -968,51 +986,53 @@
             {
                 id: 2,
                 type: "MCQ",
-                text: "Which of these is NOT a principle of design?",
+                text: "Which of these is an example of short-form video content?",
                 options: [
-                    "Balance",
-                    "Contrast",
-                    "Proximity",
-                    "Cropping"
-                ],
-                correctAnswer: "D",
-                marks: 1
-            },
-            {
-                id: 3,
-                type: "MCQ",
-                text: "Which of the following is a career in graphic design?",
-                options: [
-                    "Logo designer",
-                    "Farmer",
-                    "Pilot",
-                    "Accountant"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
-                id: 4,
-                type: "MCQ",
-                text: "Graphic design can be defined as the art of _____",
-                options: [
-                    "Coding websites",
-                    "Planning and projecting visual ideas",
-                    "Cooking with creativity",
-                    "Copying images"
+                    "Full-length movie",
+                    "Instagram Reel",
+                    "Documentary",
+                    "TV Series"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
             {
+                id: 3,
+                type: "MCQ",
+                text: "Storytelling in video editing is important because:",
+                options: [
+                    "It makes the video longer",
+                    "It helps the audience connect with the message",
+                    "It reduces file size",
+                    "It removes background noise"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            {
+                id: 4,
+                type: "MCQ",
+                text: "What is the vision of Ilm Nexus?",
+                options: [
+                    "Education for All",
+                    "Just Do It",
+                    "Learning to Earning",
+                    "Tech for Tomorrow"
+                ],
+                correctAnswer: "C",
+                marks: 1
+            },
+            
+            // Module 2 – Editing Basics & Workflow
+            {
                 id: 5,
                 type: "MCQ",
-                text: "In design, alignment means _____",
+                text: "The video editing process begins with:",
                 options: [
-                    "Randomly placing objects",
-                    "Arranging elements properly in relation to each other",
-                    "Using only one color",
-                    "None of the above"
+                    "Exporting",
+                    "Importing and organizing footage",
+                    "Adding transitions",
+                    "Color grading"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1020,12 +1040,12 @@
             {
                 id: 6,
                 type: "MCQ",
-                text: "The principle of contrast helps in _____",
+                text: "In video editing, the timeline is used for:",
                 options: [
-                    "Making designs dull",
-                    "Creating emphasis and visual interest",
-                    "Reducing visibility",
-                    "Making designs hard to read"
+                    "Watching movies",
+                    "Cutting and arranging clips",
+                    "Downloading videos",
+                    "Changing resolution"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1033,12 +1053,12 @@
             {
                 id: 7,
                 type: "MCQ",
-                text: "Which of these is a design element?",
+                text: "Which of these is an example of a basic transition?",
                 options: [
-                    "Balance",
-                    "Color",
-                    "Repetition",
-                    "Alignment"
+                    "Blur",
+                    "Fade-in/Fade-out",
+                    "3D Animation",
+                    "Color correction"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1046,51 +1066,53 @@
             {
                 id: 8,
                 type: "MCQ",
-                text: "The psychological effect of the color red often represents _____",
+                text: "Who is the founder of Ilm Nexus?",
                 options: [
-                    "Calmness",
-                    "Love or urgency",
-                    "Peace",
-                    "Relaxation"
+                    "Elon Musk",
+                    "Miqdad Bada Akorede",
+                    "Bill Gates",
+                    "Jeff Bezos"
+                ],
+                correctAnswer: "B",
+                marks: 1
+            },
+            
+            // Module 3 – Enhancing with Sound, Text & Color
+            {
+                id: 9,
+                type: "MCQ",
+                text: "Why is adding background music important in video editing?",
+                options: [
+                    "To fill empty space",
+                    "To support the mood and storytelling",
+                    "To reduce file size",
+                    "To distract the viewer"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
             {
-                id: 9,
-                type: "MCQ",
-                text: "Typography mainly deals with _____",
-                options: [
-                    "Fonts and text styling",
-                    "Image cropping",
-                    "Animation",
-                    "File formats"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
                 id: 10,
                 type: "MCQ",
-                text: "Which is an industry-standard tool for design?",
+                text: "Which of these formats is most common for background music?",
                 options: [
-                    "Canva",
-                    "Adobe Photoshop",
-                    "Both a & b",
-                    "WordPad"
+                    ".jpg",
+                    ".mp3",
+                    ".docx",
+                    ".pptx"
                 ],
-                correctAnswer: "C",
+                correctAnswer: "B",
                 marks: 1
             },
             {
                 id: 11,
                 type: "MCQ",
-                text: "A simple poster for social media is best created with ____",
+                text: "Which tool is used to balance loud and quiet audio levels in editing?",
                 options: [
-                    "Canva",
-                    "Paint",
-                    "Microsoft Word",
-                    "Notepad"
+                    "Audio mixer",
+                    "Color corrector",
+                    "Timeline",
+                    "Text tool"
                 ],
                 correctAnswer: "A",
                 marks: 1
@@ -1098,12 +1120,12 @@
             {
                 id: 12,
                 type: "MCQ",
-                text: "Branding can be defined as ____",
+                text: "Where is the Ilm Nexus Bootcamp physical center located?",
                 options: [
-                    "Just making a logo",
-                    "Creating a unique identity for a product or business",
-                    "Choosing random colors",
-                    "Printing designs"
+                    "Abuja",
+                    "Ilorin",
+                    "Lagos",
+                    "Ibadan"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1111,12 +1133,12 @@
             {
                 id: 13,
                 type: "MCQ",
-                text: "Which format is best for printing materials?",
+                text: "Which editing element is used to add captions or titles to a video?",
                 options: [
-                    "RGB",
-                    "CMYK",
-                    "PDF only",
-                    "JPEG only"
+                    "Transitions",
+                    "Text overlay",
+                    "Color grading",
+                    "Audio track"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1124,38 +1146,40 @@
             {
                 id: 14,
                 type: "MCQ",
-                text: "Layout in design refers to _____",
+                text: "Adjusting brightness, contrast, and saturation in a video is called:",
                 options: [
-                    "Arranging elements within a design space",
-                    "Drawing with pencils",
-                    "Cropping pictures",
-                    "Using only one color"
+                    "Trimming",
+                    "Color correction",
+                    "Transition",
+                    "Exporting"
                 ],
-                correctAnswer: "A",
+                correctAnswer: "B",
                 marks: 1
             },
+            
+            // Module 4 – Final Project & Exporting
             {
                 id: 15,
                 type: "MCQ",
-                text: "Which platform requires different layouts compared to print?",
+                text: "Which step comes LAST in the editing process?",
                 options: [
-                    "Social Media",
-                    "Book publishing",
-                    "Newspapers",
-                    "Magazines"
+                    "Importing footage",
+                    "Cutting clips",
+                    "Exporting video",
+                    "Adding transitions"
                 ],
-                correctAnswer: "A",
+                correctAnswer: "C",
                 marks: 1
             },
             {
                 id: 16,
                 type: "MCQ",
-                text: "A logo is important because it represents ____",
+                text: "Which file format is most commonly used for exporting videos online?",
                 options: [
-                    "A random drawing",
-                    "A brand's identity",
-                    "A hobby",
-                    "None of the above"
+                    ".exe",
+                    ".mp4",
+                    ".pdf",
+                    ".txt"
                 ],
                 correctAnswer: "B",
                 marks: 1
@@ -1163,53 +1187,53 @@
             {
                 id: 17,
                 type: "MCQ",
-                text: "Which tool is commonly used for background removal?",
+                text: "For Instagram Reels, the best aspect ratio is:",
                 options: [
-                    "Pen tool",
-                    "Text tool",
-                    "Paint bucket",
-                    "Eraser only"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
-                id: 18,
-                type: "MCQ",
-                text: "Exporting a design means ____",
-                options: [
-                    "Saving it in a suitable format for use",
-                    "Drawing on paper",
-                    "Uploading to social media",
-                    "Printing immediately"
-                ],
-                correctAnswer: "A",
-                marks: 1
-            },
-            {
-                id: 19,
-                type: "MCQ",
-                text: "Pixels per inch (PPI) is a measure of ____",
-                options: [
-                    "Color theory",
-                    "Image resolution",
-                    "Font size",
-                    "Layout balance"
+                    "16:9",
+                    "9:16",
+                    "1:1",
+                    "4:3"
                 ],
                 correctAnswer: "B",
                 marks: 1
             },
             {
-                id: 20,
+                id: 18,
                 type: "MCQ",
-                text: "A good flyer must have ____",
+                text: "Which is NOT an export setting in video editing software?",
                 options: [
-                    "Clear message and good design",
-                    "Random fonts",
-                    "Overcrowded text",
-                    "Only images without text"
+                    "Resolution",
+                    "Frame rate",
+                    "File format",
+                    "Password"
+                ],
+                correctAnswer: "D",
+                marks: 1
+            },
+            {
+                id: 19,
+                type: "MCQ",
+                text: "Which of the following is a guiding principle of Ilm Nexus?",
+                options: [
+                    "PPTT (Patience, Passion, Tools, Time)",
+                    "ASAP",
+                    "BYOD",
+                    "DIY"
                 ],
                 correctAnswer: "A",
+                marks: 1
+            },
+            {
+                id: 20,
+                type: "MCQ",
+                text: "When will Ilm Nexus conclude its First Cohort Bootcamp?",
+                options: [
+                    "Sept 15, 2025",
+                    "Oct 4, 2025",
+                    "Dec 25, 2025",
+                    "Jan 1, 2026"
+                ],
+                correctAnswer: "B",
                 marks: 1
             },
             
@@ -1217,31 +1241,31 @@
             {
                 id: 21,
                 type: "Essay",
-                text: "Define graphic design.",
+                text: "Explain the role of storytelling in video editing. Why is it important for keeping an audience engaged?",
                 marks: 5
             },
             {
                 id: 22,
                 type: "Essay",
-                text: "List six (6) fundamentals of design and explain three (3).",
+                text: "Describe the basic workflow of video editing, starting from importing raw footage to exporting the final video.",
                 marks: 5
             },
             {
                 id: 23,
                 type: "Essay",
-                text: "Explain the step-by-step process of creating a logo from scratch using Canva.",
+                text: "Why is sound design (music, voiceovers, sound effects) important in video editing? Give at least 3 reasons.",
                 marks: 5
             },
             {
                 id: 24,
                 type: "Essay",
-                text: "What is the first thing a brand must have before creating a logo?",
+                text: "Imagine you are creating a promotional video for Ilm Nexus. Outline how you would plan, edit, and export it to attract new students.",
                 marks: 5
             },
             {
                 id: 25,
                 type: "Essay",
-                text: "Why is whitespace important in design?",
+                text: "\"Ilm Nexus believes in Learning to Earning.\" Explain how mastering video editing skills can help students achieve this vision with practical examples.",
                 marks: 5
             }
         ];
@@ -1253,7 +1277,7 @@
             
             // Set student info
             studentNameElement.textContent = userData.fullName || "Student Name";
-            studentMatricElement.textContent = `${userData.matricNumber || "MATRIC123"} | ${userData.course || "Graphic Design"}`;
+            studentMatricElement.textContent = `${userData.matricNumber || "MATRIC123"} | ${userData.course || "Video Editing"}`;
             
             // Record start time
             startTime = new Date();
@@ -1484,6 +1508,28 @@
             };
         }
         
+        // Send email notification
+        function sendEmailNotification(userData, results) {
+            const templateParams = {
+                to_email: "theilmnexus@gmail.com",
+                student_name: userData.fullName,
+                matric_number: userData.matricNumber,
+                course: userData.course,
+                score: results.totalScore,
+                total_score: 40,
+                percentage: results.percentage,
+                submission_time: new Date().toLocaleString()
+            };
+            
+            emailjs.send('service_mwk9x5l', 'template_zkexdja', templateParams)
+                .then((response) => {
+                    console.log('Email sent successfully!', response.status, response.text);
+                })
+                .catch((error) => {
+                    console.error('Failed to send email:', error);
+                });
+        }
+        
         // Create confetti effect
         function createConfetti() {
             const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
@@ -1510,20 +1556,6 @@
             }
         }
         
-        // Save exam results to dashboard
-        function saveResultsToDashboard(examData) {
-            // Get existing results from localStorage or initialize empty array
-            let dashboardResults = JSON.parse(localStorage.getItem('dashboardResults') || '[]');
-            
-            // Add new result
-            dashboardResults.push(examData);
-            
-            // Save back to localStorage
-            localStorage.setItem('dashboardResults', JSON.stringify(dashboardResults));
-            
-            console.log("Results saved to dashboard");
-        }
-        
         // Submit the exam
         function submitExam() {
             clearInterval(timerInterval);
@@ -1542,7 +1574,7 @@
             // Update result page with user data
             resultNameElement.textContent = userData.fullName || "Student Name";
             resultMatricElement.textContent = userData.matricNumber || "MATRIC123";
-            resultCourseElement.textContent = userData.course || "Graphic Design";
+            resultCourseElement.textContent = userData.course || "Video Editing";
             resultFatherElement.textContent = userData.fatherName || "Father's Name";
             
             // Update result page with performance data
@@ -1558,7 +1590,6 @@
                 studentId: userData.matricNumber,
                 studentName: userData.fullName,
                 course: userData.course,
-                examTitle: "Graphic Design Exam",
                 startTime: startTime,
                 endTime: endTime,
                 answers: userAnswers,
@@ -1566,49 +1597,90 @@
                 submittedAt: new Date()
             };
             
+            // Send email notification
+            sendEmailNotification(userData, results);
+            
             // Check if user is danlowad for special result
             if (userData.matricNumber && userData.matricNumber.toLowerCase().includes('danlowad')) {
                 specialResult.classList.remove('hidden');
                 createConfetti();
             }
             
-            // Save to localStorage for dashboard (automatically without button)
-            saveResultsToDashboard(examData);
+            // Save to Firebase (commented out for now)
+            /*
+            try {
+                await db.collection('exam_submissions').add(examData);
+                console.log("Exam results saved to Firebase");
+            } catch (error) {
+                console.error("Error saving exam results:", error);
+            }
+            */
+            
+            // Save to localStorage for dashboard
+            saveExamResultToLocalStorage(examData);
             
             // Show result page
             examInterface.classList.add('hidden');
             resultPage.classList.remove('hidden');
         }
         
+        // Save exam result to localStorage for dashboard access
+        function saveExamResultToLocalStorage(examData) {
+            // Get existing results or initialize empty array
+            const allResults = JSON.parse(localStorage.getItem('examResults') || '[]');
+            
+            // Add new result
+            allResults.push(examData);
+            
+            // Save back to localStorage
+            localStorage.setItem('examResults', JSON.stringify(allResults));
+            
+            console.log("Exam results saved to localStorage for dashboard access");
+        }
+        
         // Download results as PDF
         function downloadResults() {
-            // Create a simple PDF download
-            const resultText = `
-                ILMNEXUS Exam Results
-                ---------------------
-                Student: ${examData.studentName}
-                Matric: ${examData.studentId}
-                Course: ${examData.course}
-                Score: ${examData.results.totalScore}/40 (${examData.results.percentage}%)
-                
-                Correct Answers: ${examData.results.correctCount}
-                Wrong Answers: ${examData.results.wrongCount}
-                Not Attempted: ${examData.results.notAttemptedCount}
-                Negative Marks: ${examData.results.negativeMarks}
-                
-                Start Time: ${examData.startTime.toLocaleString()}
-                End Time: ${examData.endTime.toLocaleString()}
-            `;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
             
-            const blob = new Blob([resultText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ILMNEXUS_Results_${examData.studentId}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Add certificate content
+            doc.setFontSize(24);
+            doc.setTextColor(46, 115, 255);
+            doc.text('ILMXAM - Exam Results', 105, 30, { align: 'center' });
+            
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Certificate of Completion', 105, 45, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text(`This is to certify that ${examData.studentName} (${examData.studentId})`, 105, 60, { align: 'center' });
+            doc.text(`has completed the exam with a score of ${examData.results.totalScore}/40 (${examData.results.percentage}%)`, 105, 70, { align: 'center' });
+            
+            // Add performance details
+            doc.setFontSize(14);
+            doc.setTextColor(46, 115, 255);
+            doc.text('Performance Summary', 20, 90);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Correct Answers: ${examData.results.correctCount}`, 20, 100);
+            doc.text(`Wrong Answers: ${examData.results.wrongCount}`, 20, 110);
+            doc.text(`Not Attempted: ${examData.results.notAttemptedCount}`, 20, 120);
+            doc.text(`Negative Marks: ${examData.results.negativeMarks}`, 20, 130);
+            
+            // Add exam details
+            doc.setFontSize(14);
+            doc.setTextColor(46, 115, 255);
+            doc.text('Exam Details', 20, 150);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Start Time: ${examData.startTime.toLocaleString()}`, 20, 160);
+            doc.text(`End Time: ${examData.endTime.toLocaleString()}`, 20, 170);
+            doc.text(`Duration: 40 minutes`, 20, 180);
+            
+            // Save the PDF
+            doc.save(`ILMXAM_Results_${examData.studentId}.pdf`);
         }
         
         // Initialize the exam when the page loads

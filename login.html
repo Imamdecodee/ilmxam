@@ -341,8 +341,8 @@
         const validMatricNumbers = [
             "ILM/VIE/001/25", "ILM/002/VIE/25", "VIE/ILM/003/25", "ILM/004/25/VIE", "005/ILM/VIE/25",
             "ILM/VIE/006/25", "VIE/007/25/ILM", "ILM/25/VIE/008", "009/VIE/25/ILM", "ILM/010/VIE25",
-            "ILM2024011", "ILM2024012", "ILM2024013", "ILM2024014", "ILM2024015",
-            "ILM2024016", "ILM2024017", "ILM2024018", "ILM2024019", "ILM2024020",
+            "ILM/GRA/011/25", "ILM/012/GRA/25", "GRA/ILM/013/25", "ILM/014/25/GRA", "015/ILM/GRA/25",
+            "ILM/GRA016/25", "GRA/017/25/ILM", "ILM/25/GRA/018", "019/GRA/25/ILM", "ILM/020/GRA25",
             "ILM2024021", "ILM2024022", "ILM2024023", "ILM2024024", "ILM2024025",
             "ILM2024026", "ILM2024027", "ILM2024028", "ILM2024029", "ILM2024030"
         ];
@@ -397,7 +397,7 @@
             const course = document.getElementById('course').value;
             
             // Check if it's after 9:00 PM
-            if (isAfter7PM()) {
+            if (isAfter9PM()) {
                 showToast('Login is not allowed after 7:00 PM. Please try again tomorrow.');
                 return false;
             }
@@ -419,24 +419,24 @@
                 showToast('This matric number has already been used for maximum login attempts (2).');
                 return false;
             }
+                 
+   // Check matric number and course compatibility
+            const hasGRA = matricNumber.toUpperCase().includes('GRA');
+            const isGraphicsDesigng = course.toLowerCase().includes('Graphics Design');
             
-            // Check matric number and course compatibility
-            const hasVIE = matricNumber.toUpperCase().includes('VIE');
-            const isVideoEditing = course.toLowerCase().includes('video editing');
-            
-            if (isVideoEditing && !hasVIE) {
-                showToast('Video Editing course requires a matric number containing "VIE".');
+            if (isGraphicsDesigngg && !hasGRA) {
+                showToast('Graphics Designg course requires a matric number containing "GRA".');
                 return false;
             }
             
-            if (!isVideoEditing && hasVIE) {
-                showToast('Your matric number is only valid for Video Editing course.');
+            if (!isGraphicsDesigng && hasGRA) {
+                showToast('Your matric number is only valid for Graphics Designg course.');
                 return false;
             }
             
             return true;
         };
-        
+
         // Simulate Firebase authentication (replace with actual implementation)
         const authenticateUser = async (matricNumber, fullName, course) => {
             // Show loading state
