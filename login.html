@@ -232,7 +232,7 @@
             }
             
             h1 {
-                font-size: 20px;
+                fontSize: 20px;
             }
             
             .login-container {
@@ -340,6 +340,8 @@
             <p><strong>Note:</strong> Graphic Design course requires matric numbers containing "GRA"</p>
             <p><strong>Admin Access:</strong> Matric numbers containing "admin" can login anytime</p>
             <p>Each matric number can only be used twice maximum</p>
+            <p><strong>First login:</strong> Redirects to exam instructions</p>
+            <p><strong>Second login:</strong> Redirects directly to course exam page</p>
             <p>Exam period is strictly from 5:00 PM to 7:00 PM only</p>
             <p>Contact administrator if you encounter any issues.</p>
         </div>
@@ -376,6 +378,15 @@
             "ILM2024026", "ILM2024027", "ILM2024028", "ILM2024029", "ILM2024030",
             "ILM/ADMIN/001"  // Added admin matric number
         ];
+
+        // Course to exam page mapping
+        const courseExamPages = {
+            "Video Editing": "videoexam.html",
+            "Web Development": "webexam.html", 
+            "Data Science": "dataexam.html",
+            "Graphic Design": "graphicexam.html",
+            "Digital Marketing": "marketingexam.html"
+        };
         
         // Show toast message
         const showToast = (message, isError = true) => {
@@ -427,6 +438,28 @@
             const loginData = JSON.parse(localStorage.getItem('loginAttempts') || '{}');
             loginData[matricNumber] = (loginData[matricNumber] || 0) + 1;
             localStorage.setItem('loginAttempts', JSON.stringify(loginData));
+            return loginData[matricNumber];
+        };
+        
+        // Get redirect URL based on login count and course
+        const getRedirectUrl = (matricNumber, course, loginCount) => {
+            // For admin, always go to instructions
+            if (isAdminMatric(matricNumber)) {
+                return 'examinst.html';
+            }
+            
+            // First login: go to instructions
+            if (loginCount === 1) {
+                return 'examinst.html';
+            }
+            
+            // Second login: go to course-specific exam page
+            if (loginCount === 2) {
+                return courseExamPages[course] || 'examinst.html';
+            }
+            
+            // Fallback to instructions
+            return 'examinst.html';
         };
         
         // Validate form inputs with new rules
@@ -512,12 +545,16 @@
                 const result = await authenticateUser(matricNumber, fullName, course);
                 
                 if (result.success) {
+                    // Get current login count before updating
+                    const currentLoginCount = getLoginCount(matricNumber);
+                    
                     // Update login count only for non-admin users
+                    let newLoginCount = currentLoginCount;
                     if (!isAdminMatric(matricNumber)) {
-                        updateLoginCount(matricNumber);
+                        newLoginCount = updateLoginCount(matricNumber);
                     }
                     
-                    showToast('Login successful! Redirecting to exam...', false);
+                    showToast('Login successful! Redirecting...', false);
                     
                     // Store user data in session storage
                     sessionStorage.setItem('user', JSON.stringify({
@@ -525,12 +562,16 @@
                         fullName,
                         course,
                         loginTime: new Date().toISOString(),
-                        isAdmin: isAdminMatric(matricNumber)
+                        isAdmin: isAdminMatric(matricNumber),
+                        loginCount: newLoginCount
                     }));
                     
-                    // Redirect to exam page after a short delay
+                    // Determine redirect URL based on login count
+                    const redirectUrl = getRedirectUrl(matricNumber, course, newLoginCount);
+                    
+                    // Redirect to appropriate page after a short delay
                     setTimeout(() => {
-                        window.location.href = 'examinst.html';
+                        window.location.href = redirectUrl;
                     }, 2000);
                 }
             } catch (error) {
@@ -567,16 +608,35 @@
                 timeInfo.style.color = '#856404';
             }
         };
+
+        // Update button state based on time and admin status
+        const updateButtonState = () => {
+            const matricNumber = document.getElementById('matricNumber').value.trim().toUpperCase();
+            const isAdmin = isAdminMatric(matricNumber);
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!isWithinExamPeriod() && !isAdmin) {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<span>Login Available 5:00 PM - 7:00 PM Only</span>';
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span id="btnText">Login to Exam</span><span id="btnLoading" class="loading" style="display: none;"></span>';
+            }
+        };
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             
             // Add event listener to matric number field to update time info when typing
-            document.getElementById('matricNumber').addEventListener('input', updateTimeInfo);
+            document.getElementById('matricNumber').addEventListener('input', () => {
+                updateTimeInfo();
+                updateButtonState();
+            });
             
-            // Update time info
+            // Update time info and button state
             updateTimeInfo();
+            updateButtonState();
             
             // Check if user is already logged in
             const userData = sessionStorage.getItem('user');
@@ -587,15 +647,11 @@
                 document.getElementById('course').value = user.course;
             }
             
-            // Disable login if it's outside exam hours for non-admin users
-            const matricNumber = document.getElementById('matricNumber').value.trim().toUpperCase();
-            if (!isWithinExamPeriod() && !isAdminMatric(matricNumber)) {
-                document.getElementById('loginBtn').disabled = true;
-                document.getElementById('loginBtn').innerHTML = '<span>Login Available 5:00 PM - 7:00 PM Only</span>';
-            }
-            
             // Update time info every minute
-            setInterval(updateTimeInfo, 60000);
+            setInterval(() => {
+                updateTimeInfo();
+                updateButtonState();
+            }, 60000);
         });
     </script>
 </body>
