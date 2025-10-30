@@ -268,6 +268,17 @@
             font-size: 14px;
             color: #856404;
         }
+        
+        .admin-time-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #155724;
+        }
     </style>
 </head>
 <body>
@@ -327,6 +338,7 @@
                 <li>Course: The course you are taking the exam for</li>
             </ul>
             <p><strong>Note:</strong> Graphic Design course requires matric numbers containing "GRA"</p>
+            <p><strong>Admin Access:</strong> Matric numbers containing "admin" can login anytime</p>
             <p>Each matric number can only be used twice maximum</p>
             <p>Exam period is strictly from 5:00 PM to 7:00 PM only</p>
             <p>Contact administrator if you encounter any issues.</p>
@@ -361,7 +373,8 @@
             "ILM/GRA/011/25", "ILM/012/GRA/25", "GRA/ILM/013/25", "ILM/014/25/GRA", "015/ILM/GRA/25",
             "ILM/GRA016/25", "GRA/017/25/ILM", "ILM/25/GRA/018", "019/GRA/25/ILM", "ILM/020/GRA25",
             "ILM2024021", "ILM2024022", "ILM2024023", "ILM2024024", "ILM2024025",
-            "ILM2024026", "ILM2024027", "ILM2024028", "ILM2024029", "ILM2024030"
+            "ILM2024026", "ILM2024027", "ILM2024028", "ILM2024029", "ILM2024030",
+            "ILM/ADMIN/001"  // Added admin matric number
         ];
         
         // Show toast message
@@ -398,6 +411,11 @@
             return currentTime >= 17 && currentTime < 19;
         };
         
+        // Check if matric number is admin
+        const isAdminMatric = (matricNumber) => {
+            return matricNumber.toLowerCase().includes('admin');
+        };
+        
         // Get login count for a matric number from localStorage
         const getLoginCount = (matricNumber) => {
             const loginData = JSON.parse(localStorage.getItem('loginAttempts') || '{}');
@@ -417,8 +435,11 @@
             const fullName = document.getElementById('fullName').value.trim();
             const course = document.getElementById('course').value;
             
-            // Check if it's within exam period (5pm to 7pm)
-            if (!isWithinExamPeriod()) {
+            // Check for admin access - if admin, bypass time restrictions
+            const isAdmin = isAdminMatric(matricNumber);
+            
+            // Check if it's within exam period (5pm to 7pm) - skip this check for admin
+            if (!isAdmin && !isWithinExamPeriod()) {
                 showToast('Exam login is only allowed between 5:00 PM and 7:00 PM.');
                 return false;
             }
@@ -429,14 +450,14 @@
             }
             
             // Check if matric number is valid
-            if (!validMatricNumbers.includes(matricNumber)) {
+            if (!validMatricNumbers.includes(matricNumber) && !isAdmin) {
                 showToast('Invalid matric number. Please check your credentials.');
                 return false;
             }
             
-            // Check login attempts (max 2 per matric number)
+            // Check login attempts (max 2 per matric number) - skip this check for admin
             const loginCount = getLoginCount(matricNumber);
-            if (loginCount >= 2) {
+            if (!isAdmin && loginCount >= 2) {
                 showToast('This matric number has already been used for maximum login attempts (2).');
                 return false;
             }
@@ -445,12 +466,12 @@
             const hasGRA = matricNumber.includes('GRA');
             const isGraphicDesign = course.toLowerCase().includes('graphic design');
             
-            if (isGraphicDesign && !hasGRA) {
+            if (isGraphicDesign && !hasGRA && !isAdmin) {
                 showToast('Graphic Design course requires a matric number containing "GRA".');
                 return false;
             }
             
-            if (!isGraphicDesign && hasGRA) {
+            if (!isGraphicDesign && hasGRA && !isAdmin) {
                 showToast('Your matric number is only valid for Graphic Design course.');
                 return false;
             }
@@ -468,7 +489,7 @@
             // Simulate API call
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    if (validMatricNumbers.includes(matricNumber.toUpperCase())) {
+                    if (validMatricNumbers.includes(matricNumber.toUpperCase()) || isAdminMatric(matricNumber)) {
                         resolve({ success: true });
                     } else {
                         reject(new Error('Invalid credentials'));
@@ -491,8 +512,10 @@
                 const result = await authenticateUser(matricNumber, fullName, course);
                 
                 if (result.success) {
-                    // Update login count
-                    updateLoginCount(matricNumber);
+                    // Update login count only for non-admin users
+                    if (!isAdminMatric(matricNumber)) {
+                        updateLoginCount(matricNumber);
+                    }
                     
                     showToast('Login successful! Redirecting to exam...', false);
                     
@@ -501,7 +524,8 @@
                         matricNumber,
                         fullName,
                         course,
-                        loginTime: new Date().toISOString()
+                        loginTime: new Date().toISOString(),
+                        isAdmin: isAdminMatric(matricNumber)
                     }));
                     
                     // Redirect to exam page after a short delay
@@ -523,19 +547,33 @@
         // Update time info display based on current time
         const updateTimeInfo = () => {
             const timeInfo = document.getElementById('timeInfo');
-            if (isWithinExamPeriod()) {
+            const matricNumber = document.getElementById('matricNumber').value.trim().toUpperCase();
+            const isAdmin = isAdminMatric(matricNumber);
+            
+            if (isAdmin) {
+                timeInfo.innerHTML = '<i class="fas fa-user-shield"></i> Admin access - Login available anytime';
+                timeInfo.className = 'admin-time-info';
+            } else if (isWithinExamPeriod()) {
                 timeInfo.innerHTML = '<i class="fas fa-check-circle"></i> Exam period is active (5:00 PM - 7:00 PM)';
+                timeInfo.className = 'time-info';
                 timeInfo.style.background = '#d4edda';
                 timeInfo.style.borderColor = '#c3e6cb';
                 timeInfo.style.color = '#155724';
             } else {
                 timeInfo.innerHTML = '<i class="fas fa-clock"></i> Exam login available only from 5:00 PM to 7:00 PM';
+                timeInfo.className = 'time-info';
+                timeInfo.style.background = '#fff3cd';
+                timeInfo.style.borderColor = '#ffeaa7';
+                timeInfo.style.color = '#856404';
             }
         };
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Add event listener to matric number field to update time info when typing
+            document.getElementById('matricNumber').addEventListener('input', updateTimeInfo);
             
             // Update time info
             updateTimeInfo();
@@ -549,8 +587,9 @@
                 document.getElementById('course').value = user.course;
             }
             
-            // Disable login if it's outside exam hours
-            if (!isWithinExamPeriod()) {
+            // Disable login if it's outside exam hours for non-admin users
+            const matricNumber = document.getElementById('matricNumber').value.trim().toUpperCase();
+            if (!isWithinExamPeriod() && !isAdminMatric(matricNumber)) {
                 document.getElementById('loginBtn').disabled = true;
                 document.getElementById('loginBtn').innerHTML = '<span>Login Available 5:00 PM - 7:00 PM Only</span>';
             }
