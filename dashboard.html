@@ -155,27 +155,27 @@
         
         <!-- Navigation -->
         <div class="flex-1 overflow-y-auto custom-scroll py-4">
-            <div class="nav-item active py-3 px-6 flex items-center cursor-pointer">
+            <div class="nav-item active py-3 px-6 flex items-center cursor-pointer" data-section="dashboard">
                 <i class="fas fa-home text-blue-primary mr-3"></i>
                 <span class="text-blue-primary font-medium">Dashboard</span>
             </div>
             
-            <div class="nav-item py-3 px-6 flex items-center cursor-pointer">
+            <div class="nav-item py-3 px-6 flex items-center cursor-pointer" data-section="exams">
                 <i class="fas fa-graduation-cap text-gray-600 mr-3"></i>
                 <span class="text-gray-600 font-medium">Exams</span>
             </div>
             
-            <div class="nav-item py-3 px-6 flex items-center cursor-pointer">
+            <div class="nav-item py-3 px-6 flex items-center cursor-pointer" data-section="students">
                 <i class="fas fa-users text-gray-600 mr-3"></i>
                 <span class="text-gray-600 font-medium">Students</span>
             </div>
             
-            <div class="nav-item py-3 px-6 flex items-center cursor-pointer">
+            <div class="nav-item py-3 px-6 flex items-center cursor-pointer" data-section="results">
                 <i class="fas fa-chart-bar text-gray-600 mr-3"></i>
                 <span class="text-gray-600 font-medium">Results</span>
             </div>
             
-            <div class="nav-item py-3 px-6 flex items-center cursor-pointer">
+            <div class="nav-item py-3 px-6 flex items-center cursor-pointer" data-section="settings">
                 <i class="fas fa-cog text-gray-600 mr-3"></i>
                 <span class="text-gray-600 font-medium">Settings</span>
             </div>
@@ -204,7 +204,7 @@
                 <button class="md:hidden mr-4 text-gray-600" id="menu-toggle">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
-                <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+                <h1 class="text-2xl font-bold text-gray-800" id="page-title">Admin Dashboard</h1>
             </div>
             
             <div class="flex items-center">
@@ -227,136 +227,453 @@
         </header>
         
         <!-- Dashboard content -->
-        <div class="p-6">
-            <!-- Stats overview -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-primary">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-gray-500">Total Exams</div>
-                            <div class="text-3xl font-bold mt-2" id="total-exams">0</div>
+        <div class="p-6" id="content-area">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section">
+                <!-- Stats overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-primary">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-gray-500">Total Exams</div>
+                                <div class="text-3xl font-bold mt-2" id="total-exams">0</div>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-light rounded-lg flex items-center justify-center">
+                                <i class="fas fa-graduation-cap text-blue-primary text-xl"></i>
+                            </div>
                         </div>
-                        <div class="w-12 h-12 bg-blue-light rounded-lg flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-blue-primary text-xl"></i>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-primary">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-gray-500">Active Students</div>
+                                <div class="text-3xl font-bold mt-2" id="total-students">0</div>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-light rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-orange-primary text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-gray-500">Completed Exams</div>
+                                <div class="text-3xl font-bold mt-2" id="completed-exams">0</div>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-gray-500">Avg. Score</div>
+                                <div class="text-3xl font-bold mt-2" id="average-score">0%</div>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-purple-500 text-xl"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-primary">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-gray-500">Active Students</div>
-                            <div class="text-3xl font-bold mt-2" id="total-students">0</div>
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Activity</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-2 border-b">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-blue-light rounded-full flex items-center justify-center text-blue-primary mr-3">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">New student registered</p>
+                                    <p class="text-sm text-gray-500">Sarah Johnson (ILM002)</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-500">2 hours ago</span>
                         </div>
-                        <div class="w-12 h-12 bg-orange-light rounded-lg flex items-center justify-center">
-                            <i class="fas fa-users text-orange-primary text-xl"></i>
+                        <div class="flex items-center justify-between py-2 border-b">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-500 mr-3">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Exam completed</p>
+                                    <p class="text-sm text-gray-500">John Smith scored 85% in JavaScript Fundamentals</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-500">5 hours ago</span>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-gray-500">Completed Exams</div>
-                            <div class="text-3xl font-bold mt-2" id="completed-exams">0</div>
-                        </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-gray-500">Avg. Score</div>
-                            <div class="text-3xl font-bold mt-2" id="average-score">0%</div>
-                        </div>
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-purple-500 text-xl"></i>
+                        <div class="flex items-center justify-between py-2">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-orange-light rounded-full flex items-center justify-center text-orange-primary mr-3">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">New exam created</p>
+                                    <p class="text-sm text-gray-500">Data Structures exam added to the system</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-500">1 day ago</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Results Section -->
-            <div class="bg-white rounded-xl shadow-sm p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800">Exam Results</h2>
-                    <div class="flex space-x-3">
-                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg flex items-center hover:bg-gray-200 transition-colors" id="filter-btn">
-                            <i class="fas fa-filter mr-2"></i> Filter
+            <!-- Exams Section -->
+            <div id="exams-section" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">All Exams</h2>
+                        <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="add-exam-btn">
+                            <i class="fas fa-plus mr-2"></i> Add Exam
                         </button>
-                        <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="export-results-btn">
-                            <i class="fas fa-download mr-2"></i> Export
-                        </button>
-                        <button class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-600 transition-colors" id="refresh-results-btn">
-                            <i class="fas fa-sync-alt mr-2"></i> Refresh
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-                    <div class="relative">
-                        <input type="text" placeholder="Search students..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent w-full md:w-80" id="results-search">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                     
-                    <div class="flex space-x-3">
-                        <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-filter">
-                            <option value="all">All Exams</option>
-                            <option value="JavaScript Fundamentals">JavaScript Fundamentals</option>
-                            <option value="Mathematics Advanced">Mathematics Advanced</option>
-                            <option value="Physics Theory">Physics Theory</option>
-                            <option value="Chemistry Basics">Chemistry Basics</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="exams-container">
+                        <!-- Exam cards will be loaded here -->
+                        <div class="col-span-full text-center py-8">
+                            <div class="flex justify-center">
+                                <div class="loading"></div>
+                            </div>
+                            <p class="mt-2">Loading exams...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Create Exam Section -->
+            <div id="create-exam-section" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Create New Exam</h2>
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg flex items-center hover:bg-gray-200 transition-colors" id="back-to-exams-btn">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Exams
+                        </button>
+                    </div>
+                    
+                    <form id="create-exam-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Exam Title</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-title" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-duration" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Passing Score (%)</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-passing-score" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Questions</label>
+                                <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-total-questions" required>
+                            </div>
+                        </div>
                         
-                        <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="results-sort">
-                            <option value="latest">Sort by: Latest</option>
-                            <option value="highest">Sort by: Highest Score</option>
-                            <option value="lowest">Sort by: Lowest Score</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="bg-gray-50 border-b">
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Student</th>
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Matric No.</th>
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Exam</th>
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Score</th>
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Status</th>
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Date</th>
-                                <th class="py-3 px-4 text-left font-medium text-gray-500">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="results-table-body">
-                            <tr class="border-b">
-                                <td colspan="7" class="py-8 text-center text-gray-500">
-                                    <div class="flex justify-center">
-                                        <div class="loading"></div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-description" rows="3"></textarea>
+                        </div>
+                        
+                        <!-- Questions section -->
+                        <div id="questions-container" class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Questions</h3>
+                            <div class="question-item bg-gray-50 p-4 rounded-lg mb-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium">Question 1</h4>
+                                    <button type="button" class="text-red-500 hover:text-red-700 remove-question" data-index="1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Question Text</label>
+                                    <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="2" placeholder="Enter question text"></textarea>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Option A</label>
+                                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option A">
                                     </div>
-                                    <p class="mt-2">Loading results...</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Option B</label>
+                                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option B">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Option C</label>
+                                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option C">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Option D</label>
+                                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option D">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Correct Answer</label>
+                                    <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent">
+                                        <option value="A">Option A</option>
+                                        <option value="B">Option B</option>
+                                        <option value="C">Option C</option>
+                                        <option value="D">Option D</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <button type="button" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex items-center hover:bg-gray-300 transition-colors" id="add-question-btn">
+                                <i class="fas fa-plus mr-2"></i> Add Question
+                            </button>
+                            
+                            <div class="flex space-x-3">
+                                <button type="submit" class="bg-blue-primary text-white px-4 py-2 rounded-lg hover:bg-blue-dark transition-colors">
+                                    Save Exam
+                                </button>
+                                <button type="button" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors" id="cancel-exam-btn">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                
-                <div class="mt-6 flex flex-col md:flex-row items-center justify-between hidden" id="pagination-controls">
-                    <div class="text-gray-500 mb-4 md:mb-0" id="pagination-info">
-                        Showing 0 results
+            </div>
+            
+            <!-- Students Section -->
+            <div id="students-section" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">All Students</h2>
+                        <div class="flex space-x-3">
+                            <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="add-student-btn">
+                                <i class="fas fa-plus mr-2"></i> Add Student
+                            </button>
+                            <button class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-600 transition-colors" id="refresh-students-btn">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
+                            </button>
+                        </div>
                     </div>
                     
-                    <div class="flex space-x-2" id="pagination-buttons">
-                        <button class="w-10 h-10 flex items-center justify-center border rounded-lg bg-blue-primary text-white" id="prev-page">
-                            &laquo;
-                        </button>
-                        <button class="w-10 h-10 flex items-center justify-center border rounded-lg text-gray-700 hover:bg-gray-100" id="next-page">
-                            &raquo;
-                        </button>
+                    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                        <div class="relative">
+                            <input type="text" placeholder="Search students..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent w-full md:w-80" id="students-search">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="students-filter">
+                                <option value="all">All Students</option>
+                                <option value="graduated">Graduated</option>
+                                <option value="active">Active</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 border-b">
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Name</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Matric No.</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Phone</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Course</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Age</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Certificate ID</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Status</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table-body">
+                                <tr class="border-b">
+                                    <td colspan="8" class="py-8 text-center text-gray-500">
+                                        <div class="flex justify-center">
+                                            <div class="loading"></div>
+                                        </div>
+                                        <p class="mt-2">Loading students...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="results-section" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Exam Results</h2>
+                        <div class="flex space-x-3">
+                            <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg flex items-center hover:bg-gray-200 transition-colors" id="filter-btn">
+                                <i class="fas fa-filter mr-2"></i> Filter
+                            </button>
+                            <button class="bg-blue-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-dark transition-colors" id="export-results-btn">
+                                <i class="fas fa-download mr-2"></i> Export
+                            </button>
+                            <button class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-600 transition-colors" id="refresh-results-btn">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                        <div class="relative">
+                            <input type="text" placeholder="Search students..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent w-full md:w-80" id="results-search">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="exam-filter">
+                                <option value="all">All Exams</option>
+                                <option value="JavaScript Fundamentals">JavaScript Fundamentals</option>
+                                <option value="Mathematics Advanced">Mathematics Advanced</option>
+                                <option value="Physics Theory">Physics Theory</option>
+                                <option value="Chemistry Basics">Chemistry Basics</option>
+                            </select>
+                            
+                            <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="results-sort">
+                                <option value="latest">Sort by: Latest</option>
+                                <option value="highest">Sort by: Highest Score</option>
+                                <option value="lowest">Sort by: Lowest Score</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 border-b">
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Student</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Matric No.</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Exam</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Score</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Status</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Date</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-table-body">
+                                <tr class="border-b">
+                                    <td colspan="7" class="py-8 text-center text-gray-500">
+                                        <div class="flex justify-center">
+                                            <div class="loading"></div>
+                                        </div>
+                                        <p class="mt-2">Loading results...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6 flex flex-col md:flex-row items-center justify-between hidden" id="pagination-controls">
+                        <div class="text-gray-500 mb-4 md:mb-0" id="pagination-info">
+                            Showing 0 results
+                        </div>
+                        
+                        <div class="flex space-x-2" id="pagination-buttons">
+                            <button class="w-10 h-10 flex items-center justify-center border rounded-lg bg-blue-primary text-white" id="prev-page">
+                                &laquo;
+                            </button>
+                            <button class="w-10 h-10 flex items-center justify-center border rounded-lg text-gray-700 hover:bg-gray-100" id="next-page">
+                                &raquo;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Section -->
+            <div id="settings-section" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Settings</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Add Student Form -->
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Add New Student</h3>
+                            <form id="add-student-form">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-name" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Matric Number</label>
+                                        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-matric" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                        <input type="tel" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-phone" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                                        <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-age" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-course" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-email" required>
+                                </div>
+                                
+                                <div class="flex items-center mb-4">
+                                    <input type="checkbox" class="h-4 w-4 text-blue-primary focus:ring-blue-primary border-gray-300 rounded" id="student-graduated">
+                                    <label class="ml-2 block text-sm text-gray-700">Has Graduated</label>
+                                </div>
+                                
+                                <div class="mb-4" id="certificate-field" style="display: none;">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Certificate ID</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" id="student-certificate">
+                                </div>
+                                
+                                <button type="submit" class="w-full bg-blue-primary text-white py-2 rounded-lg hover:bg-blue-dark transition-colors">
+                                    Add Student
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- System Settings -->
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">System Settings</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Institution Name</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" value="ILMNEXUS University">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Passing Score (%)</label>
+                                    <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" value="40">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Exam Duration (minutes)</label>
+                                    <input type="number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" value="60">
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-blue-primary focus:ring-blue-primary border-gray-300 rounded" checked>
+                                    <label class="ml-2 block text-sm text-gray-700">Enable Negative Marking</label>
+                                </div>
+                                
+                                <button class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors mt-4">
+                                    Save Settings
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -367,6 +684,65 @@
     <div class="fixed bottom-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center hidden" id="toast">
         <i class="fas fa-check-circle mr-3" id="toast-icon"></i>
         <span id="toast-message"></span>
+    </div>
+
+    <!-- Modal for Exam Details -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" id="exam-modal">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800" id="modal-exam-title">Exam Details</h3>
+                    <button class="text-gray-500 hover:text-gray-700" id="close-exam-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Exam Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Exam Title</p>
+                            <p class="font-medium" id="modal-exam-name">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Questions</p>
+                            <p class="font-medium" id="modal-exam-questions">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Duration</p>
+                            <p class="font-medium" id="modal-exam-duration">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Passing Score</p>
+                            <p class="font-medium" id="modal-exam-passing">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Students Who Attempted This Exam</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 border-b">
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Student Name</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Matric No.</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Score</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Status</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-attempts-table">
+                                <tr>
+                                    <td colspan="5" class="py-4 text-center text-gray-500">No attempts yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -394,11 +770,64 @@
         const completedExamsElement = document.getElementById('completed-exams');
         const averageScoreElement = document.getElementById('average-score');
         
+        // Section management
+        const pageTitle = document.getElementById('page-title');
+        const contentArea = document.getElementById('content-area');
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = {
+            dashboard: document.getElementById('dashboard-section'),
+            exams: document.getElementById('exams-section'),
+            createExam: document.getElementById('create-exam-section'),
+            students: document.getElementById('students-section'),
+            results: document.getElementById('results-section'),
+            settings: document.getElementById('settings-section')
+        };
+        
+        // Exams section elements
+        const examsContainer = document.getElementById('exams-container');
+        const addExamBtn = document.getElementById('add-exam-btn');
+        const backToExamsBtn = document.getElementById('back-to-exams-btn');
+        
+        // Create exam section elements
+        const createExamForm = document.getElementById('create-exam-form');
+        const addQuestionBtn = document.getElementById('add-question-btn');
+        const questionsContainer = document.getElementById('questions-container');
+        const cancelExamBtn = document.getElementById('cancel-exam-btn');
+        
+        // Students section elements
+        const studentsTableBody = document.getElementById('students-table-body');
+        const addStudentBtn = document.getElementById('add-student-btn');
+        const refreshStudentsBtn = document.getElementById('refresh-students-btn');
+        const studentsSearch = document.getElementById('students-search');
+        const studentsFilter = document.getElementById('students-filter');
+        
+        // Settings section elements
+        const addStudentForm = document.getElementById('add-student-form');
+        const studentGraduatedCheckbox = document.getElementById('student-graduated');
+        const certificateField = document.getElementById('certificate-field');
+        
+        // Modal elements
+        const examModal = document.getElementById('exam-modal');
+        const closeExamModal = document.getElementById('close-exam-modal');
+        const modalExamTitle = document.getElementById('modal-exam-title');
+        const modalExamName = document.getElementById('modal-exam-name');
+        const modalExamQuestions = document.getElementById('modal-exam-questions');
+        const modalExamDuration = document.getElementById('modal-exam-duration');
+        const modalExamPassing = document.getElementById('modal-exam-passing');
+        const modalAttemptsTable = document.getElementById('modal-attempts-table');
+        
         // Exam results data
         let examResults = [];
         let filteredResults = [];
         let currentPage = 1;
         const resultsPerPage = 10;
+        
+        // Students data
+        let students = [];
+        let filteredStudents = [];
+        
+        // Exams data
+        let exams = [];
         
         // Toggle sidebar on mobile
         menuToggle.addEventListener('click', () => {
@@ -468,6 +897,54 @@
             }
         }
         
+        // Switch between sections
+        function switchSection(sectionName) {
+            // Hide all sections
+            Object.values(sections).forEach(section => {
+                if (section) section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            if (sections[sectionName]) {
+                sections[sectionName].classList.remove('hidden');
+            }
+            
+            // Update page title
+            pageTitle.textContent = getSectionTitle(sectionName);
+            
+            // Update active nav item
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === sectionName) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Load section-specific data
+            if (sectionName === 'exams') {
+                fetchExams();
+            } else if (sectionName === 'students') {
+                fetchStudents();
+            } else if (sectionName === 'results') {
+                // Results section is the same as dashboard results
+                // We can just show the results table
+                filterAndRenderResults();
+            }
+        }
+        
+        // Get section title
+        function getSectionTitle(sectionName) {
+            const titles = {
+                dashboard: 'Admin Dashboard',
+                exams: 'Exam Management',
+                createExam: 'Create New Exam',
+                students: 'Student Management',
+                results: 'Exam Results',
+                settings: 'System Settings'
+            };
+            return titles[sectionName] || 'Admin Dashboard';
+        }
+        
         // Fetch exam results from Firebase
         async function fetchExamResults() {
             try {
@@ -482,20 +959,94 @@
                     </tr>
                 `;
                 
-                const querySnapshot = await db.collection('exam_results').get();
-                examResults = [];
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    examResults.push({
-                        id: doc.id,
-                        ...data,
-                        // Ensure we have a proper date object
-                        submittedAt: data.submittedAt ? data.submittedAt.toDate() : new Date(),
-                        // Calculate percentage if not already present
-                        percentage: data.results?.percentage || 0
-                    });
-                });
+                // In a real implementation, you would fetch from Firestore
+                // For now, we'll use mock data
+                examResults = [
+                    {
+                        id: '1',
+                        studentName: 'John Smith',
+                        studentId: 'ILM001',
+                        examTitle: 'JavaScript Fundamentals',
+                        submittedAt: new Date('2023-10-15'),
+                        results: {
+                            percentage: 85,
+                            correctCount: 17,
+                            wrongCount: 3,
+                            notAttemptedCount: 0,
+                            negativeMarks: 1.5
+                        }
+                    },
+                    {
+                        id: '2',
+                        studentName: 'Sarah Johnson',
+                        studentId: 'ILM002',
+                        examTitle: 'Mathematics Advanced',
+                        submittedAt: new Date('2023-10-18'),
+                        results: {
+                            percentage: 72,
+                            correctCount: 18,
+                            wrongCount: 5,
+                            notAttemptedCount: 2,
+                            negativeMarks: 2.5
+                        }
+                    },
+                    {
+                        id: '3',
+                        studentName: 'Michael Brown',
+                        studentId: 'ILM003',
+                        examTitle: 'Physics Theory',
+                        submittedAt: new Date('2023-10-20'),
+                        results: {
+                            percentage: 65,
+                            correctCount: 19.5,
+                            wrongCount: 7,
+                            notAttemptedCount: 3.5,
+                            negativeMarks: 3.5
+                        }
+                    },
+                    {
+                        id: '4',
+                        studentName: 'Emily Davis',
+                        studentId: 'ILM004',
+                        examTitle: 'Chemistry Basics',
+                        submittedAt: new Date('2023-10-22'),
+                        results: {
+                            percentage: 58,
+                            correctCount: 14.5,
+                            wrongCount: 6,
+                            notAttemptedCount: 1.5,
+                            negativeMarks: 3
+                        }
+                    },
+                    {
+                        id: '5',
+                        studentName: 'David Wilson',
+                        studentId: 'ILM005',
+                        examTitle: 'JavaScript Fundamentals',
+                        submittedAt: new Date('2023-10-25'),
+                        results: {
+                            percentage: 92,
+                            correctCount: 18.4,
+                            wrongCount: 1,
+                            notAttemptedCount: 0.6,
+                            negativeMarks: 0.5
+                        }
+                    },
+                    {
+                        id: '6',
+                        studentName: 'Lisa Anderson',
+                        studentId: 'ILM006',
+                        examTitle: 'Mathematics Advanced',
+                        submittedAt: new Date('2023-10-28'),
+                        results: {
+                            percentage: 45,
+                            correctCount: 11.25,
+                            wrongCount: 10,
+                            notAttemptedCount: 3.75,
+                            negativeMarks: 5
+                        }
+                    }
+                ];
                 
                 // Update stats
                 updateStats(examResults);
@@ -762,6 +1313,622 @@
             }
         });
         
+        // Fetch exams from Firebase
+        async function fetchExams() {
+            try {
+                examsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <div class="flex justify-center">
+                            <div class="loading"></div>
+                        </div>
+                        <p class="mt-2">Loading exams...</p>
+                    </div>
+                `;
+                
+                // In a real implementation, you would fetch from Firestore
+                // For now, we'll use mock data
+                exams = [
+                    {
+                        id: '1',
+                        title: 'JavaScript Fundamentals',
+                        description: 'Test your knowledge of JavaScript basics',
+                        totalQuestions: 20,
+                        duration: 60,
+                        passingScore: 40,
+                        attempts: 45
+                    },
+                    {
+                        id: '2',
+                        title: 'Mathematics Advanced',
+                        description: 'Advanced mathematics concepts and problem solving',
+                        totalQuestions: 25,
+                        duration: 90,
+                        passingScore: 50,
+                        attempts: 32
+                    },
+                    {
+                        id: '3',
+                        title: 'Physics Theory',
+                        description: 'Fundamental physics concepts and theories',
+                        totalQuestions: 30,
+                        duration: 75,
+                        passingScore: 45,
+                        attempts: 28
+                    },
+                    {
+                        id: '4',
+                        title: 'Chemistry Basics',
+                        description: 'Introduction to chemistry principles and elements',
+                        totalQuestions: 22,
+                        duration: 60,
+                        passingScore: 40,
+                        attempts: 19
+                    },
+                    {
+                        id: '5',
+                        title: 'Data Structures',
+                        description: 'Understanding of common data structures and algorithms',
+                        totalQuestions: 25,
+                        duration: 80,
+                        passingScore: 50,
+                        attempts: 36
+                    },
+                    {
+                        id: '6',
+                        title: 'Web Development',
+                        description: 'HTML, CSS, and JavaScript for web development',
+                        totalQuestions: 28,
+                        duration: 70,
+                        passingScore: 45,
+                        attempts: 41
+                    }
+                ];
+                
+                renderExams();
+                
+                showToast('Exams loaded successfully!');
+            } catch (error) {
+                console.error('Error fetching exams:', error);
+                examsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                        <p>Error loading exams. Please try again.</p>
+                        <button class="mt-2 px-4 py-2 bg-blue-primary text-white rounded-lg" onclick="fetchExams()">
+                            Retry
+                        </button>
+                    </div>
+                `;
+                showToast('Error loading exams: ' + error.message, false);
+            }
+        }
+        
+        // Render exams as cards
+        function renderExams() {
+            if (exams.length === 0) {
+                examsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <i class="fas fa-graduation-cap text-3xl mb-2"></i>
+                        <p>No exams available</p>
+                        <button class="mt-2 px-4 py-2 bg-blue-primary text-white rounded-lg" id="create-first-exam">
+                            Create First Exam
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            examsContainer.innerHTML = exams.map(exam => `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">${exam.title}</h3>
+                            <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">${exam.attempts} attempts</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">${exam.description}</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500">Questions</p>
+                                <p class="font-medium">${exam.totalQuestions}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Duration</p>
+                                <p class="font-medium">${exam.duration} min</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Passing Score</p>
+                                <p class="font-medium">${exam.passingScore}%</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Status</p>
+                                <p class="font-medium text-green-600">Active</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-primary text-white py-2 rounded-lg text-sm hover:bg-blue-dark transition-colors view-exam-btn" data-id="${exam.id}">
+                                View Details
+                            </button>
+                            <button class="bg-gray-100 text-gray-700 p-2 rounded-lg hover:bg-gray-200 transition-colors edit-exam-btn" data-id="${exam.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add event listeners to exam buttons
+            document.querySelectorAll('.view-exam-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const examId = button.getAttribute('data-id');
+                    viewExamDetails(examId);
+                });
+            });
+            
+            document.querySelectorAll('.edit-exam-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const examId = button.getAttribute('data-id');
+                    editExam(examId);
+                });
+            });
+        }
+        
+        // View exam details in modal
+        function viewExamDetails(examId) {
+            const exam = exams.find(e => e.id === examId);
+            if (!exam) return;
+            
+            // Update modal content
+            modalExamTitle.textContent = exam.title;
+            modalExamName.textContent = exam.title;
+            modalExamQuestions.textContent = exam.totalQuestions;
+            modalExamDuration.textContent = `${exam.duration} minutes`;
+            modalExamPassing.textContent = `${exam.passingScore}%`;
+            
+            // Find attempts for this exam
+            const examAttempts = examResults.filter(result => result.examTitle === exam.title);
+            
+            // Update attempts table
+            if (examAttempts.length === 0) {
+                modalAttemptsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-4 text-center text-gray-500">No attempts yet</td>
+                    </tr>
+                `;
+            } else {
+                modalAttemptsTable.innerHTML = examAttempts.map(attempt => {
+                    const score = parseFloat(attempt.results?.percentage || 0);
+                    const status = getStatus(score);
+                    const statusColor = getStatusColor(status);
+                    
+                    return `
+                        <tr class="border-b">
+                            <td class="py-3 px-4">${attempt.studentName || 'N/A'}</td>
+                            <td class="py-3 px-4">${attempt.studentId || 'N/A'}</td>
+                            <td class="py-3 px-4">${score}%</td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 ${statusColor} rounded-full text-xs">
+                                    ${status}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">${formatDate(attempt.submittedAt)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            // Show modal
+            examModal.classList.remove('hidden');
+        }
+        
+        // Edit exam
+        function editExam(examId) {
+            // In a real implementation, you would open an edit form
+            showToast(`Edit functionality for exam ${examId} would open here`);
+        }
+        
+        // Fetch students from Firebase
+        async function fetchStudents() {
+            try {
+                studentsTableBody.innerHTML = `
+                    <tr class="border-b">
+                        <td colspan="8" class="py-8 text-center text-gray-500">
+                            <div class="flex justify-center">
+                                <div class="loading"></div>
+                            </div>
+                            <p class="mt-2">Loading students...</p>
+                        </td>
+                    </tr>
+                `;
+                
+                // In a real implementation, you would fetch from Firestore
+                // For now, we'll use mock data
+                students = [
+                    {
+                        id: '1',
+                        name: 'John Smith',
+                        matricNumber: 'ILM001',
+                        phone: '+1 (555) 123-4567',
+                        course: 'Computer Science',
+                        age: 22,
+                        email: 'john.smith@example.com',
+                        graduated: true,
+                        certificateId: 'CERT001'
+                    },
+                    {
+                        id: '2',
+                        name: 'Sarah Johnson',
+                        matricNumber: 'ILM002',
+                        phone: '+1 (555) 234-5678',
+                        course: 'Mathematics',
+                        age: 21,
+                        email: 'sarah.johnson@example.com',
+                        graduated: false,
+                        certificateId: ''
+                    },
+                    {
+                        id: '3',
+                        name: 'Michael Brown',
+                        matricNumber: 'ILM003',
+                        phone: '+1 (555) 345-6789',
+                        course: 'Physics',
+                        age: 23,
+                        email: 'michael.brown@example.com',
+                        graduated: true,
+                        certificateId: 'CERT003'
+                    },
+                    {
+                        id: '4',
+                        name: 'Emily Davis',
+                        matricNumber: 'ILM004',
+                        phone: '+1 (555) 456-7890',
+                        course: 'Chemistry',
+                        age: 20,
+                        email: 'emily.davis@example.com',
+                        graduated: false,
+                        certificateId: ''
+                    },
+                    {
+                        id: '5',
+                        name: 'David Wilson',
+                        matricNumber: 'ILM005',
+                        phone: '+1 (555) 567-8901',
+                        course: 'Engineering',
+                        age: 24,
+                        email: 'david.wilson@example.com',
+                        graduated: true,
+                        certificateId: 'CERT005'
+                    }
+                ];
+                
+                filterAndRenderStudents();
+                
+                showToast('Students loaded successfully!');
+            } catch (error) {
+                console.error('Error fetching students:', error);
+                studentsTableBody.innerHTML = `
+                    <tr class="border-b">
+                        <td colspan="8" class="py-8 text-center text-red-500">
+                            <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                            <p>Error loading students. Please try again.</p>
+                            <button class="mt-2 px-4 py-2 bg-blue-primary text-white rounded-lg" onclick="fetchStudents()">
+                                Retry
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                showToast('Error loading students: ' + error.message, false);
+            }
+        }
+        
+        // Filter and render students based on current filters
+        function filterAndRenderStudents() {
+            const searchTerm = studentsSearch.value.toLowerCase();
+            const filterValue = studentsFilter.value;
+            
+            // Apply filters
+            filteredStudents = students.filter(student => {
+                const matchesSearch = 
+                    student.name?.toLowerCase().includes(searchTerm) ||
+                    student.matricNumber?.toLowerCase().includes(searchTerm) ||
+                    student.course?.toLowerCase().includes(searchTerm);
+                
+                let matchesFilter = true;
+                if (filterValue === 'graduated') {
+                    matchesFilter = student.graduated === true;
+                } else if (filterValue === 'active') {
+                    matchesFilter = student.graduated === false;
+                }
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderStudentsTable();
+        }
+        
+        // Render students table
+        function renderStudentsTable() {
+            if (filteredStudents.length === 0) {
+                studentsTableBody.innerHTML = `
+                    <tr class="border-b">
+                        <td colspan="8" class="py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-3xl mb-2"></i>
+                            <p>No students found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            studentsTableBody.innerHTML = filteredStudents.map(student => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 px-4">${student.name}</td>
+                    <td class="py-3 px-4">${student.matricNumber}</td>
+                    <td class="py-3 px-4">${student.phone}</td>
+                    <td class="py-3 px-4">${student.course}</td>
+                    <td class="py-3 px-4">${student.age}</td>
+                    <td class="py-3 px-4">${student.certificateId || 'N/A'}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 ${student.graduated ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'} rounded-full text-xs">
+                            ${student.graduated ? 'Graduated' : 'Active'}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button class="text-blue-primary hover:text-blue-dark mr-2 edit-student-btn" data-id="${student.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-500 hover:text-red-700 delete-student-btn" data-id="${student.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.edit-student-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const studentId = button.getAttribute('data-id');
+                    editStudent(studentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-student-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const studentId = button.getAttribute('data-id');
+                    deleteStudent(studentId);
+                });
+            });
+        }
+        
+        // Edit student
+        function editStudent(studentId) {
+            // In a real implementation, you would open an edit form
+            showToast(`Edit functionality for student ${studentId} would open here`);
+        }
+        
+        // Delete student
+        function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                // In a real implementation, you would delete from Firestore
+                students = students.filter(student => student.id !== studentId);
+                filterAndRenderStudents();
+                showToast('Student deleted successfully!');
+            }
+        }
+        
+        // Add student form submission
+        addStudentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('student-name').value;
+            const matricNumber = document.getElementById('student-matric').value;
+            const phone = document.getElementById('student-phone').value;
+            const age = document.getElementById('student-age').value;
+            const course = document.getElementById('student-course').value;
+            const email = document.getElementById('student-email').value;
+            const graduated = document.getElementById('student-graduated').checked;
+            const certificateId = document.getElementById('student-certificate').value;
+            
+            // Validate form
+            if (!name || !matricNumber || !phone || !age || !course || !email) {
+                showToast('Please fill in all required fields', false);
+                return;
+            }
+            
+            // Check if matric number already exists
+            if (students.some(student => student.matricNumber === matricNumber)) {
+                showToast('A student with this matric number already exists', false);
+                return;
+            }
+            
+            // Create new student object
+            const newStudent = {
+                id: Date.now().toString(),
+                name,
+                matricNumber,
+                phone,
+                age: parseInt(age),
+                course,
+                email,
+                graduated,
+                certificateId: graduated ? certificateId : ''
+            };
+            
+            // In a real implementation, you would save to Firestore
+            students.push(newStudent);
+            
+            // Reset form
+            addStudentForm.reset();
+            certificateField.style.display = 'none';
+            
+            // Show success message
+            showToast('Student added successfully!');
+            
+            // Refresh the students table to show the new student
+            filterAndRenderStudents();
+        });
+        
+        // Toggle certificate field based on graduated checkbox
+        studentGraduatedCheckbox.addEventListener('change', () => {
+            certificateField.style.display = studentGraduatedCheckbox.checked ? 'block' : 'none';
+        });
+        
+        // Add question to exam form
+        function addQuestion() {
+            const questionCount = document.querySelectorAll('.question-item').length + 1;
+            const questionHTML = `
+                <div class="question-item bg-gray-50 p-4 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-medium">Question ${questionCount}</h4>
+                        <button type="button" class="text-red-500 hover:text-red-700 remove-question" data-index="${questionCount}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Question Text</label>
+                        <textarea class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" rows="2" placeholder="Enter question text"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Option A</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option A">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Option B</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option B">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Option C</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option C">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Option D</label>
+                            <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent" placeholder="Option D">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correct Answer</label>
+                        <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-primary focus:border-transparent">
+                            <option value="A">Option A</option>
+                            <option value="B">Option B</option>
+                            <option value="C">Option C</option>
+                            <option value="D">Option D</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+            
+            // Add event listener to the new remove button
+            const newRemoveBtn = questionsContainer.querySelector(`.remove-question[data-index="${questionCount}"]`);
+            newRemoveBtn.addEventListener('click', function() {
+                this.closest('.question-item').remove();
+                // Update question numbers
+                updateQuestionNumbers();
+            });
+        }
+        
+        // Update question numbers after removal
+        function updateQuestionNumbers() {
+            const questionItems = document.querySelectorAll('.question-item');
+            questionItems.forEach((item, index) => {
+                const questionNumber = index + 1;
+                item.querySelector('h4').textContent = `Question ${questionNumber}`;
+                item.querySelector('.remove-question').setAttribute('data-index', questionNumber);
+            });
+        }
+        
+        // Create exam form submission
+        createExamForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('exam-title').value;
+            const duration = document.getElementById('exam-duration').value;
+            const passingScore = document.getElementById('exam-passing-score').value;
+            const totalQuestions = document.getElementById('exam-total-questions').value;
+            const description = document.getElementById('exam-description').value;
+            
+            // Validate form
+            if (!title || !duration || !passingScore || !totalQuestions) {
+                showToast('Please fill in all required fields', false);
+                return;
+            }
+            
+            // Create new exam object
+            const newExam = {
+                id: Date.now().toString(),
+                title,
+                description,
+                totalQuestions: parseInt(totalQuestions),
+                duration: parseInt(duration),
+                passingScore: parseInt(passingScore),
+                attempts: 0
+            };
+            
+            // In a real implementation, you would save to Firestore
+            exams.push(newExam);
+            
+            // Reset form
+            createExamForm.reset();
+            
+            // Show success message
+            showToast('Exam created successfully!');
+            
+            // Switch back to exams section
+            switchSection('exams');
+        });
+        
+        // Add event listeners for navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.getAttribute('data-section');
+                switchSection(section);
+            });
+        });
+        
+        // Add event listeners for students section
+        addStudentBtn.addEventListener('click', () => {
+            switchSection('settings');
+        });
+        
+        refreshStudentsBtn.addEventListener('click', () => {
+            fetchStudents();
+        });
+        
+        studentsSearch.addEventListener('input', () => {
+            filterAndRenderStudents();
+        });
+        
+        studentsFilter.addEventListener('change', () => {
+            filterAndRenderStudents();
+        });
+        
+        // Add event listeners for exam creation
+        addExamBtn.addEventListener('click', () => {
+            switchSection('createExam');
+        });
+        
+        backToExamsBtn.addEventListener('click', () => {
+            switchSection('exams');
+        });
+        
+        addQuestionBtn.addEventListener('click', addQuestion);
+        
+        cancelExamBtn.addEventListener('click', () => {
+            switchSection('exams');
+        });
+        
+        // Close exam modal
+        closeExamModal.addEventListener('click', () => {
+            examModal.classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        examModal.addEventListener('click', (e) => {
+            if (e.target === examModal) {
+                examModal.classList.add('hidden');
+            }
+        });
+        
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Admin dashboard loaded');
@@ -775,260 +1942,6 @@
                 fetchExamResults();
             }
         });
-        // Function to display exam results on the dashboard
-function displayExamResults() {
-    // Get user data from sessionStorage
-    const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const examResults = JSON.parse(localStorage.getItem('examResults') || '[]');
-    
-    // Filter results for current user only
-    const userResults = examResults.filter(result => 
-        result.studentId === userData.matricNumber
-    );
-    
-    // Find or create a container for exam results in your dashboard
-    let resultsContainer = document.getElementById('exam-results-container');
-    
-    // If container doesn't exist, create one
-    if (!resultsContainer) {
-        resultsContainer = document.createElement('div');
-        resultsContainer.id = 'exam-results-container';
-        resultsContainer.className = 'exam-results-section';
-        
-        // Add styling
-        resultsContainer.style.marginTop = '30px';
-        resultsContainer.style.padding = '20px';
-        resultsContainer.style.background = '#fff';
-        resultsContainer.style.borderRadius = '10px';
-        resultsContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-        
-        // Add heading
-        const heading = document.createElement('h2');
-        heading.textContent = 'Recent Exam Results';
-        heading.style.color = '#2E73FF';
-        heading.style.marginBottom = '20px';
-        resultsContainer.appendChild(heading);
-        
-        // Add to your dashboard (adjust selector based on your dashboard layout)
-        const mainContent = document.querySelector('.dashboard-content') || document.querySelector('main') || document.body;
-        mainContent.appendChild(resultsContainer);
-    }
-    
-    if (userResults.length === 0) {
-        resultsContainer.innerHTML = `
-            <h2 style="color: #2E73FF; margin-bottom: 20px;">Recent Exam Results</h2>
-            <div class="no-results" style="text-align: center; padding: 30px;">
-                <i class="fas fa-clipboard-list" style="font-size: 48px; color: #ddd; margin-bottom: 20px;"></i>
-                <p style="font-size: 18px; color: #777; margin-bottom: 20px;">You haven't taken any exams yet.</p>
-                <button class="take-exam-btn" onclick="window.location.href='exam.html'" 
-                    style="background: #E07C14; color: white; border: none; padding: 12px 25px; 
-                    border-radius: 8px; font-weight: 600; cursor: pointer;">
-                    Take Your First Exam
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    // Display the most recent 3 exams
-    const recentResults = userResults.slice(-3).reverse();
-    
-    resultsContainer.innerHTML = `
-        <h2 style="color: #2E73FF; margin-bottom: 20px;">Recent Exam Results</h2>
-        <div class="results-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-            ${recentResults.map(result => `
-                <div class="result-card" style="background: #f8f9fa; border-radius: 10px; padding: 15px; border-left: 4px solid #2E73FF;">
-                    <div class="result-header" style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <div class="exam-title" style="font-weight: 700; color: #2E73FF;">${result.examTitle || 'JavaScript Fundamentals'}</div>
-                        <div class="exam-date" style="font-size: 14px; color: #777;">${new Date(result.submittedAt).toLocaleDateString()}</div>
-                    </div>
-                    
-                    <div class="score-display" style="text-align: center; margin: 15px 0;">
-                        <div class="score-value" style="font-size: 28px; font-weight: 800; color: #2E73FF;">${result.results.percentage}%</div>
-                        <div class="score-label" style="font-size: 14px; color: #777;">Score: ${result.results.totalScore}/40</div>
-                    </div>
-                    
-                    <div class="performance-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                        <div class="stat" style="text-align: center; padding: 8px; background: #fff; border-radius: 6px;">
-                            <div class="stat-value" style="font-size: 16px; font-weight: 700;">${result.results.correctCount}</div>
-                            <div class="stat-label" style="font-size: 12px; color: #777;">Correct</div>
-                        </div>
-                        
-                        <div class="stat" style="text-align: center; padding: 8px; background: #fff; border-radius: 6px;">
-                            <div class="stat-value" style="font-size: 16px; font-weight: 700;">${result.results.wrongCount}</div>
-                            <div class="stat-label" style="font-size: 12px; color: #777;">Wrong</div>
-                        </div>
-                        
-                        <div class="stat" style="text-align: center; padding: 8px; background: #fff; border-radius: 6px;">
-                            <div class="stat-value" style="font-size: 16px; font-weight: 700;">${result.results.notAttemptedCount}</div>
-                            <div class="stat-label" style="font-size: 12px; color: #777;">Not Attempted</div>
-                        </div>
-                        
-                        <div class="stat" style="text-align: center; padding: 8px; background: #fff; border-radius: 6px;">
-                            <div class="stat-value" style="font-size: 16px; font-weight: 700;">${result.results.negativeMarks}</div>
-                            <div class="stat-label" style="font-size: 12px; color: #777;">Negative Marks</div>
-                        </div>
-                    </div>
-                    
-                    <button class="view-details-btn" onclick="viewExamDetails('${result.submittedAt}')" 
-                        style="display: block; width: 100%; background: #2E73FF; color: white; 
-                        border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                        View Details
-                    </button>
-                </div>
-            `).join('')}
-        </div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button onclick="window.location.href='exam-results.html'" 
-                style="background: #2E73FF; color: white; border: none; padding: 10px 20px; 
-                border-radius: 6px; font-weight: 600; cursor: pointer;">
-                View All Results
-            </button>
-        </div>
-    `;
-}
-
-// Function to view exam details (you can implement this as needed)
-function viewExamDetails(examId) {
-    // Store the exam ID to view details on another page
-    sessionStorage.setItem('viewExamId', examId);
-    window.location.href = 'exam-details.html';
-}
-
-// Call this function when your dashboard loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in
-    const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
-    if (userData.matricNumber) {
-        displayExamResults();
-    }
-});
-
-// Function to display student exam results on the dashboard
-function displayStudentExamResults() {
-    // Get user data from sessionStorage
-    const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const examResults = JSON.parse(localStorage.getItem('examResults') || '[]');
-    
-    // Filter results for current user only
-    const userResults = examResults.filter(result => 
-        result.studentId === userData.matricNumber
-    );
-    
-    // Find or create a container for exam results in your dashboard
-    let resultsContainer = document.getElementById('student-exam-results-container');
-    
-    // If container doesn't exist, create one
-    if (!resultsContainer) {
-        resultsContainer = document.createElement('div');
-        resultsContainer.id = 'student-exam-results-container';
-        resultsContainer.className = 'bg-white rounded-xl shadow-sm p-6 mt-6';
-        
-        // Add heading
-        const heading = document.createElement('h2');
-        heading.className = 'text-xl font-bold text-gray-800 mb-4';
-        heading.textContent = 'Your Recent Exam Results';
-        resultsContainer.appendChild(heading);
-        
-        // Add to your dashboard - placing it after the stats overview
-        const statsSection = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-6.mb-8');
-        statsSection.parentNode.insertBefore(resultsContainer, statsSection.nextSibling);
-    }
-    
-    if (userResults.length === 0) {
-        resultsContainer.innerHTML = `
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Your Recent Exam Results</h2>
-            <div class="text-center py-8">
-                <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500 mb-4">You haven't taken any exams yet.</p>
-                <button class="bg-orange-primary text-white px-4 py-2 rounded-lg hover:bg-orange-dark transition-colors" onclick="window.location.href='exam.html'">
-                    Take Your First Exam
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    // Display the most recent 3 exams
-    const recentResults = userResults.slice(-3).reverse();
-    
-    resultsContainer.innerHTML = `
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Your Recent Exam Results</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            ${recentResults.map(result => `
-                <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-primary">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="font-semibold text-blue-primary">${result.examTitle || 'JavaScript Fundamentals'}</div>
-                        <div class="text-sm text-gray-500">${new Date(result.submittedAt).toLocaleDateString()}</div>
-                    </div>
-                    
-                    <div class="text-center mb-3">
-                        <div class="text-2xl font-bold text-blue-primary">${result.results.percentage}%</div>
-                        <div class="text-sm text-gray-600">Score: ${result.results.totalScore}/40</div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="bg-white rounded p-2 text-center">
-                            <div class="font-bold text-green-600">${result.results.correctCount}</div>
-                            <div class="text-xs text-gray-500">Correct</div>
-                        </div>
-                        <div class="bg-white rounded p-2 text-center">
-                            <div class="font-bold text-red-600">${result.results.wrongCount}</div>
-                            <div class="text-xs text-gray-500">Wrong</div>
-                        </div>
-                        <div class="bg-white rounded p-2 text-center">
-                            <div class="font-bold text-yellow-600">${result.results.notAttemptedCount}</div>
-                            <div class="text-xs text-gray-500">Skipped</div>
-                        </div>
-                        <div class="bg-white rounded p-2 text-center">
-                            <div class="font-bold text-purple-600">${result.results.negativeMarks}</div>
-                            <div class="text-xs text-gray-500">Neg. Marks</div>
-                        </div>
-                    </div>
-                    
-                    <button class="w-full bg-blue-primary text-white py-2 rounded-lg text-sm hover:bg-blue-dark transition-colors" onclick="viewExamDetails('${result.submittedAt}')">
-                        View Details
-                    </button>
-                </div>
-            `).join('')}
-        </div>
-        <div class="text-center mt-4">
-            <button class="text-blue-primary hover:text-blue-dark font-medium" onclick="window.location.href='exam-results.html'">
-                View All Your Results <i class="fas fa-arrow-right ml-1"></i>
-            </button>
-        </div>
-    `;
-}
-
-// Function to view exam details
-function viewExamDetails(examId) {
-    // Store the exam ID to view details on another page
-    sessionStorage.setItem('viewExamId', examId);
-    window.location.href = 'exam-details.html';
-}
-
-// Call this function when your dashboard loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in and is a student (not admin)
-    const userData = JSON.parse(sessionStorage.getItem('user') || '{}');
-    
-    // If user has a matricNumber, they're likely a student
-    if (userData.matricNumber) {
-        displayStudentExamResults();
-    }
-    
-    // Your existing initialization code
-    console.log('Admin dashboard loaded');
-    
-    // Check if Firebase is initialized
-    if (firebase.apps.length === 0) {
-        console.error('Firebase is not initialized. Please check your configuration.');
-        showToast('Firebase connection error. Please check configuration.', false);
-    } else {
-        // Fetch exam results for admin view
-        fetchExamResults();
-    }
-});
     </script>
 </body>
 </html>
