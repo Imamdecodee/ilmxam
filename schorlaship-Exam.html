@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  
+  <!-- SEO Meta Tags -->
+  <title>Ilm Nexus Scholarship Exam - Digital Skills Assessment Portal</title>
+  <meta name="description" content="Official Ilm Nexus Scholarship Exam Portal. Take your digital skills assessment for scholarship opportunities.">
+  <meta name="keywords" content="Ilm Nexus, scholarship, exam, digital skills, student portal, LMS">
+  <meta name="author" content="Ilm Nexus">
+  <meta property="og:title" content="Ilm Nexus Scholarship Exam Portal">
+  <meta property="og:description" content="Take the official Ilm Nexus scholarship exam to showcase your digital skills.">
+  <meta property="og:type" content="website">
+  
+  <!-- CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --accent: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --danger: #e63946;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    
+    .hero-section {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      border: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .question {
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    #timer {
+      font-weight: bold;
+      font-size: 1.2rem;
+      padding: 8px 16px;
+      border-radius: 50px;
+      background: var(--primary);
+      color: white;
+    }
+    
+    .hidden { display: none; }
+    .center { text-align: center; }
+    .nav-btn { margin: 5px; border-radius: 8px; }
+    
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: #e9ecef;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.5s ease;
+    }
+    
+    .correct { 
+      color: #28a745; 
+      font-weight: 600;
+    }
+    
+    .wrong { 
+      color: var(--danger); 
+      font-weight: 600;
+    }
+    
+    .container-wide { 
+      max-width: 980px; 
+      margin: auto; 
+    }
+    
+    .login-icon {
+      font-size: 4rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .section-title {
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .result-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+    
+    .score-display {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 1rem 0;
+    }
+    
+    .performance-badge {
+      display: inline-block;
+      padding: 6px 15px;
+      border-radius: 50px;
+      font-weight: 600;
+      margin: 10px 0;
+    }
+    
+    .performance-excellent {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .performance-good {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .performance-fair {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .performance-poor {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .footer {
+      background: var(--dark);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 3rem;
+    }
+    
+    .answer-option {
+      display: block;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .answer-option:hover {
+      background: #f8f9fa;
+      border-color: var(--primary);
+    }
+    
+    .answer-option.selected {
+      background: rgba(67, 97, 238, 0.1);
+      border-color: var(--primary);
+    }
+    
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+    
+    .question-counter {
+      background: var(--primary);
+      color: white;
+      border-radius: 50px;
+      padding: 5px 15px;
+      font-size: 0.9rem;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    
+    .username-help {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .contact-box {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container container-wide">
+      <div class="columns is-vcentered py-5">
+        <div class="column is-two-thirds">
+          <h1 class="title is-2 has-text-white">Ilm Nexus Scholarship Exam</h1>
+          <p class="subtitle has-text-light">Showcase your digital skills for scholarship opportunities</p>
+        </div>
+        <div class="column has-text-centered">
+          <div class="login-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="section">
+    <div class="container container-wide">
+      <!-- LOGIN -->
+      <div id="loginBox" class="card p-5">
+        <h2 class="is-size-4 section-title">Student Login</h2>
+        <p class="mb-4">Use your provided credentials to access the exam</p>
+        
+        <div class="field">
+          <label class="label">Full Name</label>
+          <div class="control has-icons-left">
+            <input id="fullName" class="input" placeholder="e.g. Adebola Johnson">
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label class="label">Username</label>
+          <div class="control has-icons-left">
+            <input id="username" class="input" placeholder="e.g. ilm/0s/002/sch">
+            <span class="icon is-small is-left">
+              <i class="fas fa-at"></i>
+            </span>
+          </div>
+          <!-- <div class="username-help">
+            <p class="is-size-7"><strong>Valid username formats:</strong></p>
+            <ul class="is-size-7">
+              <li>ilm/0s/002/sch</li>
+              <li>ilm-admin</li>
+              <li>Or similar format provided by Ilm Nexus</li>
+            </ul>
+          </div> -->
+        </div>
+        
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control has-icons-left">
+            <input id="password" type="password" class="input" placeholder="Your exam password">
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+          </div>
+          <p class="help">This password will be used for your LMS portal access</p>
+        </div>
+        
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control has-icons-left">
+            <input id="email" class="input" placeholder="your.email@example.com">
+            <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="control mt-5">
+          <button id="loginBtn" class="button btn-primary is-fullwidth is-medium">Login to Exam</button>
+        </div>
+        
+        <div class="contact-box mt-4">
+          <p class="is-size-7 has-text-centered">
+            <strong>If you don't have valid credentials, contact the Secretary:</strong><br>
+            <i class="fas fa-phone mr-2"></i> 09161699509
+          </p>
+        </div>
+      </div>
+
+      <!-- INSTRUCTIONS MODAL -->
+      <div id="instructions" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Exam Instructions</p>
+            <button class="delete" aria-label="close" id="instClose"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="content">
+              <h4>Important Guidelines</h4>
+              <ol>
+                <li>Complete the exam within the specified time limit. A timer will be shown during the exam.</li>
+                <li>Do not refresh the page or navigate away during the exam, as this may cause loss of progress.</li>
+                <li>After submitting, download your result PDF using the "Download Result" button.</li>
+                <li>Click "Send Result" to submit your result to Ilm Nexus admin at <strong>theilmnexus@gmail.com</strong>.</li>
+                <li>Ensure you have a stable internet connection before sending results.</li>
+                <li>Only registered and approved candidates can take this exam.</li>
+              </ol>
+              
+              <div class="notification is-info is-light mt-4">
+                <p><strong>Exam Duration:</strong> <span id="examDuration">45</span> minutes</p>
+                <p class="mt-2"><strong>Questions:</strong> 60 multiple-choice questions</p>
+              </div>
+              
+              <div class="notification is-warning is-light mt-3">
+                <p><strong>IMPORTANT:</strong> The exam will auto-submit when time ends. Ensure you complete all questions before time expires.</p>
+              </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button id="startExamBtn" class="button is-success">Start Exam</button>
+            <button id="declineStart" class="button">Cancel</button>
+          </footer>
+        </div>
+      </div>
+
+      <!-- EXAM AREA -->
+      <div id="examArea" class="hidden">
+        <div class="card p-5">
+          <div class="level">
+            <div class="level-left">
+              <div>
+                <p><strong>Student:</strong> <span id="studentName"></span> | <span id="studentEmail"></span></p>
+                <p><strong>Username:</strong> <span id="studentUser"></span></p>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="has-text-right">
+                <p>Time remaining: <span id="timer" class="tag is-info">--:--</span></p>
+                <p>Questions: 60 | Current: <span id="currentQ">1</span></p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+          </div>
+
+          <div id="questionsContainer"></div>
+
+          <div class="has-text-centered mt-5">
+            <button id="prevBtn" class="button nav-btn is-light"><i class="fas fa-arrow-left mr-2"></i> Previous</button>
+            <button id="nextBtn" class="button nav-btn btn-primary">Next <i class="fas fa-arrow-right ml-2"></i></button>
+            <button id="submitBtn" class="button is-danger nav-btn"><i class="fas fa-paper-plane mr-2"></i> Submit Exam</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT AREA -->
+      <div id="resultArea" class="hidden">
+        <div class="result-card">
+          <h2 class="is-size-3 section-title has-text-centered">Exam Result</h2>
+          
+          <div class="score-display">
+            <span id="scoreOut">0</span>/60
+          </div>
+          
+          <div>
+            <span id="performance" class="performance-badge performance-poor">Needs Improvement</span>
+          </div>
+          
+          <div class="columns is-centered mt-5">
+            <div class="column is-half">
+              <div class="box has-text-left">
+                <p><strong>Name:</strong> <span id="resultName"></span></p>
+                <p><strong>Username:</strong> <span id="resultUsername"></span></p>
+                <p><strong>Email:</strong> <span id="resultEmail"></span></p>
+                <p><strong>LMS Password:</strong> <span id="resultPassword"></span></p>
+                <p><strong>Exam Date:</strong> <span id="resultDate"></span></p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="buttons is-centered mt-5">
+            <button id="downloadBtn" class="button is-primary is-medium">
+              <i class="fas fa-download mr-2"></i> Download Result (PDF)
+            </button>
+            <button id="sendBtn" class="button is-link is-medium">
+              <i class="fas fa-paper-plane mr-2"></i> Send Result to Admin
+            </button>
+          </div>
+          
+          <div id="sendStatus" class="mt-4"></div>
+        </div>
+      </div>
+
+      <div class="mt-6 has-text-centered">
+        <p class="is-size-7">Academic calendar: <a href="/mnt/data/Ilm_Nexus_2.0_Academic_Calendar_2025_2026.pdf" target="_blank">Open Academic Calendar</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container container-wide">
+      <div class="content has-text-centered">
+        <p>
+          <strong>Ilm Nexus</strong> &copy; 2025. Empowering students with digital skills.
+        </p>
+        <p class="mt-2">
+          <a class="has-text-light" href="#">Privacy Policy</a> | 
+          <a class="has-text-light" href="#">Terms of Service</a> | 
+          <a class="has-text-light" href="#">Contact Us</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+  // ==== CONFIG ====
+  const EXAM_MINUTES = 45;
+  const SERVER_SUBMIT_URL = '/api/exam/submit';
+  const ADMIN_EMAIL = 'theilmnexus@gmail.com';
+
+  // ==== QUESTIONS DATA ====
+  const questions = [
+    // SECTION A (1-15) - Organization Questions
+    {id:1, text:"What is the main mission of Ilm Nexus?", choices:["To teach only coding","To empower students with practical digital skills","To run businesses","To replace universities"], answer:1},
+    {id:2, text:"Which campus currently hosts Ilm Nexus?", choices:["KWASU","LASU","UI","FUTA"], answer:0},
+    {id:3, text:"Ilm Nexus was created to solve what major problem?", choices:["High data cost","Lack of practical digital skills among students","Lack of food in school","Lack of sport facilities"], answer:1},
+    {id:4, text:"Which of these is NOT a course Ilm Nexus offers?", choices:["Video Editing","Communication Skills","Frontend Development","Accounting"], answer:3},
+    {id:5, text:"What makes Ilm Nexus different?", choices:["Very expensive programs","Project-based learning and mentorship","Teaching only graduates","Only online classes"], answer:1},
+    {id:6, text:"Ilm Nexus operates with what structure?", choices:["Random plans","Academic calendar + campus presidents","No structure","Only tutors"], answer:1},
+    {id:7, text:"How many students has Ilm Nexus trained (as of 2025)?", choices:["5","20","Over 300","None"], answer:2},
+    {id:8, text:"What is the vision of Ilm Nexus?", choices:["To become Africa's leading youth-skill organization","To run a restaurant","To sell school materials","To run a bank"], answer:0},
+    {id:9, text:"Which of these is a key achievement of Ilm Nexus?", choices:["Organizing tech trainings and conferences","Building stadiums","Selling phones","Hosting sports tournaments"], answer:0},
+    {id:10, text:"Who leads each campus Ilm Nexus branch?", choices:["A lecturer","Campus President","A student union","No leader"], answer:1},
+    {id:11, text:"Why do students join Ilm Nexus?", choices:["To sleep","To learn and earn with digital skills","To fight","To play games"], answer:1},
+    {id:12, text:"Ilm Nexus provides what kind of education?", choices:["Entertainment education","Practical, job-ready skills","Cooking classes","Religious training"], answer:1},
+    {id:13, text:"What kind of certificates does Ilm Nexus provide?", choices:["Random sheets","Recognized digital skill certificates","Exam answer sheets","Attendance papers only"], answer:1},
+    {id:14, text:"Ilm Nexus is expanding to how many universities before 2026?", choices:["1","3","10+","None"], answer:2},
+    {id:15, text:"Which event helped Ilm Nexus grow in KWASU?", choices:["Football competition","Awareness conference","Cooking festival","Debate"], answer:1},
+    // SECTION B (16-30) - Digital Skills Questions
+    {id:16, text:"What are digital skills?", choices:["Skills used with digital tools and technology","Skills for cooking","Skills for dancing","Skills for sports"], answer:0},
+    {id:17, text:"Which of these is a creative digital skill?", choices:["Video Editing","Chemistry","Accounting","Laundry"], answer:0},
+    {id:18, text:"Which is a technical skill?", choices:["Frontend Development","Singing","Hairdressing","Driving"], answer:0},
+    {id:19, text:"Why are digital skills important?", choices:["They help you earn and work online","They help you run faster","They help you sleep longer","They help you cook better"], answer:0},
+    {id:20, text:"Which is a soft digital skill?", choices:["Communication Skills","Biology","Sport","Mathematics"], answer:0},
+    {id:21, text:"Which digital skill helps you promote businesses online?", choices:["Digital Marketing","Swimming","Football","Drawing"], answer:0},
+    {id:22, text:"What is a benefit of digital skills?", choices:["You can earn money as a student","You can avoid school","You can sleep more","You can fight people"], answer:0},
+    {id:23, text:"Which of these is a business digital skill?", choices:["SEO","Carpentry","Plumbing","Tailoring"], answer:0},
+    {id:24, text:"Ilm Nexus teaches how many categories of digital skills?", choices:["1","2","Many categories (creative, business, soft, technical)","None"], answer:2},
+    {id:25, text:"Which skill helps you build websites?", choices:["Frontend Development","Singing","Fashion","Law"], answer:0},
+    {id:26, text:"Which skill helps businesses get more customers?", choices:["Digital Marketing","Sleeping","Gossiping","Eating"], answer:0},
+    {id:27, text:"Which skill is best for public speaking?", choices:["Communication Skills","Programming","Designing","Football"], answer:0},
+    {id:28, text:"Digital skills can be learned by who?", choices:["Only graduates","Only lecturers","Anyone","Only rich people"], answer:2},
+    {id:29, text:"Which skill is useful for creating TikTok/Reels?", choices:["Video Editing","Mathematics","Geography","Grammar"], answer:0},
+    {id:30, text:"Digital skills are important because?", choices:["They prepare you for the future of work","They help you sleep more","They remove hunger","They build houses"], answer:0},
+    // SECTION C (31-45) - Earning Potential Questions
+    {id:31, text:"How can a graphics designer earn?", choices:["Designing flyers","Cooking","Selling water","Sleeping"], answer:0},
+    {id:32, text:"Frontend developers earn by:", choices:["Building websites","Singing","Acting","Sweeping"], answer:0},
+    {id:33, text:"Communication-skilled students earn through:", choices:["Voice-over jobs","Running","Fighting","Swimming"], answer:0},
+    {id:34, text:"Digital marketers earn by:", choices:["Managing social media","Washing plates","Selling ice cream","Ironing clothes"], answer:0},
+    {id:35, text:"Video editors earn by:", choices:["Editing videos for creators","Sweeping classrooms","Sleeping","Cooking"], answer:0},
+    {id:36, text:"Where can graphics designers sell their work?", choices:["Fiverr","The bush","Hospital","Market square"], answer:0},
+    {id:37, text:"Average earnings of frontend developers per project:", choices:["₦50,000–₦300,000","₦1,000","₦500","₦100"], answer:0},
+    {id:38, text:"Students multiply earnings by:", choices:["Practicing daily","Fighting","Sleeping all day","Avoiding work"], answer:0},
+    {id:39, text:"Who needs digital marketers?", choices:["Businesses","Trees","Fish","Clouds"], answer:0},
+    {id:40, text:"Graphics designers can earn on:", choices:["Upwork","Church altar","Football pitch","Restaurant"], answer:0},
+    {id:41, text:"Communication skills help students earn from:", choices:["Hosting events","Carrying blocks","Clearing grass","Playing ball"], answer:0},
+    {id:42, text:"Video editors are required by:", choices:["Influencers & content creators","Birds","Stones","Insects"], answer:0},
+    {id:43, text:"Digital skills allow:", choices:["Multiple income streams","No income","Hunger","Laziness"], answer:0},
+    {id:44, text:"Which platform is used for foreign jobs?", choices:["Fiverr","Petrol station","restaurant","Classroom"], answer:0},
+    {id:45, text:"Students earn more when they:", choices:["Network and build their brand","Hide","Avoid learning","Stop practicing"], answer:0},
+    // SECTION D (46-60) - AI Tools Questions
+    {id:46, text:"What is AI?", choices:["Technology that thinks & learns","A type of food","A shoe","A bag"], answer:0},
+    {id:47, text:"ChatGPT is used for:", choices:["Writing, learning, coding","Crying","Fighting","Sleeping"], answer:0},
+    {id:48, text:"Canva AI is used for:", choices:["Designing graphics","Cutting grass","Fishing","Swimming"], answer:0},
+    {id:49, text:"CapCut AI helps with:", choices:["Editing videos","Cooking","Football","Driving"], answer:0},
+    {id:50, text:"Grammarly AI improves:", choices:["Writing & grammar","Hunger","Exercise","Hair"], answer:0},
+    {id:51, text:"InVideo AI is used for:", choices:["Creating videos from text","Sweeping floors","Washing plates","Eating"], answer:0},
+    {id:52, text:"AI helps students:", choices:["Learn faster","Sleep longer","Gossip","Lose money"], answer:0},
+    {id:53, text:"Developers use what AI tool for coding?", choices:["GitHub Copilot","Shampoo","Shoes","Scissors"], answer:0},
+    {id:54, text:"Canva AI works by:", choices:["Typing a description and AI creates design","Cooking food","Running","Crying"], answer:0},
+    {id:55, text:"CapCut AI can:", choices:["Auto-caption videos","Write exams","Build houses","Fix shoes"], answer:0},
+    {id:56, text:"Grammarly AI is useful for:", choices:["Professional emails","Jumping","Swimming","Dancing"], answer:0},
+    {id:57, text:"AI tools make students:", choices:["More productive","More lazy","More sick","More confused"], answer:0},
+    {id:58, text:"ChatGPT can help with:", choices:["Assignments","Washing clothes","Cooking","Climbing trees"], answer:0},
+    {id:59, text:"InVideo AI creates:", choices:["Full videos automatically","Clothes","Shoes","Food"], answer:0},
+    {id:60, text:"Which of these is an AI tool?", choices:["Canva","Spoon","Table","Shoes"], answer:0},
+  ];
+
+  // ==== state ====
+  let state = {
+    user: null,
+    currentIndex: 0,
+    answers: {},
+    timerSeconds: EXAM_MINUTES * 60,
+    timerInterval: null,
+    startedAt: null
+  };
+
+  // DOM Elements
+  const loginBtn = document.getElementById('loginBtn');
+  const loginBox = document.getElementById('loginBox');
+  const instructionsModal = document.getElementById('instructions');
+  const instClose = document.getElementById('instClose');
+  const startExamBtn = document.getElementById('startExamBtn');
+  const declineStart = document.getElementById('declineStart');
+  const examArea = document.getElementById('examArea');
+  const questionsContainer = document.getElementById('questionsContainer');
+  const studentNameEl = document.getElementById('studentName');
+  const studentUserEl = document.getElementById('studentUser');
+  const studentEmailEl = document.getElementById('studentEmail');
+  const timerEl = document.getElementById('timer');
+  const currentQ = document.getElementById('currentQ');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const resultArea = document.getElementById('resultArea');
+  const scoreOut = document.getElementById('scoreOut');
+  const perfOut = document.getElementById('performance');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const sendBtn = document.getElementById('sendBtn');
+  const sendStatus = document.getElementById('sendStatus');
+  const progressFill = document.getElementById('progressFill');
+  const resultName = document.getElementById('resultName');
+  const resultUsername = document.getElementById('resultUsername');
+  const resultEmail = document.getElementById('resultEmail');
+  const resultPassword = document.getElementById('resultPassword');
+  const resultDate = document.getElementById('resultDate');
+
+  // Username validation function
+  function isValidUsername(username) {
+    // Check for the specific formats: ilm/0s/002/sch or ilm-admin
+    // Also allow similar patterns that might be provided
+    const validPatterns = [
+      /^ilm\/\w+\/\d+\/\w+$/, // Pattern like ilm/0s/002/sch
+      /^ilm-admin$/ // Exact match for ilm-admin
+    ];
+    
+    return validPatterns.some(pattern => pattern.test(username));
+  }
+
+  // ---- login handler ----
+  loginBtn.addEventListener('click', () => {
+    const fullName = document.getElementById('fullName').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const email = document.getElementById('email').value.trim();
+    
+    if(!fullName || !username || !password || !email) { 
+      alert('Please provide all required information'); 
+      return; 
+    }
+    
+    // Validate username format
+    if (!isValidUsername(username)) {
+      alert(`Invalid username format.If you don't have valid credentials, contact the Secretary at 09161699509.`);
+      return;
+    }
+    
+    // Store user data
+    state.user = { 
+      fullName: fullName.toUpperCase(), 
+      username, 
+      password, 
+      email 
+    };
+    
+    // Update UI
+    studentNameEl.textContent = state.user.fullName;
+    studentUserEl.textContent = username;
+    studentEmailEl.textContent = email;
+    
+    // Show instruction modal
+    loginBox.classList.add('hidden');
+    instructionsModal.classList.add('is-active');
+  });
+
+  // Modal controls
+  instClose.addEventListener('click', () => instructionsModal.classList.remove('is-active'));
+  declineStart.addEventListener('click', () => {
+    instructionsModal.classList.remove('is-active');
+    loginBox.classList.remove('hidden');
+  });
+
+  // Render question function
+  function renderQuestion(index) {
+    const q = questions[index];
+    currentQ.textContent = index + 1;
+    
+    // Update progress bar
+    const progress = ((index + 1) / questions.length) * 100;
+    progressFill.style.width = `${progress}%`;
+    
+    questionsContainer.innerHTML = '';
+    
+    const qdiv = document.createElement('div');
+    qdiv.className = 'question';
+    
+    // Question counter
+    const counter = document.createElement('div');
+    counter.className = 'question-counter';
+    counter.textContent = `Question ${index + 1} of ${questions.length}`;
+    qdiv.appendChild(counter);
+    
+    // Question text
+    const qText = document.createElement('p');
+    qText.innerHTML = '<strong>' + q.text + '</strong>';
+    qdiv.appendChild(qText);
+    
+    // Answer options
+    const answersDiv = document.createElement('div');
+    answersDiv.className = 'answers mt-4';
+    
+    q.choices.forEach((c, i) => {
+      const id = 'q' + q.id + '_c' + i;
+      const label = document.createElement('label');
+      label.className = 'answer-option';
+      label.innerHTML = `
+        <input type="radio" name="q${q.id}" id="${id}" value="${i}">
+        ${c}
+      `;
+      
+      // Add click handler for better UX
+      label.addEventListener('click', function() {
+        document.querySelectorAll(`input[name="q${q.id}"]`).forEach(radio => {
+          radio.parentElement.classList.remove('selected');
+        });
+        this.classList.add('selected');
+      });
+      
+      answersDiv.appendChild(label);
+    });
+    
+    qdiv.appendChild(answersDiv);
+    questionsContainer.appendChild(qdiv);
+
+    // Load previous answer if any
+    if(state.answers[q.id] !== undefined) {
+      const sel = document.querySelector(`input[name="q${q.id}"][value="${state.answers[q.id]}"]`);
+      if(sel) {
+        sel.checked = true;
+        sel.parentElement.classList.add('selected');
+      }
+    }
+  }
+
+  // Navigation handlers
+  prevBtn.addEventListener('click', () => {
+    saveCurrentAnswer();
+    if(state.currentIndex > 0) {
+      state.currentIndex--;
+      renderQuestion(state.currentIndex);
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    saveCurrentAnswer();
+    if(state.currentIndex < questions.length - 1) {
+      state.currentIndex++;
+      renderQuestion(state.currentIndex);
+    }
+  });
+
+  function saveCurrentAnswer() {
+    const q = questions[state.currentIndex];
+    const sel = document.querySelector(`input[name="q${q.id}"]:checked`);
+    if(sel) state.answers[q.id] = parseInt(sel.value, 10);
+  }
+
+  // Start exam
+  startExamBtn.addEventListener('click', () => {
+    instructionsModal.classList.remove('is-active');
+    examArea.classList.remove('hidden');
+    state.startedAt = Date.now();
+    renderQuestion(state.currentIndex);
+    startTimer();
+  });
+
+  // Timer functions
+  function startTimer() {
+    state.timerSeconds = EXAM_MINUTES * 60;
+    timerEl.textContent = formatTime(state.timerSeconds);
+    state.timerInterval = setInterval(() => {
+      state.timerSeconds--;
+      timerEl.textContent = formatTime(state.timerSeconds);
+      if(state.timerSeconds <= 0) {
+        clearInterval(state.timerInterval);
+        alert('Time is up. The exam will be submitted automatically.');
+        submitExam();
+      }
+    }, 1000);
+  }
+
+  function formatTime(sec) {
+    const m = Math.floor(sec/60).toString().padStart(2,'0');
+    const s = (sec%60).toString().padStart(2,'0');
+    return m + ':' + s;
+  }
+
+  // Submit exam
+  submitBtn.addEventListener('click', () => {
+    if(!confirm('Are you sure you want to submit the exam now?')) return;
+    saveCurrentAnswer();
+    submitExam();
+  });
+
+  function submitExam() {
+    // Stop timer
+    if(state.timerInterval) clearInterval(state.timerInterval);
+    
+    // Compute score
+    let score = 0;
+    const answersPayload = [];
+    
+    for(const q of questions) {
+      const chosen = (state.answers[q.id] !== undefined) ? state.answers[q.id] : null;
+      answersPayload.push({ id: q.id, chosen });
+      if(chosen !== null && chosen === q.answer) score++;
+    }
+    
+    // Show result UI
+    scoreOut.textContent = score;
+    const perc = Math.round((score / questions.length) * 100);
+    
+    // Set performance badge
+    let perf = 'Needs Improvement';
+    let perfClass = 'performance-poor';
+    
+    if(perc >= 80) {
+      perf = 'Excellent';
+      perfClass = 'performance-excellent';
+    } else if(perc >= 60) {
+      perf = 'Good';
+      perfClass = 'performance-good';
+    } else if(perc >= 40) {
+      perf = 'Fair';
+      perfClass = 'performance-fair';
+    }
+    
+    perfOut.textContent = perf;
+    perfOut.className = `performance-badge ${perfClass}`;
+    
+    // Update result details
+    resultName.textContent = state.user.fullName;
+    resultUsername.textContent = state.user.username;
+    resultEmail.textContent = state.user.email;
+    resultPassword.textContent = state.user.password;
+    resultDate.textContent = new Date().toLocaleDateString();
+    
+    // Show result area
+    resultArea.classList.remove('hidden');
+    examArea.classList.add('hidden');
+
+    // Attach data to state for download/send
+    state.result = {
+      username: state.user.username,
+      name: state.user.fullName,
+      email: state.user.email,
+      password: state.user.password,
+      score,
+      percent: perc,
+      performance: perf,
+      timestamp: new Date().toISOString(),
+      answers: answersPayload,
+      timeTakenSeconds: Math.max(1, Math.floor((Date.now()-state.startedAt)/1000))
+    };
+  }
+
+  // Download result as PDF
+  downloadBtn.addEventListener('click', async () => {
+    if(!state.result) return alert('No result to download');
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Add header with logo and title
+    doc.setFillColor(67, 97, 238);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont(undefined, 'bold');
+    doc.text('ILM NEXUS', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('SCHOLARSHIP EXAM RESULT', 105, 30, { align: 'center' });
+    
+    // Add content
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    
+    // Student info section
+    doc.setFont(undefined, 'bold');
+    doc.text('STUDENT INFORMATION', 20, 55);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Name: ${state.result.name}`, 20, 65);
+    doc.text(`Username: ${state.result.username}`, 20, 72);
+    doc.text(`Email: ${state.result.email}`, 20, 79);
+    doc.text(`LMS Password: ${state.result.password}`, 20, 86);
+    doc.text(`Exam Date: ${new Date(state.result.timestamp).toLocaleDateString()}`, 20, 93);
+    
+    // Score section
+    doc.setFont(undefined, 'bold');
+    doc.text('EXAM RESULTS', 20, 110);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Score: ${state.result.score} / ${questions.length}`, 20, 120);
+    doc.text(`Percentage: ${state.result.percent}%`, 20, 127);
+    doc.text(`Performance: ${state.result.performance}`, 20, 134);
+    doc.text(`Time Taken: ${Math.floor(state.result.timeTakenSeconds / 60)}m ${state.result.timeTakenSeconds % 60}s`, 20, 141);
+    
+    // Add a simple table for answers
+    doc.setFont(undefined, 'bold');
+    doc.text('ANSWER SUMMARY', 20, 160);
+    
+    let yPos = 170;
+    const pageHeight = doc.internal.pageSize.height;
+    
+    for(let i = 0; i < Math.min(10, state.result.answers.length); i++) {
+      const a = state.result.answers[i];
+      const q = questions.find(x => x.id === a.id);
+      
+      if(yPos > pageHeight - 20) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      const chosenText = a.chosen === null ? 'NO ANSWER' : q.choices[a.chosen];
+      const correctText = q.choices[q.answer];
+      const isCorrect = a.chosen === q.answer;
+      
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Q${a.id}:`, 20, yPos);
+      doc.text(`${chosenText}`, 35, yPos);
+      
+      if(isCorrect) {
+        doc.setTextColor(0, 128, 0);
+        doc.text('✓ Correct', 150, yPos);
+      } else {
+        doc.setTextColor(255, 0, 0);
+        doc.text('✗ Incorrect', 150, yPos);
+      }
+      
+      yPos += 7;
+    }
+    
+    // Add footer
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text('This is an official Ilm Nexus scholarship exam result. Keep this document safe.', 105, pageHeight - 10, { align: 'center' });
+    
+    const filename = `${state.result.username}_IlmNexus_Result.pdf`;
+    doc.save(filename);
+  });
+
+  // Send result to server
+  sendBtn.addEventListener('click', async () => {
+    if(!state.result) return alert('No result to send');
+    sendStatus.textContent = 'Sending...';
+    
+    try {
+      const resp = await fetch(SERVER_SUBMIT_URL, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'x-api-key': 'REPLACE_WITH_SERVER_API_KEY' 
+        },
+        body: JSON.stringify(state.result)
+      });
+      
+      if(!resp.ok) throw new Error('Server returned ' + resp.status);
+      const data = await resp.json();
+      
+      sendStatus.innerHTML = `
+        <div class="notification is-success">
+          <p>Result sent successfully to ${ADMIN_EMAIL}!</p>
+          <p>Server response: ${data.message || 'OK'}</p>
+        </div>
+      `;
+    } catch (err) {
+      console.error(err);
+      sendStatus.innerHTML = `
+        <div class="notification is-danger">
+          <p>Send failed: ${err.message}.</p>
+          <p>If offline, <strong>download your PDF</strong> and email it to ${ADMIN_EMAIL}.</p>
+        </div>
+      `;
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if(examArea.classList.contains('hidden')) return;
+    if(e.key === 'ArrowRight') nextBtn.click();
+    if(e.key === 'ArrowLeft') prevBtn.click();
+  });
+  </script>
+</body>
+</html>
