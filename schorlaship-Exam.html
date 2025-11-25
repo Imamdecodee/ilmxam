@@ -241,6 +241,110 @@
       padding: 15px;
       margin-top: 15px;
     }
+    
+    .admin-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .admin-table th, .admin-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .admin-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    
+    .question-status {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 20px;
+      font-size: 0.7rem;
+      margin: 2px;
+    }
+    
+    .answered { background: var(--success); color: white; }
+    .current { background: var(--primary); color: white; }
+    .unanswered { background: #e9ecef; color: #6c757d; }
+    
+    .flag-btn {
+      background: transparent;
+      border: none;
+      color: var(--warning);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    
+    .flagged { color: var(--danger); }
+    
+    .question-navigator {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 15px 0;
+    }
+    
+    .review-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .user-status {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    
+    .online { background: var(--success); }
+    .offline { background: #6c757d; }
+    
+    .session-warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -264,6 +368,36 @@
   <!-- Main Content -->
   <section class="section">
     <div class="container container-wide">
+      <!-- ADMIN LOGIN -->
+      <div id="adminLoginBox" class="card p-5 mb-5">
+        <h2 class="is-size-4 section-title">Admin Login</h2>
+        <p class="mb-4">Access admin panel to monitor exam sessions</p>
+        
+        <div class="field">
+          <label class="label">Admin Username</label>
+          <div class="control has-icons-left">
+            <input id="adminUsername" class="input" placeholder="admin username">
+            <span class="icon is-small is-left">
+              <i class="fas fa-user-shield"></i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label class="label">Admin Password</label>
+          <div class="control has-icons-left">
+            <input id="adminPassword" type="password" class="input" placeholder="admin password">
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="control mt-5">
+          <button id="adminLoginBtn" class="button btn-primary is-fullwidth is-medium">Access Admin Panel</button>
+        </div>
+      </div>
+
       <!-- LOGIN -->
       <div id="loginBox" class="card p-5">
         <h2 class="is-size-4 section-title">Student Login</h2>
@@ -282,19 +416,11 @@
         <div class="field">
           <label class="label">Username</label>
           <div class="control has-icons-left">
-            <input id="username" class="input" placeholder="check your email for this">
+            <input id="username" class="input" placeholder="e.g. ilm/0s/002/sch">
             <span class="icon is-small is-left">
               <i class="fas fa-at"></i>
             </span>
           </div>
-          <!-- <div class="username-help">
-            <p class="is-size-7"><strong>Valid username formats:</strong></p>
-            <ul class="is-size-7">
-              <li>ilm/0s/002/sch</li>
-              <li>ilm-admin</li>
-              <li>Or similar format provided by Ilm Nexus</li>
-            </ul>
-          </div> -->
         </div>
         
         <div class="field">
@@ -389,14 +515,44 @@
           <div class="progress-bar">
             <div id="progressFill" class="progress-fill" style="width: 0%"></div>
           </div>
+          
+          <!-- Question Navigator -->
+          <div class="question-navigator" id="questionNav"></div>
 
           <div id="questionsContainer"></div>
 
           <div class="has-text-centered mt-5">
             <button id="prevBtn" class="button nav-btn is-light"><i class="fas fa-arrow-left mr-2"></i> Previous</button>
             <button id="nextBtn" class="button nav-btn btn-primary">Next <i class="fas fa-arrow-right ml-2"></i></button>
+            <button id="reviewBtn" class="button is-warning nav-btn"><i class="fas fa-flag mr-2"></i> Review</button>
             <button id="submitBtn" class="button is-danger nav-btn"><i class="fas fa-paper-plane mr-2"></i> Submit Exam</button>
           </div>
+        </div>
+      </div>
+
+      <!-- REVIEW MODAL -->
+      <div id="reviewModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Review Questions</p>
+            <button class="delete" aria-label="close" id="reviewClose"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="content">
+              <p>Navigate to any question by clicking on its number:</p>
+              <div class="question-navigator" id="reviewNav"></div>
+              <div class="mt-4">
+                <p><span class="question-status answered"></span> Answered</p>
+                <p><span class="question-status current"></span> Current</p>
+                <p><span class="question-status unanswered"></span> Unanswered</p>
+                <p><i class="fas fa-flag flagged"></i> Flagged for review</p>
+              </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button id="closeReviewBtn" class="button">Close Review</button>
+          </footer>
         </div>
       </div>
 
@@ -438,6 +594,130 @@
         </div>
       </div>
 
+      <!-- ADMIN PANEL -->
+      <div id="adminPanel" class="admin-panel hidden">
+        <h2 class="is-size-4 section-title">Admin Dashboard</h2>
+        
+        <div class="tabs">
+          <ul>
+            <li class="is-active" data-tab="active-sessions"><a>Active Sessions</a></li>
+            <li data-tab="exam-results"><a>Exam Results</a></li>
+            <li data-tab="settings"><a>Settings</a></li>
+          </ul>
+        </div>
+        
+        <!-- Active Sessions Tab -->
+        <div id="active-sessions" class="tab-content">
+          <div class="notification is-info is-light">
+            <p>Monitor active exam sessions in real-time</p>
+          </div>
+          
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Username</th>
+                <th>Progress</th>
+                <th>Time Left</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="activeSessionsTable">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+          
+          <div class="admin-actions">
+            <button id="refreshSessions" class="button is-small">
+              <i class="fas fa-sync-alt mr-2"></i> Refresh
+            </button>
+            <button id="endAllSessions" class="button is-danger is-small">
+              <i class="fas fa-stop-circle mr-2"></i> End All Sessions
+            </button>
+          </div>
+        </div>
+        
+        <!-- Exam Results Tab -->
+        <div id="exam-results" class="tab-content hidden">
+          <div class="notification is-info is-light">
+            <p>View and manage submitted exam results</p>
+          </div>
+          
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Username</th>
+                <th>Score</th>
+                <th>Performance</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="examResultsTable">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+          
+          <div class="admin-actions">
+            <button id="exportResults" class="button is-small">
+              <i class="fas fa-file-export mr-2"></i> Export to CSV
+            </button>
+            <button id="clearResults" class="button is-danger is-small">
+              <i class="fas fa-trash mr-2"></i> Clear All Results
+            </button>
+          </div>
+        </div>
+        
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content hidden">
+          <div class="notification is-info is-light">
+            <p>Configure exam settings and parameters</p>
+          </div>
+          
+          <div class="field">
+            <label class="label">Exam Duration (minutes)</label>
+            <div class="control">
+              <input id="examDurationSetting" class="input" type="number" value="45" min="5" max="180">
+            </div>
+          </div>
+          
+          <div class="field">
+            <label class="label">Allowed Login Attempts</label>
+            <div class="control">
+              <input id="loginAttemptsSetting" class="input" type="number" value="3" min="1" max="10">
+            </div>
+          </div>
+          
+          <div class="field">
+            <label class="checkbox">
+              <input id="preventDuplicateLogin" type="checkbox" checked>
+              Prevent duplicate username login
+            </label>
+          </div>
+          
+          <div class="field">
+            <label class="checkbox">
+              <input id="autoSubmitOnTimeout" type="checkbox" checked>
+              Auto-submit when time expires
+            </label>
+          </div>
+          
+          <div class="admin-actions">
+            <button id="saveSettings" class="button is-success">
+              <i class="fas fa-save mr-2"></i> Save Settings
+            </button>
+          </div>
+        </div>
+        
+        <div class="has-text-right mt-4">
+          <button id="adminLogout" class="button is-light is-small">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </button>
+        </div>
+      </div>
+
       <div class="mt-6 has-text-centered">
         <p class="is-size-7">Academic calendar: <a href="/mnt/data/Ilm_Nexus_2.0_Academic_Calendar_2025_2026.pdf" target="_blank">Open Academic Calendar</a></p>
       </div>
@@ -469,6 +749,10 @@
   const EXAM_MINUTES = 45;
   const SERVER_SUBMIT_URL = '/api/exam/submit';
   const ADMIN_EMAIL = 'theilmnexus@gmail.com';
+  
+  // Admin credentials (in a real app, these would be stored securely on the server)
+  const ADMIN_USERNAME = 'admin';
+  const ADMIN_PASSWORD = 'admin123';
 
   // ==== QUESTIONS DATA ====
   const questions = [
@@ -545,12 +829,21 @@
     answers: {},
     timerSeconds: EXAM_MINUTES * 60,
     timerInterval: null,
-    startedAt: null
+    startedAt: null,
+    flaggedQuestions: new Set(),
+    loginAttempts: {},
+    activeSessions: {},
+    examResults: JSON.parse(localStorage.getItem('ilm_nexus_exam_results') || '[]'),
+    settings: JSON.parse(localStorage.getItem('ilm_nexus_settings') || '{"preventDuplicateLogin": true, "autoSubmitOnTimeout": true, "loginAttempts": 3, "examDuration": 45}'),
+    isAdmin: false
   };
 
   // DOM Elements
   const loginBtn = document.getElementById('loginBtn');
   const loginBox = document.getElementById('loginBox');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const adminLoginBox = document.getElementById('adminLoginBox');
+  const adminPanel = document.getElementById('adminPanel');
   const instructionsModal = document.getElementById('instructions');
   const instClose = document.getElementById('instClose');
   const startExamBtn = document.getElementById('startExamBtn');
@@ -565,6 +858,7 @@
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const submitBtn = document.getElementById('submitBtn');
+  const reviewBtn = document.getElementById('reviewBtn');
   const resultArea = document.getElementById('resultArea');
   const scoreOut = document.getElementById('scoreOut');
   const perfOut = document.getElementById('performance');
@@ -577,11 +871,34 @@
   const resultEmail = document.getElementById('resultEmail');
   const resultPassword = document.getElementById('resultPassword');
   const resultDate = document.getElementById('resultDate');
+  const questionNav = document.getElementById('questionNav');
+  const reviewModal = document.getElementById('reviewModal');
+  const reviewClose = document.getElementById('reviewClose');
+  const closeReviewBtn = document.getElementById('closeReviewBtn');
+  const reviewNav = document.getElementById('reviewNav');
+  const adminLogout = document.getElementById('adminLogout');
+  const activeSessionsTable = document.getElementById('activeSessionsTable');
+  const examResultsTable = document.getElementById('examResultsTable');
+  const refreshSessions = document.getElementById('refreshSessions');
+  const endAllSessions = document.getElementById('endAllSessions');
+  const exportResults = document.getElementById('exportResults');
+  const clearResults = document.getElementById('clearResults');
+  const examDurationSetting = document.getElementById('examDurationSetting');
+  const loginAttemptsSetting = document.getElementById('loginAttemptsSetting');
+  const preventDuplicateLogin = document.getElementById('preventDuplicateLogin');
+  const autoSubmitOnTimeout = document.getElementById('autoSubmitOnTimeout');
+  const saveSettings = document.getElementById('saveSettings');
+
+  // Initialize settings from localStorage
+  function initializeSettings() {
+    examDurationSetting.value = state.settings.examDuration;
+    loginAttemptsSetting.value = state.settings.loginAttempts;
+    preventDuplicateLogin.checked = state.settings.preventDuplicateLogin;
+    autoSubmitOnTimeout.checked = state.settings.autoSubmitOnTimeout;
+  }
 
   // Username validation function
   function isValidUsername(username) {
-    // Check for the specific formats: ilm/0s/002/sch or ilm-admin
-    // Also allow similar patterns that might be provided
     const validPatterns = [
       /^ilm\/\w+\/\d+\/\w+$/, // Pattern like ilm/0s/002/sch
       /^ilm-admin$/ // Exact match for ilm-admin
@@ -590,7 +907,93 @@
     return validPatterns.some(pattern => pattern.test(username));
   }
 
-  // ---- login handler ----
+  // Check if username is already logged in
+  function isUserAlreadyLoggedIn(username) {
+    if (!state.settings.preventDuplicateLogin) return false;
+    
+    // Check if username exists in active sessions
+    return Object.values(state.activeSessions).some(session => 
+      session.username === username
+    );
+  }
+
+  // Add user to active sessions
+  function addActiveSession(user) {
+    state.activeSessions[user.username] = {
+      ...user,
+      loginTime: new Date().toISOString(),
+      currentQuestion: 0,
+      progress: 0,
+      timeLeft: state.settings.examDuration * 60,
+      status: 'active'
+    };
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('ilm_nexus_active_sessions', JSON.stringify(state.activeSessions));
+  }
+
+  // Remove user from active sessions
+  function removeActiveSession(username) {
+    delete state.activeSessions[username];
+    localStorage.setItem('ilm_nexus_active_sessions', JSON.stringify(state.activeSessions));
+  }
+
+  // Load active sessions from localStorage
+  function loadActiveSessions() {
+    const savedSessions = localStorage.getItem('ilm_nexus_active_sessions');
+    if (savedSessions) {
+      state.activeSessions = JSON.parse(savedSessions);
+    }
+  }
+
+  // Update active session data
+  function updateActiveSession(username, data) {
+    if (state.activeSessions[username]) {
+      state.activeSessions[username] = { ...state.activeSessions[username], ...data };
+      localStorage.setItem('ilm_nexus_active_sessions', JSON.stringify(state.activeSessions));
+    }
+  }
+
+  // Initialize the application
+  function initializeApp() {
+    loadActiveSessions();
+    initializeSettings();
+    updateAdminPanel();
+    
+    // Set up tab switching for admin panel
+    document.querySelectorAll('.tabs li').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        document.querySelectorAll('.tabs li').forEach(t => t.classList.remove('is-active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        
+        // Add active class to clicked tab
+        tab.classList.add('is-active');
+        
+        // Show corresponding content
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.remove('hidden');
+      });
+    });
+  }
+
+  // ---- admin login handler ----
+  adminLoginBtn.addEventListener('click', () => {
+    const adminUsername = document.getElementById('adminUsername').value.trim();
+    const adminPassword = document.getElementById('adminPassword').value.trim();
+    
+    if(adminUsername === ADMIN_USERNAME && adminPassword === ADMIN_PASSWORD) {
+      state.isAdmin = true;
+      adminLoginBox.classList.add('hidden');
+      adminPanel.classList.remove('hidden');
+      loginBox.classList.add('hidden');
+      updateAdminPanel();
+    } else {
+      alert('Invalid admin credentials');
+    }
+  });
+
+  // ---- student login handler ----
   loginBtn.addEventListener('click', () => {
     const fullName = document.getElementById('fullName').value.trim();
     const username = document.getElementById('username').value.trim();
@@ -608,6 +1011,24 @@
       return;
     }
     
+    // Check if user is already logged in
+    if (isUserAlreadyLoggedIn(username)) {
+      alert('This username is already logged in. Please wait for the previous session to end or contact admin.');
+      return;
+    }
+    
+    // Track login attempts
+    if (!state.loginAttempts[username]) {
+      state.loginAttempts[username] = 0;
+    }
+    
+    state.loginAttempts[username]++;
+    
+    if (state.loginAttempts[username] > state.settings.loginAttempts) {
+      alert(`Too many login attempts. Please contact admin.`);
+      return;
+    }
+    
     // Store user data
     state.user = { 
       fullName: fullName.toUpperCase(), 
@@ -615,6 +1036,9 @@
       password, 
       email 
     };
+    
+    // Add to active sessions
+    addActiveSession(state.user);
     
     // Update UI
     studentNameEl.textContent = state.user.fullName;
@@ -631,7 +1055,13 @@
   declineStart.addEventListener('click', () => {
     instructionsModal.classList.remove('is-active');
     loginBox.classList.remove('hidden');
+    // Remove from active sessions if user declined to start
+    removeActiveSession(state.user.username);
   });
+
+  // Review modal controls
+  reviewClose.addEventListener('click', () => reviewModal.classList.remove('is-active'));
+  closeReviewBtn.addEventListener('click', () => reviewModal.classList.remove('is-active'));
 
   // Render question function
   function renderQuestion(index) {
@@ -641,6 +1071,15 @@
     // Update progress bar
     const progress = ((index + 1) / questions.length) * 100;
     progressFill.style.width = `${progress}%`;
+    
+    // Update active session
+    if (state.user) {
+      updateActiveSession(state.user.username, {
+        currentQuestion: index,
+        progress: Math.round(progress),
+        timeLeft: state.timerSeconds
+      });
+    }
     
     questionsContainer.innerHTML = '';
     
@@ -652,6 +1091,23 @@
     counter.className = 'question-counter';
     counter.textContent = `Question ${index + 1} of ${questions.length}`;
     qdiv.appendChild(counter);
+    
+    // Flag button
+    const flagBtn = document.createElement('button');
+    flagBtn.className = `flag-btn ${state.flaggedQuestions.has(q.id) ? 'flagged' : ''}`;
+    flagBtn.innerHTML = '<i class="fas fa-flag"></i>';
+    flagBtn.title = 'Flag for review';
+    flagBtn.addEventListener('click', () => {
+      if (state.flaggedQuestions.has(q.id)) {
+        state.flaggedQuestions.delete(q.id);
+        flagBtn.classList.remove('flagged');
+      } else {
+        state.flaggedQuestions.add(q.id);
+        flagBtn.classList.add('flagged');
+      }
+      updateQuestionNavigator();
+    });
+    counter.appendChild(flagBtn);
     
     // Question text
     const qText = document.createElement('p');
@@ -693,6 +1149,42 @@
         sel.parentElement.classList.add('selected');
       }
     }
+    
+    // Update question navigator
+    updateQuestionNavigator();
+  }
+
+  // Update question navigator
+  function updateQuestionNavigator() {
+    questionNav.innerHTML = '';
+    
+    questions.forEach((q, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'question-status';
+      
+      if (i === state.currentIndex) {
+        btn.className += ' current';
+        btn.textContent = i + 1;
+      } else if (state.answers[q.id] !== undefined) {
+        btn.className += ' answered';
+        btn.textContent = i + 1;
+      } else {
+        btn.className += ' unanswered';
+        btn.textContent = i + 1;
+      }
+      
+      if (state.flaggedQuestions.has(q.id)) {
+        btn.title = 'Flagged for review';
+      }
+      
+      btn.addEventListener('click', () => {
+        saveCurrentAnswer();
+        state.currentIndex = i;
+        renderQuestion(state.currentIndex);
+      });
+      
+      questionNav.appendChild(btn);
+    });
   }
 
   // Navigation handlers
@@ -712,6 +1204,46 @@
     }
   });
 
+  // Review button handler
+  reviewBtn.addEventListener('click', () => {
+    // Create review navigator
+    reviewNav.innerHTML = '';
+    
+    questions.forEach((q, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'question-status';
+      
+      if (i === state.currentIndex) {
+        btn.className += ' current';
+        btn.textContent = i + 1;
+      } else if (state.answers[q.id] !== undefined) {
+        btn.className += ' answered';
+        btn.textContent = i + 1;
+      } else {
+        btn.className += ' unanswered';
+        btn.textContent = i + 1;
+      }
+      
+      if (state.flaggedQuestions.has(q.id)) {
+        const flagIcon = document.createElement('i');
+        flagIcon.className = 'fas fa-flag flagged';
+        flagIcon.style.marginLeft = '5px';
+        btn.appendChild(flagIcon);
+      }
+      
+      btn.addEventListener('click', () => {
+        saveCurrentAnswer();
+        state.currentIndex = i;
+        renderQuestion(state.currentIndex);
+        reviewModal.classList.remove('is-active');
+      });
+      
+      reviewNav.appendChild(btn);
+    });
+    
+    reviewModal.classList.add('is-active');
+  });
+
   function saveCurrentAnswer() {
     const q = questions[state.currentIndex];
     const sel = document.querySelector(`input[name="q${q.id}"]:checked`);
@@ -729,15 +1261,25 @@
 
   // Timer functions
   function startTimer() {
-    state.timerSeconds = EXAM_MINUTES * 60;
+    state.timerSeconds = state.settings.examDuration * 60;
     timerEl.textContent = formatTime(state.timerSeconds);
     state.timerInterval = setInterval(() => {
       state.timerSeconds--;
       timerEl.textContent = formatTime(state.timerSeconds);
+      
+      // Update active session
+      if (state.user) {
+        updateActiveSession(state.user.username, {
+          timeLeft: state.timerSeconds
+        });
+      }
+      
       if(state.timerSeconds <= 0) {
         clearInterval(state.timerInterval);
-        alert('Time is up. The exam will be submitted automatically.');
-        submitExam();
+        if (state.settings.autoSubmitOnTimeout) {
+          alert('Time is up. The exam will be submitted automatically.');
+          submitExam();
+        }
       }
     }, 1000);
   }
@@ -758,6 +1300,11 @@
   function submitExam() {
     // Stop timer
     if(state.timerInterval) clearInterval(state.timerInterval);
+    
+    // Remove from active sessions
+    if (state.user) {
+      removeActiveSession(state.user.username);
+    }
     
     // Compute score
     let score = 0;
@@ -815,6 +1362,15 @@
       answers: answersPayload,
       timeTakenSeconds: Math.max(1, Math.floor((Date.now()-state.startedAt)/1000))
     };
+    
+    // Save result
+    state.examResults.push(state.result);
+    localStorage.setItem('ilm_nexus_exam_results', JSON.stringify(state.examResults));
+    
+    // Update admin panel if visible
+    if (state.isAdmin) {
+      updateAdminPanel();
+    }
   }
 
   // Download result as PDF
@@ -938,12 +1494,204 @@
     }
   });
 
+  // Admin panel functions
+  function updateAdminPanel() {
+    updateActiveSessionsTable();
+    updateExamResultsTable();
+  }
+
+  function updateActiveSessionsTable() {
+    activeSessionsTable.innerHTML = '';
+    
+    if (Object.keys(state.activeSessions).length === 0) {
+      activeSessionsTable.innerHTML = '<tr><td colspan="6" class="has-text-centered">No active sessions</td></tr>';
+      return;
+    }
+    
+    Object.values(state.activeSessions).forEach(session => {
+      const row = document.createElement('tr');
+      
+      // Calculate time elapsed
+      const loginTime = new Date(session.loginTime);
+      const now = new Date();
+      const elapsedMs = now - loginTime;
+      const elapsedMins = Math.floor(elapsedMs / 60000);
+      
+      row.innerHTML = `
+        <td>${session.fullName}</td>
+        <td>${session.username}</td>
+        <td>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${session.progress}%"></div>
+          </div>
+          ${session.progress}%
+        </td>
+        <td>${formatTime(session.timeLeft)}</td>
+        <td><span class="user-status online"></span> Active (${elapsedMins}m)</td>
+        <td>
+          <button class="button is-small is-danger end-session" data-username="${session.username}">
+            End Session
+          </button>
+        </td>
+      `;
+      
+      activeSessionsTable.appendChild(row);
+    });
+    
+    // Add event listeners to end session buttons
+    document.querySelectorAll('.end-session').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const username = this.getAttribute('data-username');
+        if (confirm(`End session for ${username}? This will submit their exam.`)) {
+          removeActiveSession(username);
+          updateAdminPanel();
+        }
+      });
+    });
+  }
+
+  function updateExamResultsTable() {
+    examResultsTable.innerHTML = '';
+    
+    if (state.examResults.length === 0) {
+      examResultsTable.innerHTML = '<tr><td colspan="6" class="has-text-centered">No exam results</td></tr>';
+      return;
+    }
+    
+    // Sort by date (newest first)
+    const sortedResults = [...state.examResults].sort((a, b) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
+    );
+    
+    sortedResults.forEach(result => {
+      const row = document.createElement('tr');
+      const date = new Date(result.timestamp).toLocaleDateString();
+      
+      row.innerHTML = `
+        <td>${result.name}</td>
+        <td>${result.username}</td>
+        <td>${result.score}/${questions.length} (${result.percent}%)</td>
+        <td>${result.performance}</td>
+        <td>${date}</td>
+        <td>
+          <button class="button is-small is-info view-result" data-username="${result.username}">
+            View
+          </button>
+          <button class="button is-small is-danger delete-result" data-username="${result.username}">
+            Delete
+          </button>
+        </td>
+      `;
+      
+      examResultsTable.appendChild(row);
+    });
+    
+    // Add event listeners to result buttons
+    document.querySelectorAll('.view-result').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const username = this.getAttribute('data-username');
+        const result = state.examResults.find(r => r.username === username);
+        if (result) {
+          alert(`Result for ${result.name}:\nScore: ${result.score}/${questions.length}\nPercentage: ${result.percent}%\nPerformance: ${result.performance}`);
+        }
+      });
+    });
+    
+    document.querySelectorAll('.delete-result').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const username = this.getAttribute('data-username');
+        if (confirm(`Delete result for ${username}?`)) {
+          state.examResults = state.examResults.filter(r => r.username !== username);
+          localStorage.setItem('ilm_nexus_exam_results', JSON.stringify(state.examResults));
+          updateAdminPanel();
+        }
+      });
+    });
+  }
+
+  // Admin panel event listeners
+  refreshSessions.addEventListener('click', updateAdminPanel);
+  
+  endAllSessions.addEventListener('click', () => {
+    if (confirm('End all active sessions? This will submit all ongoing exams.')) {
+      state.activeSessions = {};
+      localStorage.setItem('ilm_nexus_active_sessions', JSON.stringify({}));
+      updateAdminPanel();
+    }
+  });
+  
+  exportResults.addEventListener('click', () => {
+    if (state.examResults.length === 0) {
+      alert('No results to export');
+      return;
+    }
+    
+    // Create CSV content
+    let csv = 'Name,Username,Email,Score,Percentage,Performance,Date\n';
+    
+    state.examResults.forEach(result => {
+      const date = new Date(result.timestamp).toLocaleDateString();
+      csv += `"${result.name}","${result.username}","${result.email}",${result.score},${result.percent}%,"${result.performance}","${date}"\n`;
+    });
+    
+    // Create download link
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ilm_nexus_exam_results.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  
+  clearResults.addEventListener('click', () => {
+    if (confirm('Clear all exam results? This action cannot be undone.')) {
+      state.examResults = [];
+      localStorage.setItem('ilm_nexus_exam_results', JSON.stringify([]));
+      updateAdminPanel();
+    }
+  });
+  
+  saveSettings.addEventListener('click', () => {
+    state.settings = {
+      examDuration: parseInt(examDurationSetting.value),
+      loginAttempts: parseInt(loginAttemptsSetting.value),
+      preventDuplicateLogin: preventDuplicateLogin.checked,
+      autoSubmitOnTimeout: autoSubmitOnTimeout.checked
+    };
+    
+    localStorage.setItem('ilm_nexus_settings', JSON.stringify(state.settings));
+    alert('Settings saved successfully');
+  });
+  
+  adminLogout.addEventListener('click', () => {
+    state.isAdmin = false;
+    adminPanel.classList.add('hidden');
+    adminLoginBox.classList.remove('hidden');
+    loginBox.classList.remove('hidden');
+  });
+
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if(examArea.classList.contains('hidden')) return;
     if(e.key === 'ArrowRight') nextBtn.click();
     if(e.key === 'ArrowLeft') prevBtn.click();
+    if(e.key === 'r' || e.key === 'R') reviewBtn.click();
   });
+
+  // Handle page unload
+  window.addEventListener('beforeunload', (e) => {
+    if (state.user && !state.result) {
+      // If user is in the middle of exam, warn about data loss
+      e.preventDefault();
+      e.returnValue = 'Your exam progress will be lost if you leave this page. Are you sure?';
+    }
+  });
+
+  // Initialize the app
+  initializeApp();
   </script>
 </body>
 </html>
